@@ -1,7 +1,8 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { UserPlus, Search, Edit2, Trash2 } from 'lucide-react';
+import { UserPlus, Search, Edit2, Trash2, Save } from 'lucide-react';
+import Modal from '../components/Modal';
 
 interface Santri {
   id: number;
@@ -10,14 +11,38 @@ interface Santri {
 }
 
 const SantriPage: React.FC = () => {
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ nis: '', nama: '' });
+  const [error, setError] = useState('');
+
   const { data: santris, isLoading } = useQuery<Santri[]>({
     queryKey: ['santri'],
     queryFn: async () => {
-      // For now we'll skip auth for this call or assume it works
       const response = await api.get('/santri');
       return response.data;
     },
   });
+
+  const mutation = useMutation({
+    mutationFn: (newSantri: { nis: string; nama: string }) => {
+      return api.post('/santri', newSantri);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['santri'] });
+      setIsModalOpen(false);
+      setFormData({ nis: '', nama: '' });
+      setError('');
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.message || 'Gagal menyimpan data');
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mutation.mutate(formData);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -26,7 +51,7 @@ const SantriPage: React.FC = () => {
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
           <input type="text" placeholder="Cari santri..." style={{ paddingLeft: '40px' }} />
         </div>
-        <button className="btn btn-primary">
+        <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
           <UserPlus size={18} />
           Tambah Santri
         </button>
@@ -56,8 +81,8 @@ const SantriPage: React.FC = () => {
                 </td>
                 <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                    <button style={{ p: '8px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}><Edit2 size={16} /></button>
-                    <button style={{ p: '8px', border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={16} /></button>
+                    <button style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}><Edit2 size={16} /></button>
+                    <button style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>
@@ -65,6 +90,61 @@ const SantriPage: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title="Tambah Santri Baru"
+      >
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {error && (
+            <div style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: '8px', fontSize: '0.875rem' }}>
+              {error}
+            </div>
+          )}
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NIS</label>
+            <input 
+              type="text" 
+              placeholder="Masukkan NIS" 
+              value={formData.nis}
+              onChange={(e) => setFormData({ ...formData, nis: e.target.value })}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Nama Lengkap</label>
+            <input 
+              type="text" 
+              placeholder="Masukkan Nama Lengkap" 
+              value={formData.nama}
+              onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
+              required
+            />
+          </div>
+
+          <div style={{ marginTop: '12px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button 
+              type="button" 
+              className="btn" 
+              onClick={() => setIsModalOpen(false)}
+              style={{ background: '#f1f5f9' }}
+            >
+              Batal
+            </button>
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={mutation.isPending}
+            >
+              <Save size={18} />
+              {mutation.isPending ? 'Menyimpan...' : 'Simpan Santri'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
