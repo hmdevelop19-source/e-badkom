@@ -1,0 +1,31 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import LoginPage from './pages/LoginPage';
+import DashboardLayout from './layouts/DashboardLayout';
+import AdminDashboard from './pages/AdminDashboard';
+import SantriPage from './pages/SantriPage';
+import LaporanPage from './pages/LaporanPage';
+import SuratPage from './pages/SuratPage';
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<DashboardLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="santri" element={<SantriPage />} />
+            <Route path="laporan" element={<LaporanPage />} />
+            <Route path="surat" element={<SuratPage />} />
+          </Route>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
