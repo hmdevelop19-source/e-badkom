@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import SantriPage from './pages/SantriPage';
+import BadkomPage from './pages/BadkomPage';
 import LaporanPage from './pages/LaporanPage';
 import SuratPage from './pages/SuratPage';
 
@@ -18,6 +19,7 @@ function App() {
           <Route path="/admin" element={<DashboardLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="santri" element={<SantriPage />} />
+            <Route path="badkom" element={<BadkomPage />} />
             <Route path="laporan" element={<LaporanPage />} />
             <Route path="surat" element={<SuratPage />} />
           </Route>
