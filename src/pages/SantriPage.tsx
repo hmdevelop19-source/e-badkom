@@ -1,19 +1,32 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { UserPlus, Search, Edit2, Trash2, Save } from 'lucide-react';
+import { UserPlus, Search, Edit2, Trash2 } from 'lucide-react';
 import Modal from '../components/Modal';
 
 interface Santri {
   id: number;
   nis: string;
   nama: string;
+  nik?: string;
+  jenis_kelamin?: string;
+  tempat_lahir?: string;
+  tanggal_lahir?: string;
+  alamat?: string;
+  nama_ortu?: string;
+  nama_wali_kelas?: string;
+  no_hp?: string;
+  email?: string;
+  id_prov?: number;
+  id_kab?: number;
+  id_kec?: number;
+  id_kel?: number;
 }
 
 const SantriPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ nis: '', nama: '' });
+  const [formData, setFormData] = useState<Partial<Santri>>({ nis: '', nama: '' });
   const [error, setError] = useState('');
 
   const { data: santris, isLoading } = useQuery<Santri[]>({
@@ -25,7 +38,7 @@ const SantriPage: React.FC = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: (newSantri: { nis: string; nama: string }) => {
+    mutationFn: (newSantri: Partial<Santri>) => {
       return api.post('/santri', newSantri);
     },
     onSuccess: () => {
@@ -103,44 +116,137 @@ const SantriPage: React.FC = () => {
             </div>
           )}
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NIS</label>
-            <input 
-              type="text" 
-              placeholder="Masukkan NIS" 
-              value={formData.nis}
-              onChange={(e) => setFormData({ ...formData, nis: e.target.value })}
-              required
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <input 
+                type="text" 
+                placeholder="Nomor Induk Santri" 
+                value={formData.nis}
+                onChange={(e) => setFormData({ ...formData, nis: e.target.value })}
+                required
+              />
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <input 
+                type="text" 
+                placeholder="Nomor KTP santri" 
+                value={formData.nik || ''}
+                onChange={(e) => setFormData({ ...formData, nik: e.target.value })}
+              />
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Nama Lengkap</label>
             <input 
               type="text" 
-              placeholder="Masukkan Nama Lengkap" 
+              placeholder="Nama Lengkap Santri" 
               value={formData.nama}
               onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
               required
             />
           </div>
 
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <select 
+              value={formData.jenis_kelamin || ''}
+              onChange={(e) => setFormData({ ...formData, jenis_kelamin: e.target.value })}
+            >
+              <option value="">--Jenis Kelamin--</option>
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <input 
+                type="text" 
+                placeholder="Tempat Lahir" 
+                value={formData.tempat_lahir || ''}
+                onChange={(e) => setFormData({ ...formData, tempat_lahir: e.target.value })}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <input 
+                type="date" 
+                placeholder="dd/mm/yyyy" 
+                value={formData.tanggal_lahir || ''}
+                onChange={(e) => setFormData({ ...formData, tanggal_lahir: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 700 }}>Alamat Lengkap:</label>
+            <select value={formData.id_prov || ''} onChange={(e) => setFormData({ ...formData, id_prov: Number(e.target.value) })}>
+              <option value="">--Pilih Provinsi--</option>
+              <option value="1">Jawa Timur</option>
+            </select>
+            <select value={formData.id_kab || ''} onChange={(e) => setFormData({ ...formData, id_kab: Number(e.target.value) })}>
+              <option value="">--Pilih Kabupaten--</option>
+              <option value="1">Pamekasan</option>
+            </select>
+            <select value={formData.id_kec || ''} onChange={(e) => setFormData({ ...formData, id_kec: Number(e.target.value) })}>
+              <option value="">--Pilih Kecamatan--</option>
+              <option value="1">Palengaan</option>
+            </select>
+            <select value={formData.id_kel || ''} onChange={(e) => setFormData({ ...formData, id_kel: Number(e.target.value) })}>
+              <option value="">--Pilih Kelurahan--</option>
+              <option value="1">Potoan Laok</option>
+            </select>
+            <textarea 
+              placeholder="Detil Alamat santri" 
+              value={formData.alamat || ''}
+              onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
+              rows={3}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <input 
+              type="text" 
+              placeholder="Nama orang tua / wali" 
+              value={formData.nama_ortu || ''}
+              onChange={(e) => setFormData({ ...formData, nama_ortu: e.target.value })}
+            />
+            <input 
+              type="text" 
+              placeholder="Nama wali kelas" 
+              value={formData.nama_wali_kelas || ''}
+              onChange={(e) => setFormData({ ...formData, nama_wali_kelas: e.target.value })}
+            />
+            <input 
+              type="text" 
+              placeholder="Nomor HP, 0 diganti 62" 
+              value={formData.no_hp || ''}
+              onChange={(e) => setFormData({ ...formData, no_hp: e.target.value })}
+            />
+            <input 
+              type="email" 
+              placeholder="Email Santri" 
+              value={formData.email || ''}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+          </div>
+
           <div style={{ marginTop: '12px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+             <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={mutation.isPending}
+              style={{ background: '#0ea5e9' }}
+            >
+              {mutation.isPending ? 'Menyimpan...' : 'Save'}
+            </button>
             <button 
               type="button" 
               className="btn" 
               onClick={() => setIsModalOpen(false)}
-              style={{ background: '#f1f5f9' }}
+              style={{ background: '#ef4444', color: 'white' }}
             >
-              Batal
-            </button>
-            <button 
-              type="submit" 
-              className="btn btn-primary"
-              disabled={mutation.isPending}
-            >
-              <Save size={18} />
-              {mutation.isPending ? 'Menyimpan...' : 'Simpan Santri'}
+              Cancel
             </button>
           </div>
         </form>

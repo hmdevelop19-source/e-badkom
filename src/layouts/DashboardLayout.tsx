@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Mail, LogOut, Menu as MenuIcon } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Mail, LogOut } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
