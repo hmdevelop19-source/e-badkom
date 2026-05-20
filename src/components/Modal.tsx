@@ -7,9 +7,10 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  maxWidth?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidth }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -31,7 +32,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
             className="card"
             style={{
               width: '100%',
-              maxWidth: '500px',
+              maxWidth: maxWidth || '500px',
+              maxHeight: '90vh',
+              display: 'flex',
+              flexDirection: 'column',
               padding: '0',
               overflow: 'hidden'
             }}
@@ -52,7 +56,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
               </button>
             </div>
             
-            <div style={{ padding: '24px' }}>
+            <div style={{ padding: '24px', overflowY: 'auto' }}>
               {children}
             </div>
           </motion.div>
