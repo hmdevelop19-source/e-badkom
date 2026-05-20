@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { UserPlus, Search, Edit2, Trash2 } from 'lucide-react';
@@ -28,6 +28,39 @@ const SantriPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<Partial<Santri>>({ nis: '', nama: '' });
   const [error, setError] = useState('');
+
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [regencies, setRegencies] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [villages, setVillages] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.get('/wilayah/provinsi').then(res => setProvinces(res.data));
+  }, []);
+
+  useEffect(() => {
+    if (formData.id_prov) {
+      api.get(`/wilayah/kabupaten/${formData.id_prov}`).then(res => setRegencies(res.data));
+    } else {
+      setRegencies([]);
+    }
+  }, [formData.id_prov]);
+
+  useEffect(() => {
+    if (formData.id_kab) {
+      api.get(`/wilayah/kecamatan/${formData.id_kab}`).then(res => setDistricts(res.data));
+    } else {
+      setDistricts([]);
+    }
+  }, [formData.id_kab]);
+
+  useEffect(() => {
+    if (formData.id_kec) {
+      api.get(`/wilayah/kelurahan/${formData.id_kec}`).then(res => setVillages(res.data));
+    } else {
+      setVillages([]);
+    }
+  }, [formData.id_kec]);
 
   const { data: santris, isLoading } = useQuery<Santri[]>({
     queryKey: ['santri'],
@@ -132,7 +165,17 @@ const SantriPage: React.FC = () => {
                 type="text" 
                 placeholder="Nomor KTP santri" 
                 value={formData.nik || ''}
-                onChange={(e) => setFormData({ ...formData, nik: e.target.value })}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setFormData(prev => ({ ...prev, nik: val }));
+                  if (val.length === 16) {
+                    api.get(`/wilayah/parse-nik/${val}`).then(res => {
+                      if (res.data.status) {
+                        setFormData(prev => ({ ...prev, ...res.data.data }));
+                      }
+                    }).catch(err => console.error(err));
+                  }
+                }}
               />
             </div>
           </div>
@@ -180,21 +223,21 @@ const SantriPage: React.FC = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '0.875rem', fontWeight: 700 }}>Alamat Lengkap:</label>
-            <select value={formData.id_prov || ''} onChange={(e) => setFormData({ ...formData, id_prov: Number(e.target.value) })}>
+            <select value={formData.id_prov || ''} onChange={(e) => setFormData({ ...formData, id_prov: Number(e.target.value), id_kab: undefined, id_kec: undefined, id_kel: undefined })}>
               <option value="">--Pilih Provinsi--</option>
-              <option value="1">Jawa Timur</option>
+              {provinces.map(p => <option key={p.id} value={p.id}>{p.nama}</option>)}
             </select>
-            <select value={formData.id_kab || ''} onChange={(e) => setFormData({ ...formData, id_kab: Number(e.target.value) })}>
+            <select value={formData.id_kab || ''} onChange={(e) => setFormData({ ...formData, id_kab: Number(e.target.value), id_kec: undefined, id_kel: undefined })}>
               <option value="">--Pilih Kabupaten--</option>
-              <option value="1">Pamekasan</option>
+              {regencies.map(r => <option key={r.id} value={r.id}>{r.nama}</option>)}
             </select>
-            <select value={formData.id_kec || ''} onChange={(e) => setFormData({ ...formData, id_kec: Number(e.target.value) })}>
+            <select value={formData.id_kec || ''} onChange={(e) => setFormData({ ...formData, id_kec: Number(e.target.value), id_kel: undefined })}>
               <option value="">--Pilih Kecamatan--</option>
-              <option value="1">Palengaan</option>
+              {districts.map(d => <option key={d.id} value={d.id}>{d.nama}</option>)}
             </select>
             <select value={formData.id_kel || ''} onChange={(e) => setFormData({ ...formData, id_kel: Number(e.target.value) })}>
               <option value="">--Pilih Kelurahan--</option>
-              <option value="1">Potoan Laok</option>
+              {villages.map(v => <option key={v.id} value={v.id}>{v.nama}</option>)}
             </select>
             <textarea 
               placeholder="Detil Alamat santri" 
