@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { UserPlus, Search, Edit2, Trash2, Eye, Download, Upload, FileText } from 'lucide-react';
+import { UserPlus, Search, Edit2, Trash2, Eye, Download, Upload, FileText, FileSpreadsheet } from 'lucide-react';
 import Modal from '../components/Modal';
+import { ActionDropdown } from '../components/ActionDropdown';
 
 interface Santri {
   id: number;
@@ -41,7 +42,9 @@ interface Santri {
 
 const SantriPage: React.FC = () => {
   const queryClient = useQueryClient();
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const excelInputRef = useRef<HTMLInputElement>(null);
+  const [activeTab, setActiveTab] = useState<'santri' | 'wali'>('santri');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -166,6 +169,59 @@ const SantriPage: React.FC = () => {
     }
   };
 
+  const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formDataFile = new FormData();
+    formDataFile.append('file', file);
+
+    try {
+      const response = await api.post('/santri/import/excel', formDataFile, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      alert(response.data.message);
+      queryClient.invalidateQueries({ queryKey: ['santri'] });
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal mengimpor file Excel.');
+    }
+    if (excelInputRef.current) excelInputRef.current.value = '';
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const response = await api.get('/santri/export/excel', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'santri_export.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error(error);
+      alert('Gagal mengekspor data Excel.');
+    }
+  };
+
+  const handleDownloadTemplateExcel = async () => {
+    try {
+      const response = await api.get('/santri/template/excel', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'santri_template.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error(error);
+      alert('Gagal mengunduh template Excel.');
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -175,21 +231,37 @@ const SantriPage: React.FC = () => {
         </div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" style={{ display: 'none' }} />
+          <input type="file" ref={excelInputRef} onChange={handleImportExcel} accept=".xlsx,.xls" style={{ display: 'none' }} />
           
-          <button className="btn" onClick={handleDownloadTemplate} style={{ background: '#f1f5f9', color: '#475569', fontWeight: 600 }}>
-            <FileText size={18} />
-            Template CSV
-          </button>
-          
-          <button className="btn" onClick={handleExport} style={{ background: '#f8fafc', color: '#0369a1', border: '1px solid #bae6fd', fontWeight: 600 }}>
-            <Download size={18} />
-            Export CSV
-          </button>
-          
-          <button className="btn" onClick={() => fileInputRef.current?.click()} style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', fontWeight: 600 }}>
-            <Upload size={18} />
-            Import CSV
-          </button>
+          <ActionDropdown
+            label="Template"
+            icon={<FileText size={18} />}
+            buttonStyle={{ background: '#f1f5f9', color: '#475569', fontWeight: 600, border: '1px solid #cbd5e1' }}
+            items={[
+              { label: 'Template CSV', icon: <FileText size={16} />, onClick: handleDownloadTemplate },
+              { label: 'Template Excel', icon: <FileSpreadsheet size={16} />, onClick: handleDownloadTemplateExcel }
+            ]}
+          />
+
+          <ActionDropdown
+            label="Export"
+            icon={<Download size={18} />}
+            buttonStyle={{ background: '#f8fafc', color: '#0369a1', border: '1px solid #bae6fd', fontWeight: 600 }}
+            items={[
+              { label: 'Export CSV', icon: <FileText size={16} />, onClick: handleExport },
+              { label: 'Export Excel', icon: <FileSpreadsheet size={16} />, onClick: handleExportExcel }
+            ]}
+          />
+
+          <ActionDropdown
+            label="Import"
+            icon={<Upload size={18} />}
+            buttonStyle={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', fontWeight: 600 }}
+            items={[
+              { label: 'Import CSV', icon: <FileText size={16} />, onClick: () => fileInputRef.current?.click() },
+              { label: 'Import Excel', icon: <FileSpreadsheet size={16} />, onClick: () => excelInputRef.current?.click() }
+            ]}
+          />
 
           <button className="btn btn-primary" onClick={() => {
             setIsEditMode(false);

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { Network, Search, Edit2, Trash2, Download, Upload, FileSpreadsheet } from 'lucide-react';
+import { Network, Search, Edit2, Trash2, Download, Upload, FileText, FileSpreadsheet } from 'lucide-react';
 import Modal from '../components/Modal';
+import { ActionDropdown } from '../components/ActionDropdown';
 
 interface Badkom {
   id: number;
@@ -32,6 +33,7 @@ const PjutdPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const excelInputRef = useRef<HTMLInputElement>(null);
 
   const initialFormState: Partial<Pjutd> = { 
     kode_lembaga: '', 
@@ -208,6 +210,59 @@ const PjutdPage: React.FC = () => {
     }
   };
 
+  const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formDataFile = new FormData();
+    formDataFile.append('file', file);
+
+    try {
+      const response = await api.post('/pjutd/import/excel', formDataFile, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      alert(response.data.message);
+      queryClient.invalidateQueries({ queryKey: ['pjutd'] });
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Gagal mengimpor file Excel.');
+    }
+    if (excelInputRef.current) excelInputRef.current.value = '';
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const response = await api.get('/pjutd/export/excel', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'pjutd_export.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error(error);
+      alert('Gagal mengekspor data Excel.');
+    }
+  };
+
+  const handleDownloadTemplateExcel = async () => {
+    try {
+      const response = await api.get('/pjutd/template/excel', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'pjutd_template.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error(error);
+      alert('Gagal mengunduh template Excel.');
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -222,36 +277,54 @@ const PjutdPage: React.FC = () => {
           />
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button 
-            className="btn" 
-            style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' }}
-            onClick={handleDownloadTemplate}
-          >
-            <FileSpreadsheet size={16} />
-            Template CSV
-          </button>
-          <button 
-            className="btn" 
-            style={{ background: '#f8fafc', color: '#0284c7', border: '1px solid #bae6fd' }}
-            onClick={handleExport}
-          >
-            <Download size={16} />
-            Export CSV
-          </button>
-          <button 
-            className="btn" 
-            style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Upload size={16} />
-            Import CSV
-          </button>
+          <ActionDropdown
+            label="Template"
+            icon={<FileText size={16} />}
+            buttonStyle={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' }}
+            items={[
+              { label: 'Template CSV', icon: <FileText size={16} />, onClick: handleDownloadTemplate },
+              { label: 'Template Excel', icon: <FileSpreadsheet size={16} />, onClick: handleDownloadTemplateExcel }
+            ]}
+          />
+          <ActionDropdown
+            label="Export"
+            icon={<Download size={16} />}
+            buttonStyle={{ background: '#f8fafc', color: '#0284c7', border: '1px solid #bae6fd' }}
+            items={[
+              { label: 'Export CSV', icon: <FileText size={16} />, onClick: handleExport },
+              { label: 'Export Excel', icon: <FileSpreadsheet size={16} />, onClick: handleExportExcel }
+            ]}
+          />
+          <ActionDropdown
+            label="Import"
+            icon={<Upload size={16} />}
+            buttonStyle={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}
+            items={[
+              { label: 'Import CSV', icon: <FileText size={16} />, onClick: () => fileInputRef.current?.click() },
+              { label: 'Import Excel', icon: <FileSpreadsheet size={16} />, onClick: () => excelInputRef.current?.click() }
+            ]}
+          />
+
           <input
             type="file"
             ref={fileInputRef}
             style={{ display: 'none' }}
             accept=".csv"
             onChange={handleImport}
+          />
+          <input
+            type="file"
+            ref={excelInputRef}
+            style={{ display: 'none' }}
+            accept=".xlsx,.xls"
+            onChange={handleImportExcel}
+          />
+          <input
+            type="file"
+            ref={excelInputRef}
+            style={{ display: 'none' }}
+            accept=".xlsx,.xls"
+            onChange={handleImportExcel}
           />
           <button className="btn btn-primary" onClick={() => { setFormData(initialFormState); setIsModalOpen(true); }}>
             <Network size={18} />
