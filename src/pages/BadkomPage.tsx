@@ -7,7 +7,6 @@ import Modal from '../components/Modal';
 interface Badkom {
   id: number;
   kode_badkom: string;
-  nama_badkom: string;
   nama_pj: string;
   email?: string;
   wilayah_koordinasi: string;
@@ -23,7 +22,6 @@ const BadkomPage: React.FC = () => {
 
   const initialFormState: Partial<Badkom> = { 
     kode_badkom: '', 
-    nama_badkom: '',
     nama_pj: '',
     email: '',
     wilayah_koordinasi: '',
@@ -46,8 +44,8 @@ const BadkomPage: React.FC = () => {
     if (!badkoms) return [];
     return badkoms.filter(b => 
       b.kode_badkom.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.nama_badkom.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.nama_pj.toLowerCase().includes(searchQuery.toLowerCase())
+      b.nama_pj.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.wilayah_koordinasi.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [badkoms, searchQuery]);
 
@@ -207,9 +205,8 @@ const BadkomPage: React.FC = () => {
           <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
             <tr>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Kode</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Nama Badkom</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Nama PJ</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Wilayah Koordinasi</th>
+              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Nama PJ</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>
             </tr>
           </thead>
@@ -225,9 +222,8 @@ const BadkomPage: React.FC = () => {
             ) : filteredBadkoms?.map((b) => (
               <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                 <td style={{ padding: '16px 24px', fontWeight: 500 }}>{b.kode_badkom}</td>
-                <td style={{ padding: '16px 24px' }}>{b.nama_badkom}</td>
-                <td style={{ padding: '16px 24px' }}>{b.nama_pj}</td>
                 <td style={{ padding: '16px 24px' }}>{b.wilayah_koordinasi}</td>
+                <td style={{ padding: '16px 24px' }}>{b.nama_pj}</td>
                 <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                     <button 
@@ -280,12 +276,12 @@ const BadkomPage: React.FC = () => {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NAMA BADKOM *</label>
+                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>CAKUPAN WILAYAH KOORDINASI *</label>
                 <input 
                   type="text" 
-                  placeholder="Nama resmi badan koordinasi" 
-                  value={formData.nama_badkom || ''}
-                  onChange={(e) => setFormData({ ...formData, nama_badkom: e.target.value })}
+                  placeholder="Misal: Kecamatan A dan B" 
+                  value={formData.wilayah_koordinasi || ''}
+                  onChange={(e) => setFormData({ ...formData, wilayah_koordinasi: e.target.value })}
                   required
                 />
               </div>
@@ -329,20 +325,10 @@ const BadkomPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Section: Wilayah Koordinasi */}
+          {/* Section: Alamat */}
           <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Wilayah & Alamat</h3>
+            <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Alamat</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>CAKUPAN WILAYAH KOORDINASI *</label>
-                <input 
-                  type="text" 
-                  placeholder="Misal: Kecamatan A dan B" 
-                  value={formData.wilayah_koordinasi || ''}
-                  onChange={(e) => setFormData({ ...formData, wilayah_koordinasi: e.target.value })}
-                  required
-                />
-              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>ALAMAT KANTOR / BADKOM</label>
                 <textarea 

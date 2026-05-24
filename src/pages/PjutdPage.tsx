@@ -7,7 +7,7 @@ import Modal from '../components/Modal';
 interface Badkom {
   id: number;
   kode_badkom: string;
-  nama_badkom: string;
+  wilayah_koordinasi: string;
   nama_pj: string;
 }
 
@@ -394,7 +394,7 @@ const PjutdPage: React.FC = () => {
                 >
                   <option value="">-- Pilih Badkom --</option>
                   {badkoms?.map(b => (
-                    <option key={b.id} value={b.id}>{b.kode_badkom} - {b.nama_badkom}</option>
+                    <option key={b.id} value={b.id}>{b.kode_badkom} - {b.wilayah_koordinasi}</option>
                   ))}
                 </select>
               </div>
