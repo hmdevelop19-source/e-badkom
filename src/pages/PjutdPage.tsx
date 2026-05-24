@@ -423,7 +423,7 @@ const PjutdPage: React.FC = () => {
                   >
                     <option value="">-- Pilih Provinsi --</option>
                     {provinces.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
+                      <option key={p.id} value={p.id}>{p.nama}</option>
                     ))}
                   </select>
                 </div>
@@ -436,7 +436,7 @@ const PjutdPage: React.FC = () => {
                   >
                     <option value="">-- Pilih Kabupaten --</option>
                     {regencies.map(r => (
-                      <option key={r.id} value={r.id}>{r.name}</option>
+                      <option key={r.id} value={r.id}>{r.nama}</option>
                     ))}
                   </select>
                 </div>
@@ -449,7 +449,7 @@ const PjutdPage: React.FC = () => {
                   >
                     <option value="">-- Pilih Kecamatan --</option>
                     {districts.map(d => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
+                      <option key={d.id} value={d.id}>{d.nama}</option>
                     ))}
                   </select>
                 </div>
@@ -462,7 +462,7 @@ const PjutdPage: React.FC = () => {
                   >
                     <option value="">-- Pilih Kelurahan --</option>
                     {villages.map(v => (
-                      <option key={v.id} value={v.id}>{v.name}</option>
+                      <option key={v.id} value={v.id}>{v.nama}</option>
                     ))}
                   </select>
                 </div>
