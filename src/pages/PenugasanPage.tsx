@@ -9,6 +9,12 @@ interface Utd {
   id: number;
   santri_id: number;
   pjutd_id: number;
+  tahun_ajaran_id: number;
+  tahunAjaran?: {
+    id: number;
+    nama_tahun_ajaran: string;
+    is_active: boolean;
+  };
   santri?: {
     id: number;
     nis: string;
@@ -25,13 +31,23 @@ const PenugasanPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<string>('');
   const [formData, setFormData] = useState<Partial<Utd>>({ santri_id: undefined, pjutd_id: undefined });
   const [error, setError] = useState('');
 
-  const { data: utds = [], isLoading } = useQuery<Utd[]>({
-    queryKey: ['utd'],
+  const { data: tahunAjarans = [] } = useQuery({
+    queryKey: ['tahun-ajaran'],
     queryFn: async () => {
-      const response = await api.get('/utd');
+      const response = await api.get('/tahun-ajaran');
+      return response.data;
+    }
+  });
+
+  const { data: utds = [], isLoading } = useQuery<Utd[]>({
+    queryKey: ['utd', selectedTahunAjaranId],
+    queryFn: async () => {
+      const params = selectedTahunAjaranId ? { tahun_ajaran_id: selectedTahunAjaranId } : {};
+      const response = await api.get('/utd', { params });
       return response.data;
     }
   });
@@ -111,6 +127,17 @@ const PenugasanPage: React.FC = () => {
           />
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
+          <select 
+            className="form-control"
+            value={selectedTahunAjaranId}
+            onChange={(e) => setSelectedTahunAjaranId(e.target.value)}
+            style={{ minWidth: '150px' }}
+          >
+            <option value="">Tahun Ajaran Aktif</option>
+            {tahunAjarans.map((ta: any) => (
+              <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : '(Arsip)'}</option>
+            ))}
+          </select>
           <button className="btn btn-primary" onClick={() => { setFormData({ santri_id: undefined, pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
             <MapPin size={18} />
             Tambah Penugasan
@@ -124,7 +151,7 @@ const PenugasanPage: React.FC = () => {
             <tr>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Santri</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Lokasi PJ UTD</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Tanggal Penugasan</th>
+              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Tahun Ajaran</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>
             </tr>
           </thead>
@@ -149,8 +176,10 @@ const PenugasanPage: React.FC = () => {
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {utd.pjutd?.kode_lembaga}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
-                    {/* Menggunakan id sebagai fallback apabila tidak ada kolom created_at, namun kita akan dummy format */}
-                    <span style={{ color: 'var(--text-secondary)' }}>Ditugaskan</span>
+                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.tahunAjaran?.nama_tahun_ajaran}</div>
+                    {!utd.tahunAjaran?.is_active && (
+                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 6px', borderRadius: '4px' }}>Arsip</span>
+                    )}
                   </td>
                   <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>

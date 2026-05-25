@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
@@ -11,6 +11,7 @@ const DashboardLayout: React.FC = () => {
     { label: 'Santri', path: '/admin/santri', icon: Users },
     { label: 'Badkom', path: '/admin/badkom', icon: Building2 },
     { label: 'PJ UTD', path: '/admin/pjutd', icon: Network },
+    { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', icon: Calendar },
     { label: 'Penugasan', path: '/admin/penugasan', icon: MapPin },
     { label: 'Laporan', path: '/admin/laporan', icon: FileText },
     { label: 'Surat', path: '/admin/surat', icon: Mail },
