@@ -36,6 +36,16 @@ interface Santri {
       nama_pjutd: string;
       kode_lembaga: string;
     };
+    tahun_ajaran?: {
+      id: number;
+      nama_tahun_ajaran: string;
+      is_active: boolean;
+    };
+    penilaian?: {
+      id: number;
+      keterangan: string;
+      predikat: string;
+    };
     created_at: string;
   }>;
 }
@@ -623,17 +633,35 @@ const SantriPage: React.FC = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead style={{ background: '#f1f5f9' }}>
                     <tr>
-                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Tanggal</th>
-                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Kode Lembaga</th>
-                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Nama PJUTD (Lembaga)</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Tahun Ajaran</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Tempat Tugas</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Penilaian</th>
                     </tr>
                   </thead>
                   <tbody>
                     {selectedSantri.utds.map((utd) => (
                       <tr key={utd.id} style={{ borderTop: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>{new Date(utd.created_at).toLocaleDateString('id-ID')}</td>
-                        <td style={{ padding: '12px 20px', fontSize: '0.875rem', fontWeight: 500 }}>{utd.pjutd?.kode_lembaga || '-'}</td>
-                        <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>{utd.pjutd?.nama_pjutd || '-'}</td>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem', fontWeight: 500 }}>
+                          {utd.tahun_ajaran?.nama_tahun_ajaran || '-'}
+                        </td>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
+                          <div style={{ fontWeight: 500 }}>{utd.pjutd?.nama_pjutd || '-'}</div>
+                          <div style={{ color: 'var(--text-secondary)' }}>{utd.pjutd?.kode_lembaga}</div>
+                        </td>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
+                          {utd.penilaian ? (
+                            <div>
+                              <span style={{ fontWeight: 600, color: utd.penilaian.keterangan === 'Lulus' ? '#10b981' : '#ef4444' }}>
+                                {utd.penilaian.keterangan}
+                              </span>
+                              <span style={{ marginLeft: '4px', background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                {utd.penilaian.predikat}
+                              </span>
+                            </div>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Belum dinilai</span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
