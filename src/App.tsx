@@ -11,6 +11,7 @@ import TahunAjaranPage from './pages/TahunAjaranPage';
 import PenilaianPage from './pages/PenilaianPage';
 import LaporanPage from './pages/LaporanPage';
 import SuratPage from './pages/SuratPage';
+import UserPage from './pages/UserPage';
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin" element={<DashboardLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<UserPage />} />
             <Route path="santri" element={<SantriPage />} />
             <Route path="badkom" element={<BadkomPage />} />
             <Route path="pjutd" element={<PjutdPage />} />

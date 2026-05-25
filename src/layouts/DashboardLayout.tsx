@@ -1,22 +1,29 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  
+  const currentUserStr = localStorage.getItem('user');
+  const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+  const level = currentUser?.level || 'user';
 
-  const navItems = [
-    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { label: 'Santri', path: '/admin/santri', icon: Users },
-    { label: 'Badkom', path: '/admin/badkom', icon: Building2 },
-    { label: 'PJ UTD', path: '/admin/pjutd', icon: Network },
-    { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', icon: Calendar },
-    { label: 'Penugasan', path: '/admin/penugasan', icon: MapPin },
-    { label: 'Penilaian', path: '/admin/penilaian', icon: Award },
-    { label: 'Laporan', path: '/admin/laporan', icon: FileText },
-    { label: 'Surat', path: '/admin/surat', icon: Mail },
+  const allNavItems = [
+    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
+    { label: 'Manajemen Akun', path: '/admin/users', icon: Shield, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+    { label: 'Santri', path: '/admin/santri', icon: Users, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+    { label: 'Badkom', path: '/admin/badkom', icon: Building2, roles: ['admin', 'badkom_pusat'] },
+    { label: 'PJ UTD', path: '/admin/pjutd', icon: Network, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+    { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', icon: Calendar, roles: ['admin', 'badkom_pusat'] },
+    { label: 'Penugasan', path: '/admin/penugasan', icon: MapPin, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+    { label: 'Penilaian', path: '/admin/penilaian', icon: Award, roles: ['admin', 'badkom_pusat', 'pjutd'] },
+    { label: 'Laporan', path: '/admin/laporan', icon: FileText, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
+    { label: 'Surat', path: '/admin/surat', icon: Mail, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
   ];
+
+  const navItems = allNavItems.filter(item => item.roles.includes(level));
 
   const handleLogout = () => {
     localStorage.removeItem('token');
