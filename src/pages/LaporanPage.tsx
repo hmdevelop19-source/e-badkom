@@ -41,7 +41,8 @@ const LaporanPage: React.FC = () => {
   const [isMendesakModalOpen, setIsMendesakModalOpen] = useState(false);
 
   // Forms
-  const [soalForm, setSoalForm] = useState<Partial<Soal>>({ target_level: 'utd', tipe_soal: 'uraian', opsi_jawaban: [''] });
+  const [soalForms, setSoalForms] = useState<Partial<Soal>[]>([{ target_level: 'utd', tipe_soal: 'uraian', opsi_jawaban: [''] }]);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [mendesakForm, setMendesakForm] = useState({ judul: '', isi_laporan: '' });
   const [jawabanForm, setJawabanForm] = useState<Record<number, string>>({});
   
@@ -52,7 +53,6 @@ const LaporanPage: React.FC = () => {
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const level = currentUser?.level;
   const isPusat = level === 'admin' || level === 'badkom_pusat';
-  const isWilayah = level === 'badkom_wilayah';
   const isSender = level === 'utd' || level === 'pjutd' || level === 'badkom_wilayah'; // Wilayah also sends to Pusat
 
   // Queries
@@ -93,6 +93,7 @@ const LaporanPage: React.FC = () => {
   // Mutations
   const saveSoalMutation = useMutation({
     mutationFn: (data: any) => {
+      if (data.isBatch) return api.post('/soal-laporan', { soal_list: data.items });
       if (data.id) return api.put(`/soal-laporan/${data.id}`, data);
       return api.post('/soal-laporan', data);
     },
@@ -131,25 +132,55 @@ const LaporanPage: React.FC = () => {
   // Handlers
   const handleSaveSoal = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...soalForm };
-    if (payload.tipe_soal === 'uraian') payload.opsi_jawaban = null;
-    else if (payload.opsi_jawaban) {
-      payload.opsi_jawaban = payload.opsi_jawaban.filter(o => o.trim() !== '');
+    if (isEditMode) {
+      const payload = { ...soalForms[0] };
+      if (payload.tipe_soal === 'uraian') payload.opsi_jawaban = null;
+      else if (payload.opsi_jawaban) {
+        payload.opsi_jawaban = payload.opsi_jawaban.filter(o => o.trim() !== '');
+      }
+      saveSoalMutation.mutate(payload);
+    } else {
+      const items = soalForms.map(form => {
+        const payload = { ...form };
+        if (payload.tipe_soal === 'uraian') payload.opsi_jawaban = null;
+        else if (payload.opsi_jawaban) {
+          payload.opsi_jawaban = payload.opsi_jawaban.filter(o => o.trim() !== '');
+        }
+        return payload;
+      });
+      saveSoalMutation.mutate({ isBatch: true, items });
     }
-    saveSoalMutation.mutate(payload);
   };
 
-  const addOpsi = () => {
-    if (soalForm.opsi_jawaban) {
-      setSoalForm({ ...soalForm, opsi_jawaban: [...soalForm.opsi_jawaban, ''] });
+  const addSoalForm = () => {
+    setSoalForms([...soalForms, { target_level: 'utd', tipe_soal: 'uraian', opsi_jawaban: [''] }]);
+  };
+
+  const removeSoalForm = (index: number) => {
+    if (soalForms.length > 1) {
+      setSoalForms(soalForms.filter((_, i) => i !== index));
     }
   };
 
-  const updateOpsi = (index: number, value: string) => {
-    if (soalForm.opsi_jawaban) {
-      const newOpsi = [...soalForm.opsi_jawaban];
-      newOpsi[index] = value;
-      setSoalForm({ ...soalForm, opsi_jawaban: newOpsi });
+  const updateSoalForm = (index: number, field: keyof Soal, value: any) => {
+    const newForms = [...soalForms];
+    newForms[index] = { ...newForms[index], [field]: value };
+    setSoalForms(newForms);
+  };
+
+  const addOpsi = (formIndex: number) => {
+    const form = soalForms[formIndex];
+    if (form.opsi_jawaban) {
+      updateSoalForm(formIndex, 'opsi_jawaban', [...form.opsi_jawaban, '']);
+    }
+  };
+
+  const updateOpsi = (formIndex: number, opsiIndex: number, value: string) => {
+    const form = soalForms[formIndex];
+    if (form.opsi_jawaban) {
+      const newOpsi = [...form.opsi_jawaban];
+      newOpsi[opsiIndex] = value;
+      updateSoalForm(formIndex, 'opsi_jawaban', newOpsi);
     }
   };
 
@@ -198,7 +229,7 @@ const LaporanPage: React.FC = () => {
             <div className="card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ margin: 0 }}>Bank Soal Laporan</h3>
-                <button className="btn btn-primary" onClick={() => { setSoalForm({ target_level: 'utd', tipe_soal: 'uraian', opsi_jawaban: [''], is_active: true }); setIsSoalModalOpen(true); }}>
+                <button className="btn btn-primary" onClick={() => { setIsEditMode(false); setSoalForms([{ target_level: 'utd', tipe_soal: 'uraian', opsi_jawaban: [''], is_active: true }]); setIsSoalModalOpen(true); }}>
                   <Plus size={18} /> Tambah Soal
                 </button>
               </div>
@@ -226,7 +257,7 @@ const LaporanPage: React.FC = () => {
                         <td style={{ padding: '12px' }}>{s.tipe_soal === 'uraian' ? 'Uraian' : 'Pilihan Ganda'}</td>
                         <td style={{ padding: '12px' }}>{s.is_active ? 'Aktif' : 'Nonaktif'}</td>
                         <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
-                          <button className="btn" style={{ padding: '6px' }} onClick={() => { setSoalForm(s); setIsSoalModalOpen(true); }}><Edit2 size={14} /></button>
+                          <button className="btn" style={{ padding: '6px' }} onClick={() => { setIsEditMode(true); setSoalForms([{ ...s }]); setIsSoalModalOpen(true); }}><Edit2 size={14} /></button>
                           <button className="btn" style={{ padding: '6px', color: 'red' }} onClick={() => deleteSoalMutation.mutate(s.id)}><Trash2 size={14} /></button>
                         </td>
                       </tr>
@@ -354,41 +385,61 @@ const LaporanPage: React.FC = () => {
       )}
 
       {/* Modal Tambah/Edit Soal */}
-      <Modal isOpen={isSoalModalOpen} onClose={() => setIsSoalModalOpen(false)} title="Manajemen Soal Laporan">
-        <form onSubmit={handleSaveSoal} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="form-group">
-            <label className="form-label">Target Pengisi Soal</label>
-            <select className="form-control" value={soalForm.target_level} onChange={e => setSoalForm({...soalForm, target_level: e.target.value})}>
-              <option value="utd">UTD (Santri)</option>
-              <option value="pjutd">PJ UTD (Lembaga)</option>
-              <option value="badkom_wilayah">Badkom Wilayah</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">Pertanyaan</label>
-            <textarea className="form-control" rows={3} value={soalForm.pertanyaan || ''} onChange={e => setSoalForm({...soalForm, pertanyaan: e.target.value})} required />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Tipe Jawaban</label>
-            <select className="form-control" value={soalForm.tipe_soal} onChange={e => setSoalForm({...soalForm, tipe_soal: e.target.value})}>
-              <option value="uraian">Uraian Panjang</option>
-              <option value="pilihan_ganda">Pilihan Ganda</option>
-            </select>
-          </div>
-          {soalForm.tipe_soal === 'pilihan_ganda' && (
-            <div className="form-group">
-              <label className="form-label">Opsi Jawaban (Isi satu per satu)</label>
-              {soalForm.opsi_jawaban?.map((opsi, index) => (
-                <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                  <input type="text" className="form-control" value={opsi} onChange={e => updateOpsi(index, e.target.value)} placeholder={`Opsi ${index+1}`} required />
+      <Modal isOpen={isSoalModalOpen} onClose={() => setIsSoalModalOpen(false)} title={isEditMode ? "Edit Soal" : "Tambah Soal (Bisa Sekaligus Banyak)"}>
+        <form onSubmit={handleSaveSoal} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          
+          {soalForms.map((form, formIndex) => (
+            <div key={formIndex} style={{ border: '1px solid #e2e8f0', padding: '16px', borderRadius: '8px', position: 'relative' }}>
+              {!isEditMode && soalForms.length > 1 && (
+                <button type="button" onClick={() => removeSoalForm(formIndex)} style={{ position: 'absolute', top: '8px', right: '8px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                  <Trash2 size={16} />
+                </button>
+              )}
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="form-group">
+                  <label className="form-label">Target Pengisi Soal {isEditMode ? '' : formIndex + 1}</label>
+                  <select className="form-control" value={form.target_level} onChange={e => updateSoalForm(formIndex, 'target_level', e.target.value)}>
+                    <option value="utd">UTD (Santri)</option>
+                    <option value="pjutd">PJ UTD (Lembaga)</option>
+                    <option value="badkom_wilayah">Badkom Wilayah</option>
+                  </select>
                 </div>
-              ))}
-              <button type="button" className="btn" style={{ padding: '6px', fontSize: '0.75rem' }} onClick={addOpsi}>+ Tambah Opsi</button>
+                <div className="form-group">
+                  <label className="form-label">Pertanyaan</label>
+                  <textarea className="form-control" rows={2} value={form.pertanyaan || ''} onChange={e => updateSoalForm(formIndex, 'pertanyaan', e.target.value)} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Tipe Jawaban</label>
+                  <select className="form-control" value={form.tipe_soal} onChange={e => updateSoalForm(formIndex, 'tipe_soal', e.target.value)}>
+                    <option value="uraian">Uraian Panjang</option>
+                    <option value="pilihan_ganda">Pilihan Ganda</option>
+                  </select>
+                </div>
+                {form.tipe_soal === 'pilihan_ganda' && (
+                  <div className="form-group">
+                    <label className="form-label">Opsi Jawaban</label>
+                    {form.opsi_jawaban?.map((opsi, opsiIndex) => (
+                      <div key={opsiIndex} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                        <input type="text" className="form-control" value={opsi} onChange={e => updateOpsi(formIndex, opsiIndex, e.target.value)} placeholder={`Opsi ${opsiIndex+1}`} required />
+                      </div>
+                    ))}
+                    <button type="button" className="btn" style={{ padding: '6px', fontSize: '0.75rem' }} onClick={() => addOpsi(formIndex)}>+ Tambah Opsi</button>
+                  </div>
+                )}
+              </div>
             </div>
+          ))}
+
+          {!isEditMode && (
+            <button type="button" className="btn" style={{ alignSelf: 'flex-start', border: '1px dashed #cbd5e1', color: 'var(--primary-color)' }} onClick={addSoalForm}>
+              <Plus size={16} /> Tambah Pertanyaan Lain
+            </button>
           )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
             <button type="button" className="btn" onClick={() => setIsSoalModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn btn-primary">Simpan Soal</button>
+            <button type="submit" className="btn btn-primary">Simpan {soalForms.length > 1 ? 'Semua Soal' : 'Soal'}</button>
           </div>
         </form>
       </Modal>
