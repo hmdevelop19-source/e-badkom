@@ -6,6 +6,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import SantriPage from './pages/SantriPage';
 import BadkomPage from './pages/BadkomPage';
 import PjutdPage from './pages/PjutdPage';
+import PenugasanPage from './pages/PenugasanPage';
 import LaporanPage from './pages/LaporanPage';
 import SuratPage from './pages/SuratPage';
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="santri" element={<SantriPage />} />
             <Route path="badkom" element={<BadkomPage />} />
             <Route path="pjutd" element={<PjutdPage />} />
+            <Route path="penugasan" element={<PenugasanPage />} />
             <Route path="laporan" element={<LaporanPage />} />
             <Route path="surat" element={<SuratPage />} />
           </Route>

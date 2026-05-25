@@ -8,9 +8,10 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   maxWidth?: string;
+  overflowVisible?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidth }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidth, overflowVisible = false }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -37,7 +38,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidt
               display: 'flex',
               flexDirection: 'column',
               padding: '0',
-              overflow: 'hidden'
+              overflow: overflowVisible ? 'visible' : 'hidden'
             }}
           >
             <div style={{
@@ -49,6 +50,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidt
             }}>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>{title}</h3>
               <button 
+                type="button"
                 onClick={onClose}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
               >
@@ -56,7 +58,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidt
               </button>
             </div>
             
-            <div style={{ padding: '24px', overflowY: 'auto' }}>
+            <div style={{ padding: '24px', overflowY: overflowVisible ? 'visible' : 'auto' }}>
               {children}
             </div>
           </motion.div>
