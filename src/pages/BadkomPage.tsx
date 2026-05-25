@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { Building2, Search, Edit2, Trash2, Network, Upload, Download, FileText, FileSpreadsheet } from 'lucide-react';
+import { Building2, Search, Edit2, Trash2, Upload, Download, FileText, FileSpreadsheet } from 'lucide-react';
 import Modal from '../components/Modal';
 import { ActionDropdown } from '../components/ActionDropdown';
 
