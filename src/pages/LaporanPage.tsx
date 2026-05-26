@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { FileText, AlertCircle, Plus, Edit2, Trash2, CheckCircle, Clock } from 'lucide-react';
+import { FileText, AlertCircle, Plus, Edit2, Trash2, CheckCircle } from 'lucide-react';
 import Modal from '../components/Modal';
 
 interface Soal {

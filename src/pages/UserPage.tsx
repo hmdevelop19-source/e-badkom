@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { Users, Search, Edit2, Trash2, Shield, Plus } from 'lucide-react';
+import { Search, Edit2, Trash2, Shield, Plus } from 'lucide-react';
 import Modal from '../components/Modal';
 
 interface User {
