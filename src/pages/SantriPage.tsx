@@ -45,6 +45,8 @@ interface Santri {
       id: number;
       keterangan: string;
       predikat: string;
+      status_badkom_wilayah: string;
+      status_badkom_pusat: string;
     };
     created_at: string;
   }>;
@@ -291,6 +293,7 @@ const SantriPage: React.FC = () => {
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>NIS</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Nama</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Status</th>
+              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Tugas Wajib</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>
             </tr>
           </thead>
@@ -305,6 +308,21 @@ const SantriPage: React.FC = () => {
                 <td style={{ padding: '16px 24px' }}>{s.nama}</td>
                 <td style={{ padding: '16px 24px' }}>
                   <span style={{ padding: '4px 10px', borderRadius: '12px', background: '#e0f2fe', color: '#0369a1', fontSize: '0.75rem', fontWeight: 600 }}>Aktif</span>
+                </td>
+                <td style={{ padding: '16px 24px' }}>
+                  {(() => {
+                    const validLulus = s.utds?.filter(u => u.penilaian?.keterangan === 'Lulus' && u.penilaian?.status_badkom_wilayah === 'Disetujui' && u.penilaian?.status_badkom_pusat === 'Disetujui').length || 0;
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontWeight: 700, color: validLulus >= 3 ? '#166534' : '#b45309' }}>{validLulus} / 3 Lulus</span>
+                        </div>
+                        <span style={{ fontSize: '0.75rem', color: validLulus >= 3 ? '#15803d' : '#ca8a04', fontWeight: 600 }}>
+                          {validLulus >= 3 ? 'Tugas Selesai' : 'Punya Tanggungan'}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </td>
                 <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
@@ -650,13 +668,18 @@ const SantriPage: React.FC = () => {
                         </td>
                         <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
                           {utd.penilaian ? (
-                            <div>
-                              <span style={{ fontWeight: 600, color: utd.penilaian.keterangan === 'Lulus' ? '#10b981' : '#ef4444' }}>
-                                {utd.penilaian.keterangan}
-                              </span>
-                              <span style={{ marginLeft: '4px', background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                                {utd.penilaian.predikat}
-                              </span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div>
+                                <span style={{ fontWeight: 600, color: utd.penilaian.keterangan === 'Lulus' ? '#10b981' : '#ef4444' }}>
+                                  {utd.penilaian.keterangan}
+                                </span>
+                                <span style={{ marginLeft: '4px', background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                  {utd.penilaian.predikat}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                Wilayah: {utd.penilaian.status_badkom_wilayah} | Pusat: {utd.penilaian.status_badkom_pusat}
+                              </div>
                             </div>
                           ) : (
                             <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Belum dinilai</span>

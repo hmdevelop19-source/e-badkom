@@ -47,6 +47,7 @@ const KATEGORI_BULAN_OPTIONS = Array.from({ length: 12 }, (_, i) => `Bulan Ke-${
 const LaporanPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'wajib' | 'mendesak'>('wajib');
+  const [activeSoalTab, setActiveSoalTab] = useState<'utd' | 'pjutd' | 'badkom_wilayah'>('utd');
   
   // Modals
   const [isSoalModalOpen, setIsSoalModalOpen] = useState(false);
@@ -272,37 +273,47 @@ const LaporanPage: React.FC = () => {
           {/* Admin Soal Management */}
           {isPusat && (
             <div className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
                 <h3 style={{ margin: 0 }}>Bank Soal Laporan</h3>
                 <button className="btn btn-primary" onClick={() => { 
                   setIsEditMode(false); 
-                  setGlobalTargetLevel('utd');
+                  setGlobalTargetLevel(activeSoalTab);
                   setSoalForms([{ tipe_soal: 'uraian', opsi_jawaban: [''], is_active: true }]); 
                   setIsSoalModalOpen(true); 
                 }}>
-                  <Plus size={18} /> Tambah Soal
+                  <Plus size={18} /> Tambah Soal untuk {activeSoalTab === 'utd' ? 'UTD' : activeSoalTab === 'pjutd' ? 'PJ UTD' : 'Badkom Wilayah'}
                 </button>
+              </div>
+
+              {/* Sub-tabs for Target Level */}
+              <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '16px' }}>
+                <button 
+                  style={{ padding: '8px 16px', border: 'none', background: activeSoalTab === 'utd' ? '#e0e7ff' : 'transparent', color: activeSoalTab === 'utd' ? '#4338ca' : '#64748b', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
+                  onClick={() => setActiveSoalTab('utd')}
+                >Soal UTD (Santri)</button>
+                <button 
+                  style={{ padding: '8px 16px', border: 'none', background: activeSoalTab === 'pjutd' ? '#e0e7ff' : 'transparent', color: activeSoalTab === 'pjutd' ? '#4338ca' : '#64748b', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
+                  onClick={() => setActiveSoalTab('pjutd')}
+                >Soal PJ UTD (Lembaga)</button>
+                <button 
+                  style={{ padding: '8px 16px', border: 'none', background: activeSoalTab === 'badkom_wilayah' ? '#e0e7ff' : 'transparent', color: activeSoalTab === 'badkom_wilayah' ? '#4338ca' : '#64748b', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
+                  onClick={() => setActiveSoalTab('badkom_wilayah')}
+                >Soal Badkom Wilayah</button>
               </div>
               
               {loadingSoal ? <p>Memuat soal...</p> : (
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead style={{ background: '#f8fafc' }}>
                     <tr>
-                      <th style={{ padding: '12px' }}>Target</th>
-                      <th style={{ padding: '12px' }}>Pertanyaan</th>
+                      <th style={{ padding: '12px', width: '60%' }}>Pertanyaan</th>
                       <th style={{ padding: '12px' }}>Tipe</th>
                       <th style={{ padding: '12px' }}>Status</th>
                       <th style={{ padding: '12px' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {soalList.map(s => (
+                    {soalList.filter(s => s.target_level === activeSoalTab).map(s => (
                       <tr key={s.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '12px' }}>
-                          <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', background: '#e0e7ff', color: '#4338ca' }}>
-                            {s.target_level.toUpperCase()}
-                          </span>
-                        </td>
                         <td style={{ padding: '12px' }}>{s.pertanyaan}</td>
                         <td style={{ padding: '12px' }}>{s.tipe_soal === 'uraian' ? 'Uraian' : 'Pilihan Ganda'}</td>
                         <td style={{ padding: '12px' }}>{s.is_active ? 'Aktif' : 'Nonaktif'}</td>
@@ -317,6 +328,11 @@ const LaporanPage: React.FC = () => {
                         </td>
                       </tr>
                     ))}
+                    {soalList.filter(s => s.target_level === activeSoalTab).length === 0 && (
+                      <tr>
+                        <td colSpan={4} style={{ padding: '24px', textAlign: 'center', color: '#94a3b8' }}>Belum ada soal untuk kategori ini.</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               )}
@@ -457,8 +473,8 @@ const LaporanPage: React.FC = () => {
         <form onSubmit={handleSaveSoal} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           <div className="form-group" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <label className="form-label" style={{ fontWeight: 'bold' }}>Target Pengisi Soal {isEditMode ? '' : '(Berlaku untuk semua soal di bawah)'}</label>
-            <select className="form-control" value={globalTargetLevel} onChange={e => setGlobalTargetLevel(e.target.value)}>
+            <label className="form-label" style={{ fontWeight: 'bold' }}>Target Pengisi Soal {isEditMode ? '' : '(Terkunci sesuai tab yang dipilih)'}</label>
+            <select className="form-control" value={globalTargetLevel} disabled style={{ background: '#e2e8f0', cursor: 'not-allowed' }}>
               <option value="utd">UTD (Santri)</option>
               <option value="pjutd">PJ UTD (Lembaga)</option>
               <option value="badkom_wilayah">Badkom Wilayah</option>

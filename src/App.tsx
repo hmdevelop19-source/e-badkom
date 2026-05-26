@@ -12,6 +12,7 @@ import PenilaianPage from './pages/PenilaianPage';
 import LaporanPage from './pages/LaporanPage';
 import SuratPage from './pages/SuratPage';
 import UserPage from './pages/UserPage';
+import PenilaianValidasiPage from './pages/PenilaianValidasiPage';
 
 import LaporanMasukWajibPage from './pages/LaporanMasukWajibPage';
 import LaporanMasukInsidentalPage from './pages/LaporanMasukInsidentalPage';
@@ -33,6 +34,7 @@ function App() {
             <Route path="tahun-ajaran" element={<TahunAjaranPage />} />
             <Route path="penugasan" element={<PenugasanPage />} />
             <Route path="penilaian" element={<PenilaianPage />} />
+            <Route path="validasi-penilaian" element={<PenilaianValidasiPage />} />
             <Route path="laporan" element={<LaporanPage />} />
             <Route path="laporan-masuk/wajib" element={<LaporanMasukWajibPage />} />
             <Route path="laporan-masuk/insidental" element={<LaporanMasukInsidentalPage />} />
