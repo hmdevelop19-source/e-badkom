@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { FileText, AlertCircle, Plus, Edit2, Trash2, CheckCircle, Clock } from 'lucide-react';
@@ -13,12 +13,21 @@ interface Soal {
   is_active: boolean;
 }
 
+interface TahunAjaran {
+  id: number;
+  nama_tahun_ajaran: string;
+  is_active: boolean;
+}
+
 interface LaporanWajib {
   id: number;
   bulan_tahun: string;
+  kategori_bulan: string;
+  tahun_ajaran_id: number;
   status: string;
   user: any;
   jawabans: any[];
+  tahunAjaran?: TahunAjaran;
 }
 
 interface LaporanMendesak {
@@ -27,9 +36,13 @@ interface LaporanMendesak {
   isi_laporan: string;
   file_lampiran: string | null;
   status_penyelesaian: string;
+  tahun_ajaran_id: number;
   user: any;
   created_at: string;
+  tahunAjaran?: TahunAjaran;
 }
+
+const KATEGORI_BULAN_OPTIONS = Array.from({ length: 12 }, (_, i) => `Bulan Ke-${i + 1}`);
 
 const LaporanPage: React.FC = () => {
   const queryClient = useQueryClient();
@@ -49,15 +62,32 @@ const LaporanPage: React.FC = () => {
   const [jawabanForm, setJawabanForm] = useState<Record<number, string>>({});
   
   const currentMonthYear = new Date().toISOString().slice(0, 7); // YYYY-MM
-  const [selectedBulanTahun, setSelectedBulanTahun] = useState(currentMonthYear);
+  const [selectedKategoriBulan, setSelectedKategoriBulan] = useState('Bulan Ke-1');
+  const [selectedTahunAjaran, setSelectedTahunAjaran] = useState<number | ''>('');
 
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const level = currentUser?.level;
   const isPusat = level === 'admin' || level === 'badkom_pusat';
-  const isSender = level === 'utd' || level === 'pjutd' || level === 'badkom_wilayah'; // Wilayah also sends to Pusat
+  const isSender = level === 'utd' || level === 'pjutd' || level === 'badkom_wilayah';
 
   // Queries
+  const { data: tahunAjaranList = [] } = useQuery<TahunAjaran[]>({
+    queryKey: ['tahun_ajaran'],
+    queryFn: async () => {
+      const res = await api.get('/tahun-ajaran');
+      return res.data;
+    }
+  });
+
+  useEffect(() => {
+    if (tahunAjaranList.length > 0 && selectedTahunAjaran === '') {
+      const active = tahunAjaranList.find(t => t.is_active);
+      if (active) setSelectedTahunAjaran(active.id);
+      else setSelectedTahunAjaran(tahunAjaranList[0].id);
+    }
+  }, [tahunAjaranList, selectedTahunAjaran]);
+
   const { data: soalList = [], isLoading: loadingSoal } = useQuery<Soal[]>({
     queryKey: ['soal_laporan'],
     queryFn: async () => {
@@ -126,11 +156,6 @@ const LaporanPage: React.FC = () => {
     }
   });
 
-  const updateStatusMendesakMutation = useMutation({
-    mutationFn: (data: { id: number, status: string }) => api.put(`/laporan-mendesak/${data.id}/status`, { status_penyelesaian: data.status }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['laporan_mendesak'] })
-  });
-
   // Handlers
   const handleSaveSoal = (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,7 +222,8 @@ const LaporanPage: React.FC = () => {
   const handleWajibSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitWajibMutation.mutate({
-      bulan_tahun: selectedBulanTahun,
+      bulan_tahun: currentMonthYear,
+      kategori_bulan: selectedKategoriBulan,
       jawaban: jawabanForm
     });
   };
@@ -207,8 +233,17 @@ const LaporanPage: React.FC = () => {
     submitMendesakMutation.mutate(mendesakForm);
   };
 
-  // Check if current user has already submitted this month
-  const hasSubmittedWajib = laporanWajibList.some(l => l.user?.id === currentUser?.id && l.bulan_tahun === selectedBulanTahun);
+  // Check if current user has already submitted this month IN THE ACTIVE TAHUN AJARAN
+  const activeTahunAjaran = tahunAjaranList.find(t => t.is_active);
+  const hasSubmittedWajib = laporanWajibList.some(l => 
+    l.user?.id === currentUser?.id && 
+    l.kategori_bulan === selectedKategoriBulan && 
+    l.tahun_ajaran_id === activeTahunAjaran?.id
+  );
+
+  // My Reports only, filtered by selectedTahunAjaran
+  const myLaporanWajibList = laporanWajibList.filter(l => l.user?.id === currentUser?.id && l.tahun_ajaran_id === selectedTahunAjaran);
+  const myLaporanMendesakList = laporanMendesakList.filter(l => l.user?.id === currentUser?.id && l.tahun_ajaran_id === selectedTahunAjaran);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -288,25 +323,43 @@ const LaporanPage: React.FC = () => {
             </div>
           )}
 
-          {/* Pengumpulan / Riwayat */}
+          {/* Pengumpulan / Riwayat Saya */}
           <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0 }}>Riwayat Laporan Wajib</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
+              <h3 style={{ margin: 0 }}>Laporan Wajib Saya</h3>
               
-              <div style={{ display: 'flex', gap: '16px' }}>
-                <input 
-                  type="month" 
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '0.875rem', color: '#64748b' }}>T.A:</span>
+                  <select 
+                    className="form-control" 
+                    value={selectedTahunAjaran} 
+                    onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
+                    style={{ padding: '6px 12px' }}
+                  >
+                    {tahunAjaranList.map(ta => (
+                      <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
+                    ))}
+                  </select>
+                </div>
+                <select 
                   className="form-control" 
-                  value={selectedBulanTahun} 
-                  onChange={e => setSelectedBulanTahun(e.target.value)} 
-                />
-                {isSender && (
+                  value={selectedKategoriBulan} 
+                  onChange={e => setSelectedKategoriBulan(e.target.value)}
+                  style={{ padding: '6px 12px' }}
+                >
+                  {KATEGORI_BULAN_OPTIONS.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+                {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
                   <button 
                     className="btn btn-primary" 
                     onClick={() => { setJawabanForm({}); setIsSubmitWajibModalOpen(true); }}
                     disabled={hasSubmittedWajib}
+                    style={{ padding: '6px 16px' }}
                   >
-                    {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan Bulan Ini'}
+                    {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan Ini'}
                   </button>
                 )}
               </div>
@@ -314,11 +367,12 @@ const LaporanPage: React.FC = () => {
 
             {loadingWajib ? <p>Memuat riwayat...</p> : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {laporanWajibList.filter(l => l.bulan_tahun === selectedBulanTahun).map(laporan => (
+                {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).map(laporan => (
                   <div key={laporan.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
                       <div>
-                        <strong>Pengirim: </strong> {laporan.user?.fullname} ({laporan.user?.level.toUpperCase()})
+                        <strong>{laporan.kategori_bulan}</strong> 
+                        <span style={{ color: '#94a3b8', fontSize: '0.875rem', marginLeft: '8px' }}>(Dikirim: {laporan.bulan_tahun})</span>
                       </div>
                       <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
                         <CheckCircle size={14} /> Terkirim
@@ -334,8 +388,8 @@ const LaporanPage: React.FC = () => {
                     </div>
                   </div>
                 ))}
-                {laporanWajibList.filter(l => l.bulan_tahun === selectedBulanTahun).length === 0 && (
-                  <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>Tidak ada laporan wajib untuk periode ini.</p>
+                {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).length === 0 && (
+                  <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>Anda belum mengisi laporan untuk {selectedKategoriBulan} pada Tahun Ajaran ini.</p>
                 )}
               </div>
             )}
@@ -345,18 +399,31 @@ const LaporanPage: React.FC = () => {
 
       {activeTab === 'mendesak' && (
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ margin: 0 }}>Daftar Laporan Mendesak</h3>
-            {isSender && (
-              <button className="btn btn-primary" onClick={() => setIsMendesakModalOpen(true)}>
-                <AlertCircle size={18} /> Buat Laporan Mendesak
-              </button>
-            )}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
+            <h3 style={{ margin: 0 }}>Laporan Mendesak Saya</h3>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.875rem', color: '#64748b' }}>Tahun Ajaran:</span>
+              <select 
+                className="form-control" 
+                value={selectedTahunAjaran} 
+                onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
+                style={{ padding: '6px 12px' }}
+              >
+                {tahunAjaranList.map(ta => (
+                  <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
+                ))}
+              </select>
+              {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
+                <button className="btn btn-primary" onClick={() => setIsMendesakModalOpen(true)}>
+                  <AlertCircle size={18} /> Buat Laporan Mendesak
+                </button>
+              )}
+            </div>
           </div>
 
           {loadingMendesak ? <p>Memuat laporan...</p> : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {laporanMendesakList.map(laporan => (
+              {myLaporanMendesakList.map(laporan => (
                 <div key={laporan.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', background: laporan.status_penyelesaian === 'Selesai' ? '#f8fafc' : '#fff' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <h4 style={{ margin: 0, color: 'var(--text-primary)' }}>{laporan.judul}</h4>
@@ -372,33 +439,14 @@ const LaporanPage: React.FC = () => {
                     </span>
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '12px' }}>
-                    Dari: {laporan.user?.fullname} ({laporan.user?.level}) • {new Date(laporan.created_at).toLocaleString('id-ID')}
+                    Dikirim: {new Date(laporan.created_at).toLocaleString('id-ID')}
                   </div>
                   <p style={{ fontSize: '0.875rem', margin: '0 0 16px 0', whiteSpace: 'pre-wrap' }}>{laporan.isi_laporan}</p>
-                  
-                  {/* Status update buttons for superiors */}
-                  {laporan.user?.id !== currentUser?.id && !isSender && (
-                    <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
-                      <button 
-                        className="btn" 
-                        style={{ padding: '6px 12px', fontSize: '0.75rem', background: '#fef3c7', color: '#b45309' }}
-                        onClick={() => updateStatusMendesakMutation.mutate({ id: laporan.id, status: 'Diproses' })}
-                        disabled={laporan.status_penyelesaian === 'Diproses'}
-                      >
-                        <Clock size={14} /> Tandai Diproses
-                      </button>
-                      <button 
-                        className="btn" 
-                        style={{ padding: '6px 12px', fontSize: '0.75rem', background: '#dcfce7', color: '#15803d' }}
-                        onClick={() => updateStatusMendesakMutation.mutate({ id: laporan.id, status: 'Selesai' })}
-                        disabled={laporan.status_penyelesaian === 'Selesai'}
-                      >
-                        <CheckCircle size={14} /> Tandai Selesai
-                      </button>
-                    </div>
-                  )}
                 </div>
               ))}
+              {myLaporanMendesakList.length === 0 && (
+                <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>Anda belum membuat laporan mendesak pada Tahun Ajaran ini.</p>
+              )}
             </div>
           )}
         </div>
@@ -476,7 +524,7 @@ const LaporanPage: React.FC = () => {
       </Modal>
 
       {/* Modal Isi Laporan Wajib */}
-      <Modal isOpen={isSubmitWajibModalOpen} onClose={() => setIsSubmitWajibModalOpen(false)} title={`Isi Laporan Wajib - ${selectedBulanTahun}`}>
+      <Modal isOpen={isSubmitWajibModalOpen} onClose={() => setIsSubmitWajibModalOpen(false)} title={`Isi Laporan Wajib - ${selectedKategoriBulan}`}>
         <form onSubmit={handleWajibSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {loadingMySoal ? <p>Memuat pertanyaan...</p> : mySoal.length === 0 ? <p>Belum ada soal aktif untuk level Anda.</p> : (
             mySoal.map(soal => (

@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield, Inbox, ChevronDown, ChevronRight } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [laporanMasukOpen, setLaporanMasukOpen] = useState(
+    location.pathname.includes('/admin/laporan-masuk')
+  );
   
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -20,10 +23,17 @@ const DashboardLayout: React.FC = () => {
     { label: 'Penugasan', path: '/admin/penugasan', icon: MapPin, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
     { label: 'Penilaian', path: '/admin/penilaian', icon: Award, roles: ['admin', 'badkom_pusat', 'pjutd'] },
     { label: 'Laporan', path: '/admin/laporan', icon: FileText, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
+    { 
+      label: 'Laporan Masuk', 
+      icon: Inbox, 
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
+      subItems: [
+        { label: 'Laporan Wajib', path: '/admin/laporan-masuk/wajib' },
+        { label: 'Laporan Insidental', path: '/admin/laporan-masuk/insidental' }
+      ]
+    },
     { label: 'Surat', path: '/admin/surat', icon: Mail, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
   ];
-
-  const navItems = allNavItems.filter(item => item.roles.includes(level));
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -39,16 +49,50 @@ const DashboardLayout: React.FC = () => {
         </div>
         
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {navItems.map((item) => (
-            <Link 
-              key={item.path}
-              to={item.path} 
-              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-            >
-              <item.icon size={20} />
-              {item.label}
-            </Link>
-          ))}
+          {allNavItems.filter(item => item.roles.includes(level)).map((item) => {
+            if (item.subItems) {
+              return (
+                <div key={item.label}>
+                  <button 
+                    className="nav-link" 
+                    style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left', justifyContent: 'space-between' }}
+                    onClick={() => setLaporanMasukOpen(!laporanMasukOpen)}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <item.icon size={20} />
+                      {item.label}
+                    </div>
+                    {laporanMasukOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                  </button>
+                  {laporanMasukOpen && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '32px', marginTop: '4px' }}>
+                      {item.subItems.map(subItem => (
+                        <Link 
+                          key={subItem.path}
+                          to={subItem.path} 
+                          className={`nav-link ${location.pathname === subItem.path ? 'active' : ''}`}
+                          style={{ padding: '8px 16px', fontSize: '0.875rem' }}
+                        >
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <Link 
+                key={item.path}
+                to={item.path as string} 
+                className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+              >
+                <item.icon size={20} />
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <button 
@@ -63,7 +107,11 @@ const DashboardLayout: React.FC = () => {
 
       <main className="main-content">
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 700 }}>{navItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}</h1>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 700 }}>
+            {location.pathname.includes('/laporan-masuk/wajib') ? 'Laporan Masuk Wajib' : 
+             location.pathname.includes('/laporan-masuk/insidental') ? 'Laporan Masuk Insidental' : 
+             allNavItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
+          </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ textAlign: 'right' }}>
               <p style={{ fontWeight: 600 }}>Administrator</p>
