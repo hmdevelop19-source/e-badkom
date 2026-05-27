@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { Search, Edit2, Trash2, Shield, Plus } from 'lucide-react';
 import Modal from '../components/Modal';
+import { TablePagination } from '../components/TablePagination';
 
 interface User {
   id: number;
@@ -23,6 +24,10 @@ const UserPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   
   const [formData, setFormData] = useState<Partial<User>>({ 
     username: '', fullname: '', email: '', level: 'badkom_wilayah' 
@@ -139,6 +144,16 @@ const UserPage: React.FC = () => {
     user.level.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   const getLevelLabel = (level: string) => {
     const labels: Record<string, string> = {
       admin: 'Super Admin',
@@ -194,12 +209,12 @@ const UserPage: React.FC = () => {
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : filteredUsers.length === 0 ? (
+            ) : paginatedUsers.length === 0 ? (
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Belum ada akun pengguna</td>
               </tr>
             ) : (
-              filteredUsers.map((user) => (
+              paginatedUsers.map((user) => (
                 <tr key={user.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '16px 24px' }}>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{user.fullname}</div>
@@ -264,6 +279,20 @@ const UserPage: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredUsers.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
 
       <Modal 

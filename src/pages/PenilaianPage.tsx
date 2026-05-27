@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { Award, Search, Edit2, FileText, CheckCircle, XCircle } from 'lucide-react';
 import Modal from '../components/Modal';
+import { TablePagination } from '../components/TablePagination';
 
 interface Penilaian {
   id?: number;
@@ -44,6 +45,10 @@ const PenilaianPage: React.FC = () => {
   
   const [formData, setFormData] = useState<Partial<Penilaian>>({ keterangan: 'Lulus', predikat: 'A', catatan: '' });
   const [error, setError] = useState('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const { data: tahunAjarans = [] } = useQuery({
     queryKey: ['tahun-ajaran'],
@@ -109,6 +114,16 @@ const PenilaianPage: React.FC = () => {
     utd.pjutd?.nama_pjutd.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredUtds.length / itemsPerPage);
+  const paginatedUtds = filteredUtds.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedTahunAjaranId]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -152,12 +167,12 @@ const PenilaianPage: React.FC = () => {
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : filteredUtds.length === 0 ? (
+            ) : paginatedUtds.length === 0 ? (
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Belum ada data penugasan</td>
               </tr>
             ) : (
-              filteredUtds.map((utd) => (
+              paginatedUtds.map((utd) => (
                 <tr key={utd.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '16px 24px' }}>
                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.santri?.nama}</div>
@@ -220,6 +235,20 @@ const PenilaianPage: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredUtds.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
 
       <Modal 

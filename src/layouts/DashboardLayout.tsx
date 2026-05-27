@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield, Inbox, ChevronDown, ChevronRight, Settings, GraduationCap, Send } from 'lucide-react';
+import { 
+  LayoutDashboard, LogOut, Shield, ChevronDown, ChevronRight, 
+  Settings, Database, ClipboardCheck, Archive, Briefcase
+} from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [laporanMasukOpen, setLaporanMasukOpen] = useState(
-    location.pathname.includes('/admin/laporan-masuk')
-  );
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
+    'Data Master': location.pathname.includes('/admin/santri') || location.pathname.includes('/admin/badkom') || location.pathname.includes('/admin/pjutd') || location.pathname.includes('/admin/tahun-ajaran'),
+    'Manajemen Tugas': location.pathname.includes('/admin/penugasan') || location.pathname.includes('/admin/penilaian') && !location.pathname.includes('/validasi'),
+    'Validasi & Kelulusan': location.pathname.includes('/admin/validasi') || location.pathname.includes('/admin/pengajuan-boyong') || location.pathname.includes('/admin/alumni'),
+    'Manajemen Laporan': location.pathname.includes('/admin/laporan'),
+    'Sistem & Pengaturan': location.pathname.includes('/admin/users') || location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/pengaturan'),
+  });
   
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -15,37 +22,62 @@ const DashboardLayout: React.FC = () => {
 
   const allNavItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
-    { label: 'Manajemen Akun', path: '/admin/users', icon: Shield, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-    { label: 'Santri', path: '/admin/santri', icon: Users, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-    { label: 'Badkom', path: '/admin/badkom', icon: Building2, roles: ['admin', 'badkom_pusat'] },
-    { label: 'PJ UTD', path: '/admin/pjutd', icon: Network, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-    { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', icon: Calendar, roles: ['admin', 'badkom_pusat'] },
-    { label: 'Penugasan', path: '/admin/penugasan', icon: MapPin, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-    { label: 'Penilaian', path: '/admin/penilaian', icon: Award, roles: ['admin', 'badkom_pusat', 'pjutd'] },
     { 
-      label: 'Validasi', 
-      icon: Shield, 
+      label: 'Data Master', 
+      icon: Database, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
-        { label: 'Penilaian UTD', path: '/admin/validasi-penilaian' },
-        { label: 'Boyong / Kelulusan', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] }
+        { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', roles: ['admin', 'badkom_pusat'] },
+        { label: 'Badkom', path: '/admin/badkom', roles: ['admin', 'badkom_pusat'] },
+        { label: 'PJ UTD', path: '/admin/pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Santri', path: '/admin/santri', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
-    { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', icon: Send, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
-    { label: 'Daftar Alumni', path: '/admin/alumni', icon: GraduationCap, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-    { label: 'Laporan', path: '/admin/laporan', icon: FileText, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
     { 
-      label: 'Laporan Masuk', 
-      icon: Inbox, 
+      label: 'Manajemen Tugas', 
+      icon: Briefcase, 
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
+      subItems: [
+        { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Penilaian', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'pjutd'] },
+      ]
+    },
+    { 
+      label: 'Validasi & Kelulusan', 
+      icon: ClipboardCheck, 
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
+      subItems: [
+        { label: 'Validasi Penilaian', path: '/admin/validasi-penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Validasi Boyong', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] },
+        { label: 'Daftar Alumni', path: '/admin/alumni', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+      ]
+    },
+    { 
+      label: 'Manajemen Laporan', 
+      icon: Archive, 
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'],
+      subItems: [
+        { label: 'Laporan Saya', path: '/admin/laporan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
+        { label: 'Laporan Wajib Masuk', path: '/admin/laporan-masuk/wajib', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Laporan Insidental Masuk', path: '/admin/laporan-masuk/insidental', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+      ]
+    },
+    { 
+      label: 'Sistem & Pengaturan', 
+      icon: Settings, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
-        { label: 'Laporan Wajib', path: '/admin/laporan-masuk/wajib' },
-        { label: 'Laporan Insidental', path: '/admin/laporan-masuk/insidental' }
+        { label: 'Manajemen Akun', path: '/admin/users', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Surat', path: '/admin/surat', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Pengaturan', path: '/admin/pengaturan', roles: ['admin', 'badkom_pusat'] },
       ]
-    },
-    { label: 'Surat', path: '/admin/surat', icon: Mail, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-    { label: 'Pengaturan', path: '/admin/pengaturan', icon: Settings, roles: ['admin', 'badkom_pusat'] },
+    }
   ];
+
+  const toggleMenu = (label: string) => {
+    setOpenMenus(prev => ({ ...prev, [label]: !prev[label] }));
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -56,29 +88,37 @@ const DashboardLayout: React.FC = () => {
   return (
     <div className="layout-container">
       <aside className="sidebar">
-        <div style={{ padding: '0 16px', marginBottom: '8px' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>E-Badkom</h2>
+        <div style={{ padding: '0 16px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ background: 'var(--secondary)', color: 'var(--primary)', padding: '8px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Shield size={24} />
+          </div>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--secondary)', margin: 0 }}>E-Badkom</h2>
         </div>
         
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {allNavItems.filter(item => item.roles.includes(level)).map((item) => {
             if (item.subItems) {
+              const visibleSubItems = item.subItems.filter(sub => sub.roles.includes(level));
+              if (visibleSubItems.length === 0) return null;
+              
+              const isOpen = openMenus[item.label];
+
               return (
                 <div key={item.label}>
                   <button 
                     className="nav-link" 
                     style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left', justifyContent: 'space-between' }}
-                    onClick={() => setLaporanMasukOpen(!laporanMasukOpen)}
+                    onClick={() => toggleMenu(item.label)}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <item.icon size={20} />
                       {item.label}
                     </div>
-                    {laporanMasukOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                   </button>
-                  {laporanMasukOpen && (
+                  {isOpen && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '32px', marginTop: '4px' }}>
-                      {item.subItems.map(subItem => (
+                      {visibleSubItems.map(subItem => (
                         <Link 
                           key={subItem.path}
                           to={subItem.path} 
@@ -117,26 +157,33 @@ const DashboardLayout: React.FC = () => {
         </button>
       </aside>
 
-      <main className="main-content">
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 700 }}>
-            {location.pathname.includes('/laporan-masuk/wajib') ? 'Laporan Masuk Wajib' : 
-             location.pathname.includes('/laporan-masuk/insidental') ? 'Laporan Masuk Insidental' : 
-             allNavItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <header className="top-header">
+          <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>
+            {location.pathname === '/admin' ? 'Dashboard' : 
+             allNavItems.flatMap(i => [i, ...(i.subItems || [])]).find(i => i.path === location.pathname)?.label || 'E-Badkom'}
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontWeight: 600 }}>Administrator</p>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>admin@ebadkom.com</p>
+              <p style={{ fontWeight: 600, margin: 0, lineHeight: 1.2 }}>{currentUser?.fullname || 'Administrator'}</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, marginTop: '2px' }}>{level.toUpperCase()}</p>
             </div>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--secondary)', display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center', color: 'white', fontWeight: 700 }}>
-              A
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: 700 }}>
+              {currentUser?.fullname?.charAt(0).toUpperCase() || 'A'}
             </div>
           </div>
         </header>
         
-        <Outlet />
-      </main>
+        <main className="main-content">
+          <div style={{ paddingBottom: '40px' }}>
+            <Outlet />
+          </div>
+        </main>
+        
+        <footer className="footer">
+          &copy; {new Date().getFullYear()} E-Badkom - Sistem Informasi Manajemen Tugas & Evaluasi. Hak Cipta Dilindungi.
+        </footer>
+      </div>
     </div>
   );
 };

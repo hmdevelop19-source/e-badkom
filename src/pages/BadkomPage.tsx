@@ -4,6 +4,7 @@ import api from '../api/client';
 import { Building2, Search, Edit2, Trash2, Upload, Download, FileText, FileSpreadsheet } from 'lucide-react';
 import Modal from '../components/Modal';
 import { ActionDropdown } from '../components/ActionDropdown';
+import { TablePagination } from '../components/TablePagination';
 
 interface Badkom {
   id: number;
@@ -21,6 +22,10 @@ const BadkomPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const excelInputRef = useRef<HTMLInputElement>(null);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const initialFormState: Partial<Badkom> = { 
     kode_badkom: '', 
@@ -50,6 +55,16 @@ const BadkomPage: React.FC = () => {
       b.wilayah_koordinasi.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [badkoms, searchQuery]);
+
+  const totalPages = Math.ceil(filteredBadkoms.length / itemsPerPage);
+  const paginatedBadkoms = filteredBadkoms.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const mutation = useMutation({
     mutationFn: (newBadkom: Partial<Badkom>) => {
@@ -280,11 +295,11 @@ const BadkomPage: React.FC = () => {
               <tr>
                 <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : filteredBadkoms?.length === 0 ? (
+            ) : paginatedBadkoms?.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data badkom.</td>
               </tr>
-            ) : filteredBadkoms?.map((b) => (
+            ) : paginatedBadkoms?.map((b) => (
               <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                 <td style={{ padding: '16px 24px', fontWeight: 500 }}>{b.kode_badkom}</td>
                 <td style={{ padding: '16px 24px' }}>{b.wilayah_koordinasi}</td>
@@ -311,6 +326,20 @@ const BadkomPage: React.FC = () => {
             ))}
           </tbody>
         </table>
+        
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredBadkoms.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
 
       <Modal 

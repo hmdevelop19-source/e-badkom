@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { Shield, Check, X } from 'lucide-react';
+import { Shield, Check, X, Search } from 'lucide-react';
+import { TablePagination } from '../components/TablePagination';
 
 const PenilaianValidasiPage: React.FC = () => {
   const queryClient = useQueryClient();
@@ -9,6 +10,12 @@ const PenilaianValidasiPage: React.FC = () => {
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const level = currentUser?.level || 'user';
+  
+  const [searchQuery, setSearchQuery] = React.useState('');
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [itemsPerPage, setItemsPerPage] = React.useState(10);
   
   const { data: penilaians = [], isLoading } = useQuery({
     queryKey: ['penilaian'],
@@ -34,12 +41,39 @@ const PenilaianValidasiPage: React.FC = () => {
     }
   };
 
+  const filteredPenilaians = penilaians.filter((p: any) => 
+    p.utd?.santri?.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.utd?.pjutd?.nama_pjutd.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredPenilaians.length / itemsPerPage);
+  const paginatedPenilaians = filteredPenilaians.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <Shield size={24} style={{ color: 'var(--primary)' }} />
-          <h2 style={{ margin: 0 }}>Validasi Penilaian Santri</h2>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Shield size={24} style={{ color: 'var(--primary)' }} />
+            <h2 style={{ margin: 0 }}>Validasi Penilaian Santri</h2>
+          </div>
+          <div style={{ position: 'relative', width: '300px' }}>
+            <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
+            <input 
+              type="text" 
+              placeholder="Cari santri atau tempat tugas..." 
+              style={{ paddingLeft: '40px', width: '100%' }} 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
         
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -58,12 +92,12 @@ const PenilaianValidasiPage: React.FC = () => {
               <tr>
                 <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : penilaians.length === 0 ? (
+            ) : paginatedPenilaians.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Belum ada penilaian yang masuk</td>
               </tr>
             ) : (
-              penilaians.map((p: any) => {
+              paginatedPenilaians.map((p: any) => {
                 const sWilayahColor = getStatusColor(p.status_badkom_wilayah);
                 const sPusatColor = getStatusColor(p.status_badkom_pusat);
                 
@@ -136,6 +170,20 @@ const PenilaianValidasiPage: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredPenilaians.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
     </div>
   );

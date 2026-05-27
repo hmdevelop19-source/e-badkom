@@ -1,10 +1,15 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { CheckCircle, XCircle, Clock, Printer } from 'lucide-react';
+import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { TablePagination } from '../components/TablePagination';
 
 const ValidasiBoyongPage: React.FC = () => {
   const queryClient = useQueryClient();
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [itemsPerPage, setItemsPerPage] = React.useState(10);
 
   const { data: boyongs = [], isLoading } = useQuery({
     queryKey: ['boyong-menunggu'],
@@ -25,6 +30,12 @@ const ValidasiBoyongPage: React.FC = () => {
       alert(err.response?.data?.message || 'Gagal memperbarui status.');
     }
   });
+
+  const totalPages = Math.ceil(boyongs.length / itemsPerPage);
+  const paginatedBoyongs = boyongs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -48,12 +59,12 @@ const ValidasiBoyongPage: React.FC = () => {
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : boyongs.length === 0 ? (
+            ) : paginatedBoyongs.length === 0 ? (
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada pengajuan boyong yang menunggu validasi.</td>
               </tr>
             ) : (
-              boyongs.map((b: any) => {
+              paginatedBoyongs.map((b: any) => {
                 const validLulus = b.santri?.utds?.filter((u: any) => u.penilaian?.keterangan === 'Lulus' && u.penilaian?.status_badkom_wilayah === 'Disetujui' && u.penilaian?.status_badkom_pusat === 'Disetujui').length || 0;
                 
                 return (
@@ -102,6 +113,20 @@ const ValidasiBoyongPage: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={boyongs.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
     </div>
   );

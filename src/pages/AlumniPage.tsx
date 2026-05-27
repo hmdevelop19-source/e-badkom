@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../api/client';
 import { GraduationCap, Printer, Search } from 'lucide-react';
+import { TablePagination } from '../components/TablePagination';
 
 const AlumniPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const { data: alumni = [], isLoading } = useQuery({
     queryKey: ['alumni'],
@@ -19,6 +24,16 @@ const AlumniPage: React.FC = () => {
     a.nama.toLowerCase().includes(searchQuery.toLowerCase()) || 
     a.nis.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filteredAlumni.length / itemsPerPage);
+  const paginatedAlumni = filteredAlumni.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -55,12 +70,12 @@ const AlumniPage: React.FC = () => {
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : filteredAlumni.length === 0 ? (
+            ) : paginatedAlumni.length === 0 ? (
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data alumni.</td>
               </tr>
             ) : (
-              filteredAlumni.map((a: any) => (
+              paginatedAlumni.map((a: any) => (
                 <tr key={a.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '16px 24px' }}>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{a.nama}</div>
@@ -86,6 +101,20 @@ const AlumniPage: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredAlumni.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
     </div>
   );

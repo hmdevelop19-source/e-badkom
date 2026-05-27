@@ -4,6 +4,7 @@ import api from '../api/client';
 import { UserPlus, Search, Edit2, Trash2, Eye, Download, Upload, FileText, FileSpreadsheet } from 'lucide-react';
 import Modal from '../components/Modal';
 import { ActionDropdown } from '../components/ActionDropdown';
+import { TablePagination } from '../components/TablePagination';
 
 interface Santri {
   id: number;
@@ -63,6 +64,11 @@ const SantriPage: React.FC = () => {
   const [selectedSantri, setSelectedSantri] = useState<Santri | null>(null);
   const [formData, setFormData] = useState<Partial<Santri>>({ nis: '', nama: '' });
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [provinces, setProvinces] = useState<any[]>([]);
   const [regencies, setRegencies] = useState<any[]>([]);
@@ -104,6 +110,22 @@ const SantriPage: React.FC = () => {
       return response.data;
     },
   });
+
+  const filteredSantris = santris?.filter(s => 
+    s.nama.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    s.nis.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  const totalPages = Math.ceil(filteredSantris.length / itemsPerPage);
+  const paginatedSantris = filteredSantris.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const { data: settings = [] } = useQuery({
     queryKey: ['settings'],
@@ -252,7 +274,13 @@ const SantriPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ position: 'relative', width: '300px' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
-          <input type="text" placeholder="Cari santri..." style={{ paddingLeft: '40px', width: '100%' }} />
+          <input 
+            type="text" 
+            placeholder="Cari santri..." 
+            style={{ paddingLeft: '40px', width: '100%' }} 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" style={{ display: 'none' }} />
@@ -314,9 +342,13 @@ const SantriPage: React.FC = () => {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
+                <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : santris?.map((s) => (
+            ) : paginatedSantris.length === 0 ? (
+              <tr>
+                <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data yang ditemukan.</td>
+              </tr>
+            ) : paginatedSantris.map((s) => (
               <tr key={s.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                 <td style={{ padding: '16px 24px', fontWeight: 500 }}>{s.nis}</td>
                 <td style={{ padding: '16px 24px' }}>{s.nama}</td>
@@ -391,6 +423,20 @@ const SantriPage: React.FC = () => {
             ))}
           </tbody>
         </table>
+        
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredSantris.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
 
       <Modal

@@ -4,6 +4,7 @@ import api from '../api/client';
 import { MapPin, Search, Edit2, Trash2 } from 'lucide-react';
 import Modal from '../components/Modal';
 import { SearchableSelect } from '../components/SearchableSelect';
+import { TablePagination } from '../components/TablePagination';
 
 interface Utd {
   id: number;
@@ -34,6 +35,10 @@ const PenugasanPage: React.FC = () => {
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<string>('');
   const [formData, setFormData] = useState<Partial<Utd>>({ santri_id: undefined, pjutd_id: undefined });
   const [error, setError] = useState('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const { data: tahunAjarans = [] } = useQuery({
     queryKey: ['tahun-ajaran'],
@@ -113,6 +118,16 @@ const PenugasanPage: React.FC = () => {
     utd.pjutd?.nama_pjutd.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredUtds.length / itemsPerPage);
+  const paginatedUtds = filteredUtds.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedTahunAjaranId]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -160,12 +175,12 @@ const PenugasanPage: React.FC = () => {
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : filteredUtds.length === 0 ? (
+            ) : paginatedUtds.length === 0 ? (
               <tr>
                 <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Belum ada data penugasan</td>
               </tr>
             ) : (
-              filteredUtds.map((utd) => (
+              paginatedUtds.map((utd) => (
                 <tr key={utd.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '16px 24px' }}>
                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.santri?.nama}</div>
@@ -212,6 +227,20 @@ const PenugasanPage: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredUtds.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
 
       <Modal 

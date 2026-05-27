@@ -4,6 +4,7 @@ import api from '../api/client';
 import { Network, Search, Edit2, Trash2, Download, Upload, FileText, FileSpreadsheet } from 'lucide-react';
 import Modal from '../components/Modal';
 import { ActionDropdown } from '../components/ActionDropdown';
+import { TablePagination } from '../components/TablePagination';
 
 interface Badkom {
   id: number;
@@ -34,6 +35,10 @@ const PjutdPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const excelInputRef = useRef<HTMLInputElement>(null);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const initialFormState: Partial<Pjutd> = { 
     kode_lembaga: '', 
@@ -110,6 +115,16 @@ const PjutdPage: React.FC = () => {
       (p.badkom?.kode_badkom || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [pjutds, searchQuery]);
+
+  const totalPages = Math.ceil(filteredPjutds.length / itemsPerPage);
+  const paginatedPjutds = filteredPjutds.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const mutation = useMutation({
     mutationFn: (newPjutd: Partial<Pjutd>) => {
@@ -349,11 +364,11 @@ const PjutdPage: React.FC = () => {
               <tr>
                 <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : filteredPjutds?.length === 0 ? (
+            ) : paginatedPjutds?.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data PJ UTD.</td>
               </tr>
-            ) : filteredPjutds?.map((p) => (
+            ) : paginatedPjutds?.map((p) => (
               <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                 <td style={{ padding: '16px 24px', fontWeight: 500 }}>{p.kode_lembaga}</td>
                 <td style={{ padding: '16px 24px' }}>{p.nama_pjutd}</td>
@@ -390,6 +405,20 @@ const PjutdPage: React.FC = () => {
             ))}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredPjutds.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
 
       <Modal 

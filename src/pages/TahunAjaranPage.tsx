@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { Calendar, Search, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import Modal from '../components/Modal';
+import { TablePagination } from '../components/TablePagination';
 
 interface TahunAjaran {
   id: number;
@@ -16,6 +17,10 @@ const TahunAjaranPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState<Partial<TahunAjaran>>({ nama_tahun_ajaran: '', is_active: false });
   const [error, setError] = useState('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const { data: tahunAjarans = [], isLoading } = useQuery<TahunAjaran[]>({
     queryKey: ['tahun-ajaran'],
@@ -70,6 +75,16 @@ const TahunAjaranPage: React.FC = () => {
     t.nama_tahun_ajaran.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -105,12 +120,12 @@ const TahunAjaranPage: React.FC = () => {
               <tr>
                 <td colSpan={3} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
               </tr>
-            ) : filteredData.length === 0 ? (
+            ) : paginatedData.length === 0 ? (
               <tr>
                 <td colSpan={3} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Belum ada data tahun ajaran</td>
               </tr>
             ) : (
-              filteredData.map((item) => (
+              paginatedData.map((item) => (
                 <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '16px 24px' }}>
                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{item.nama_tahun_ajaran}</div>
@@ -161,6 +176,20 @@ const TahunAjaranPage: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        {!isLoading && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredData.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+          />
+        )}
       </div>
 
       <Modal 

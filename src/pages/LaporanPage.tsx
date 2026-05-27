@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { FileText, AlertCircle, Plus, Edit2, Trash2, CheckCircle } from 'lucide-react';
 import Modal from '../components/Modal';
+import { TablePagination } from '../components/TablePagination';
 
 interface Soal {
   id: number;
@@ -49,6 +50,10 @@ const LaporanPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'wajib' | 'mendesak'>('wajib');
   const [activeSoalTab, setActiveSoalTab] = useState<'utd' | 'pjutd' | 'badkom_wilayah'>('utd');
   
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   // Modals
   const [isSoalModalOpen, setIsSoalModalOpen] = useState(false);
   const [isSubmitWajibModalOpen, setIsSubmitWajibModalOpen] = useState(false);
@@ -246,6 +251,17 @@ const LaporanPage: React.FC = () => {
   const myLaporanWajibList = laporanWajibList.filter(l => l.user?.id === currentUser?.id && l.tahun_ajaran_id === selectedTahunAjaran);
   const myLaporanMendesakList = laporanMendesakList.filter(l => l.user?.id === currentUser?.id && l.tahun_ajaran_id === selectedTahunAjaran);
 
+  const filteredSoalList = soalList.filter(s => s.target_level === activeSoalTab);
+  const totalSoalPages = Math.ceil(filteredSoalList.length / itemsPerPage);
+  const paginatedSoalList = filteredSoalList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeSoalTab]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
@@ -302,7 +318,8 @@ const LaporanPage: React.FC = () => {
               </div>
               
               {loadingSoal ? <p>Memuat soal...</p> : (
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead style={{ background: '#f8fafc' }}>
                     <tr>
                       <th style={{ padding: '12px', width: '60%' }}>Pertanyaan</th>
@@ -312,7 +329,7 @@ const LaporanPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {soalList.filter(s => s.target_level === activeSoalTab).map(s => (
+                    {paginatedSoalList.map(s => (
                       <tr key={s.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
                         <td style={{ padding: '12px' }}>{s.pertanyaan}</td>
                         <td style={{ padding: '12px' }}>{s.tipe_soal === 'uraian' ? 'Uraian' : 'Pilihan Ganda'}</td>
@@ -328,13 +345,28 @@ const LaporanPage: React.FC = () => {
                         </td>
                       </tr>
                     ))}
-                    {soalList.filter(s => s.target_level === activeSoalTab).length === 0 && (
+                    {paginatedSoalList.length === 0 && (
                       <tr>
                         <td colSpan={4} style={{ padding: '24px', textAlign: 'center', color: '#94a3b8' }}>Belum ada soal untuk kategori ini.</td>
                       </tr>
                     )}
                   </tbody>
                 </table>
+                
+                {filteredSoalList.length > 0 && (
+                  <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalSoalPages}
+                    totalItems={filteredSoalList.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={setCurrentPage}
+                    onItemsPerPageChange={(limit) => {
+                      setItemsPerPage(limit);
+                      setCurrentPage(1);
+                    }}
+                  />
+                )}
+                </>
               )}
             </div>
           )}
