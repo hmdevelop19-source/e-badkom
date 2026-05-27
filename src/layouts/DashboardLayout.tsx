@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield, Inbox, ChevronDown, ChevronRight, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield, Inbox, ChevronDown, ChevronRight, Settings, GraduationCap, Send } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
@@ -22,7 +22,17 @@ const DashboardLayout: React.FC = () => {
     { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', icon: Calendar, roles: ['admin', 'badkom_pusat'] },
     { label: 'Penugasan', path: '/admin/penugasan', icon: MapPin, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
     { label: 'Penilaian', path: '/admin/penilaian', icon: Award, roles: ['admin', 'badkom_pusat', 'pjutd'] },
-    { label: 'Validasi Penilaian', path: '/admin/validasi-penilaian', icon: Shield, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+    { 
+      label: 'Validasi', 
+      icon: Shield, 
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
+      subItems: [
+        { label: 'Penilaian UTD', path: '/admin/validasi-penilaian' },
+        { label: 'Boyong / Kelulusan', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] }
+      ]
+    },
+    { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', icon: Send, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+    { label: 'Daftar Alumni', path: '/admin/alumni', icon: GraduationCap, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
     { label: 'Laporan', path: '/admin/laporan', icon: FileText, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
     { 
       label: 'Laporan Masuk', 

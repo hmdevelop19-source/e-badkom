@@ -9,6 +9,7 @@ interface Santri {
   id: number;
   nis: string;
   nama: string;
+  status_santri?: string;
   nik?: string;
   jenis_kelamin?: string;
   tempat_lahir?: string;
@@ -320,20 +321,32 @@ const SantriPage: React.FC = () => {
                 <td style={{ padding: '16px 24px', fontWeight: 500 }}>{s.nis}</td>
                 <td style={{ padding: '16px 24px' }}>{s.nama}</td>
                 <td style={{ padding: '16px 24px' }}>
-                  <span style={{ padding: '4px 10px', borderRadius: '12px', background: '#e0f2fe', color: '#0369a1', fontSize: '0.75rem', fontWeight: 600 }}>Aktif</span>
+                  <span style={{ 
+                    padding: '4px 10px', 
+                    borderRadius: '12px', 
+                    background: s.status_santri === 'Menunggu Boyong' ? '#fef3c7' : '#e0f2fe', 
+                    color: s.status_santri === 'Menunggu Boyong' ? '#d97706' : '#0369a1', 
+                    fontSize: '0.75rem', 
+                    fontWeight: 600 
+                  }}>
+                    {s.status_santri || 'Aktif'}
+                  </span>
                 </td>
                 <td style={{ padding: '16px 24px' }}>
                   {(() => {
                     const target = getTargetTugasWajib();
                     const validLulus = s.utds?.filter(u => u.penilaian?.keterangan === 'Lulus' && u.penilaian?.status_badkom_wilayah === 'Disetujui' && u.penilaian?.status_badkom_pusat === 'Disetujui').length || 0;
+
                     return (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontWeight: 700, color: validLulus >= target ? '#166534' : '#b45309' }}>{validLulus} / {target} Lulus</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontWeight: 700, color: validLulus >= target ? '#166534' : '#b45309' }}>{validLulus} / {target} Lulus</span>
+                          </div>
+                          <span style={{ fontSize: '0.75rem', color: validLulus >= target ? '#15803d' : '#ca8a04', fontWeight: 600 }}>
+                            {validLulus >= target ? 'Tugas Selesai' : 'Punya Tanggungan'}
+                          </span>
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: validLulus >= target ? '#15803d' : '#ca8a04', fontWeight: 600 }}>
-                          {validLulus >= target ? 'Tugas Selesai' : 'Punya Tanggungan'}
-                        </span>
                       </div>
                     );
                   })()}

@@ -14,6 +14,9 @@ import SuratPage from './pages/SuratPage';
 import UserPage from './pages/UserPage';
 import PenilaianValidasiPage from './pages/PenilaianValidasiPage';
 import SettingsPage from './pages/SettingsPage';
+import ValidasiBoyongPage from './pages/ValidasiBoyongPage';
+import PengajuanBoyongPage from './pages/PengajuanBoyongPage';
+import AlumniPage from './pages/AlumniPage';
 
 import LaporanMasukWajibPage from './pages/LaporanMasukWajibPage';
 import LaporanMasukInsidentalPage from './pages/LaporanMasukInsidentalPage';
@@ -36,6 +39,9 @@ function App() {
             <Route path="penugasan" element={<PenugasanPage />} />
             <Route path="penilaian" element={<PenilaianPage />} />
             <Route path="validasi-penilaian" element={<PenilaianValidasiPage />} />
+            <Route path="pengajuan-boyong" element={<PengajuanBoyongPage />} />
+            <Route path="validasi-boyong" element={<ValidasiBoyongPage />} />
+            <Route path="alumni" element={<AlumniPage />} />
             <Route path="laporan" element={<LaporanPage />} />
             <Route path="laporan-masuk/wajib" element={<LaporanMasukWajibPage />} />
             <Route path="laporan-masuk/insidental" element={<LaporanMasukInsidentalPage />} />
