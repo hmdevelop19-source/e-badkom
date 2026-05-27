@@ -13,6 +13,7 @@ import LaporanPage from './pages/LaporanPage';
 import SuratPage from './pages/SuratPage';
 import UserPage from './pages/UserPage';
 import PenilaianValidasiPage from './pages/PenilaianValidasiPage';
+import SettingsPage from './pages/SettingsPage';
 
 import LaporanMasukWajibPage from './pages/LaporanMasukWajibPage';
 import LaporanMasukInsidentalPage from './pages/LaporanMasukInsidentalPage';
@@ -39,6 +40,7 @@ function App() {
             <Route path="laporan-masuk/wajib" element={<LaporanMasukWajibPage />} />
             <Route path="laporan-masuk/insidental" element={<LaporanMasukInsidentalPage />} />
             <Route path="surat" element={<SuratPage />} />
+            <Route path="pengaturan" element={<SettingsPage />} />
           </Route>
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>

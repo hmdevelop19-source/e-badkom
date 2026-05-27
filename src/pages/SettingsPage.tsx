@@ -1,0 +1,118 @@
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../api/client';
+import { Settings, Save } from 'lucide-react';
+
+const SettingsPage: React.FC = () => {
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState<{ [key: string]: string }>({});
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+  const { data: settings = [], isLoading } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const response = await api.get('/settings');
+      return response.data;
+    }
+  });
+
+  useEffect(() => {
+    if (settings.length > 0) {
+      const initialData: { [key: string]: string } = {};
+      settings.forEach((s: any) => {
+        initialData[s.key] = s.value;
+      });
+      setFormData(initialData);
+    }
+  }, [settings]);
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (data: { settings: { key: string, value: string }[] }) => 
+      api.post('/settings/bulk', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      setMessage({ type: 'success', text: 'Pengaturan berhasil disimpan!' });
+      setTimeout(() => setMessage(null), 3000);
+    },
+    onError: (err: any) => {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Gagal menyimpan pengaturan.' });
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = Object.keys(formData).map(key => ({
+      key,
+      value: formData[key]
+    }));
+    updateSettingsMutation.mutate({ settings: payload });
+  };
+
+  const handleInputChange = (key: string, value: string) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  if (isLoading) {
+    return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat pengaturan...</div>;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px', margin: '0 auto' }}>
+      <div className="card">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
+          <Settings size={24} style={{ color: 'var(--primary)' }} />
+          <h2 style={{ margin: 0 }}>Pengaturan Sistem</h2>
+        </div>
+        
+        {message && (
+          <div style={{ 
+            padding: '12px 16px', 
+            borderRadius: '8px', 
+            marginBottom: '24px',
+            background: message.type === 'success' ? '#dcfce7' : '#fee2e2',
+            color: message.type === 'success' ? '#166534' : '#991b1b',
+            fontWeight: 500
+          }}>
+            {message.text}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Target Tugas Wajib */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Target Penilaian Lulus (Tugas Wajib UTD)</label>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
+              Jumlah minimum nilai "Lulus" yang harus dicapai Santri (dan divalidasi oleh Wilayah/Pusat) agar status tanggungannya dianggap selesai.
+            </p>
+            <input 
+              type="number" 
+              className="form-control" 
+              value={formData['target_tugas_wajib'] || ''} 
+              onChange={(e) => handleInputChange('target_tugas_wajib', e.target.value)}
+              min="1"
+              max="20"
+              required
+              style={{ maxWidth: '200px' }}
+            />
+          </div>
+
+          {/* Anda dapat menambahkan pengaturan lain di sini di masa depan */}
+
+          <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={updateSettingsMutation.isPending}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 24px' }}
+            >
+              <Save size={18} />
+              {updateSettingsMutation.isPending ? 'Menyimpan...' : 'Simpan Pengaturan'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default SettingsPage;

@@ -104,6 +104,19 @@ const SantriPage: React.FC = () => {
     },
   });
 
+  const { data: settings = [] } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const response = await api.get('/settings');
+      return response.data;
+    }
+  });
+
+  const getTargetTugasWajib = () => {
+    const setting = settings.find((s: any) => s.key === 'target_tugas_wajib');
+    return setting && !isNaN(Number(setting.value)) ? Number(setting.value) : 3;
+  };
+
   const mutation = useMutation({
     mutationFn: (newSantri: Partial<Santri>) => {
       if (isEditMode && newSantri.id) {
@@ -311,14 +324,15 @@ const SantriPage: React.FC = () => {
                 </td>
                 <td style={{ padding: '16px 24px' }}>
                   {(() => {
+                    const target = getTargetTugasWajib();
                     const validLulus = s.utds?.filter(u => u.penilaian?.keterangan === 'Lulus' && u.penilaian?.status_badkom_wilayah === 'Disetujui' && u.penilaian?.status_badkom_pusat === 'Disetujui').length || 0;
                     return (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontWeight: 700, color: validLulus >= 3 ? '#166534' : '#b45309' }}>{validLulus} / 3 Lulus</span>
+                          <span style={{ fontWeight: 700, color: validLulus >= target ? '#166534' : '#b45309' }}>{validLulus} / {target} Lulus</span>
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: validLulus >= 3 ? '#15803d' : '#ca8a04', fontWeight: 600 }}>
-                          {validLulus >= 3 ? 'Tugas Selesai' : 'Punya Tanggungan'}
+                        <span style={{ fontSize: '0.75rem', color: validLulus >= target ? '#15803d' : '#ca8a04', fontWeight: 600 }}>
+                          {validLulus >= target ? 'Tugas Selesai' : 'Punya Tanggungan'}
                         </span>
                       </div>
                     );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield, Inbox, ChevronDown, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Mail, LogOut, Building2, Network, MapPin, Calendar, Award, Shield, Inbox, ChevronDown, ChevronRight, Settings } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
@@ -34,6 +34,7 @@ const DashboardLayout: React.FC = () => {
       ]
     },
     { label: 'Surat', path: '/admin/surat', icon: Mail, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+    { label: 'Pengaturan', path: '/admin/pengaturan', icon: Settings, roles: ['admin', 'badkom_pusat'] },
   ];
 
   const handleLogout = () => {
