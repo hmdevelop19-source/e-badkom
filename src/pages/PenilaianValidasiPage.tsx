@@ -82,9 +82,8 @@ const PenilaianValidasiPage: React.FC = () => {
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Santri & Tahun</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Tempat Tugas</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Hasil Penilaian</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Validasi Wilayah</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Validasi Pusat</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi Anda</th>
+              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Status Validasi (Pusat)</th>
+              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -98,7 +97,6 @@ const PenilaianValidasiPage: React.FC = () => {
               </tr>
             ) : (
               paginatedPenilaians.map((p: any) => {
-                const sWilayahColor = getStatusColor(p.status_badkom_wilayah);
                 const sPusatColor = getStatusColor(p.status_badkom_pusat);
                 
                 return (
@@ -126,19 +124,13 @@ const PenilaianValidasiPage: React.FC = () => {
                       {p.catatan && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Catatan: {p.catatan}</div>}
                     </td>
                     <td style={{ padding: '16px 24px' }}>
-                      <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, background: sWilayahColor.bg, color: sWilayahColor.text }}>
-                        {p.status_badkom_wilayah}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px 24px' }}>
                       <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, background: sPusatColor.bg, color: sPusatColor.text }}>
                         {p.status_badkom_pusat}
                       </span>
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                        {((level === 'badkom_wilayah' && p.status_badkom_wilayah === 'Menunggu') || 
-                          (['admin', 'badkom_pusat'].includes(level) && p.status_badkom_pusat === 'Menunggu')) && (
+                        {['admin', 'badkom_pusat'].includes(level) && p.status_badkom_pusat === 'Menunggu' ? (
                           <>
                             <button 
                               className="btn" 
@@ -157,10 +149,8 @@ const PenilaianValidasiPage: React.FC = () => {
                               <X size={16} />
                             </button>
                           </>
-                        )}
-                        {((level === 'badkom_wilayah' && p.status_badkom_wilayah !== 'Menunggu') || 
-                          (['admin', 'badkom_pusat'].includes(level) && p.status_badkom_pusat !== 'Menunggu')) && (
-                           <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>Sudah divalidasi</span>
+                        ) : (
+                           <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>{p.status_badkom_pusat === 'Menunggu' ? 'Menunggu Validasi' : 'Sudah divalidasi'}</span>
                         )}
                       </div>
                     </td>

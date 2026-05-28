@@ -11,6 +11,7 @@ interface Penilaian {
   keterangan: 'Lulus' | 'Tidak Lulus';
   predikat: 'A' | 'B' | 'C' | 'D';
   catatan?: string;
+  status_badkom_pusat?: string;
 }
 
 interface Utd {
@@ -40,6 +41,11 @@ const PenilaianPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const currentUserStr = localStorage.getItem('user');
+  const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+  const level = currentUser?.level || 'user';
+  const canEdit = ['admin', 'badkom_wilayah'].includes(level);
+
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<string>('');
   const [selectedUtd, setSelectedUtd] = useState<Utd | null>(null);
   
@@ -204,31 +210,38 @@ const PenilaianPage: React.FC = () => {
                             <FileText size={12} /> {utd.penilaian.catatan}
                           </div>
                         )}
+                        <div style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                          Status Validasi: <span style={{ fontWeight: 600, color: utd.penilaian.status_badkom_pusat === 'Disetujui' ? '#166534' : utd.penilaian.status_badkom_pusat === 'Ditolak' ? '#991b1b' : '#854d0e' }}>{utd.penilaian.status_badkom_pusat || 'Menunggu'}</span>
+                        </div>
                       </div>
                     ) : (
                       <span style={{ fontSize: '0.875rem', color: '#94a3b8', fontStyle: 'italic' }}>Belum dinilai</span>
                     )}
                   </td>
                   <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                    <button 
-                      className={`btn ${utd.penilaian ? '' : 'btn-primary'}`} 
-                      style={{ 
-                        padding: '8px 12px', 
-                        background: utd.penilaian ? '#f1f5f9' : undefined, 
-                        color: utd.penilaian ? '#475569' : undefined 
-                      }}
-                      onClick={() => openPenilaianModal(utd)}
-                    >
-                      {utd.penilaian ? (
-                        <>
-                          <Edit2 size={16} /> Edit Nilai
-                        </>
-                      ) : (
-                        <>
-                          <Award size={16} /> Beri Nilai
-                        </>
-                      )}
-                    </button>
+                    {canEdit ? (
+                      <button 
+                        className={`btn ${utd.penilaian ? '' : 'btn-primary'}`} 
+                        style={{ 
+                          padding: '8px 12px', 
+                          background: utd.penilaian ? '#f1f5f9' : undefined, 
+                          color: utd.penilaian ? '#475569' : undefined 
+                        }}
+                        onClick={() => openPenilaianModal(utd)}
+                      >
+                        {utd.penilaian ? (
+                          <>
+                            <Edit2 size={16} /> Edit Nilai
+                          </>
+                        ) : (
+                          <>
+                            <Award size={16} /> Beri Nilai
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>View Only</span>
+                    )}
                   </td>
                 </tr>
               ))

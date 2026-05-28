@@ -39,7 +39,7 @@ const DashboardLayout: React.FC = () => {
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
       subItems: [
         { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-        { label: 'Penilaian', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'pjutd'] },
+        { label: 'Penilaian', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
       ]
     },
     { 
@@ -47,7 +47,7 @@ const DashboardLayout: React.FC = () => {
       icon: ClipboardCheck, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
       subItems: [
-        { label: 'Validasi Penilaian', path: '/admin/validasi-penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Validasi Penilaian', path: '/admin/validasi-penilaian', roles: ['admin', 'badkom_pusat'] },
         { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
         { label: 'Validasi Boyong', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] },
         { label: 'Daftar Alumni', path: '/admin/alumni', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
