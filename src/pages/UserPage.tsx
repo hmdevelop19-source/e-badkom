@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { Search, Edit2, Trash2, Shield, Plus } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useDialog } from '../contexts/DialogContext';
 import Modal from '../components/Modal';
 import { TablePagination } from '../components/TablePagination';
 
@@ -20,6 +22,7 @@ interface User {
 }
 
 const UserPage: React.FC = () => {
+  const { showConfirm } = useDialog();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -90,7 +93,13 @@ const UserPage: React.FC = () => {
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/users/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('Akun berhasil dihapus');
+    },
+    onError: () => {
+      toast.error('Gagal menghapus akun');
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -263,9 +272,9 @@ const UserPage: React.FC = () => {
                         className="btn" 
                         style={{ padding: '8px', background: '#fef2f2', color: '#ef4444' }}
                         onClick={() => {
-                          if (window.confirm('Yakin ingin menghapus akun ini?')) {
+                          showConfirm('Yakin ingin menghapus akun ini?', () => {
                             deleteMutation.mutate(user.id);
-                          }
+                          });
                         }}
                         disabled={user.id === currentUser?.id}
                         title="Hapus Akun"

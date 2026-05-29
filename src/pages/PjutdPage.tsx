@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { Network, Search, Edit2, Trash2, Download, Upload, FileText, FileSpreadsheet } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useDialog } from '../contexts/DialogContext';
 import Modal from '../components/Modal';
 import { ActionDropdown } from '../components/ActionDropdown';
 import { TablePagination } from '../components/TablePagination';
@@ -30,6 +32,7 @@ interface Pjutd {
 }
 
 const PjutdPage: React.FC = () => {
+  const { showConfirm } = useDialog();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -152,7 +155,7 @@ const PjutdPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['pjutd'] });
     },
     onError: () => {
-      alert('Gagal menghapus data.');
+      toast.error('Gagal menghapus data.');
     }
   });
 
@@ -167,9 +170,9 @@ const PjutdPage: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus data PJ UTD ini?')) {
+    showConfirm('Apakah Anda yakin ingin menghapus data PJ UTD ini?', () => {
       deleteMutation.mutate(id);
-    }
+    });
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,10 +188,10 @@ const PjutdPage: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert(response.data.message);
+      toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: ['pjutd'] });
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Gagal mengimpor file.');
+      toast.error(error.response?.data?.message || 'Gagal mengimpor file.');
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -205,7 +208,7 @@ const PjutdPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengekspor data.');
+      toast.error('Gagal mengekspor data.');
     }
   };
 
@@ -221,7 +224,7 @@ const PjutdPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengunduh template.');
+      toast.error('Gagal mengunduh template.');
     }
   };
 
@@ -238,10 +241,10 @@ const PjutdPage: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert(response.data.message);
+      toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: ['pjutd'] });
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Gagal mengimpor file Excel.');
+      toast.error(error.response?.data?.message || 'Gagal mengimpor file Excel.');
     }
     if (excelInputRef.current) excelInputRef.current.value = '';
   };
@@ -258,7 +261,7 @@ const PjutdPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengekspor data Excel.');
+      toast.error('Gagal mengekspor data Excel.');
     }
   };
 
@@ -274,7 +277,7 @@ const PjutdPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengunduh template Excel.');
+      toast.error('Gagal mengunduh template Excel.');
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../api/client';
 import { GraduationCap, Printer, Search } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { TablePagination } from '../components/TablePagination';
 
 const AlumniPage: React.FC = () => {
@@ -97,7 +98,7 @@ const AlumniPage: React.FC = () => {
                           const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
                           window.open(fileURL, '_blank');
                         } catch (error) {
-                          alert('Gagal memuat PDF');
+                          toast.error('Gagal memuat PDF');
                         }
                       }}
                     >

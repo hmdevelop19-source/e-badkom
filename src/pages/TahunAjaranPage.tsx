@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { Calendar, Search, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useDialog } from '../contexts/DialogContext';
 import Modal from '../components/Modal';
 import { TablePagination } from '../components/TablePagination';
 
@@ -12,6 +14,7 @@ interface TahunAjaran {
 }
 
 const TahunAjaranPage: React.FC = () => {
+  const { showConfirm } = useDialog();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,7 +61,7 @@ const TahunAjaranPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['tahun-ajaran'] });
     },
     onError: (err: any) => {
-      alert(err.response?.data?.message || 'Gagal menghapus tahun ajaran.');
+      toast.error(err.response?.data?.message || 'Gagal menghapus tahun ajaran.');
     }
   });
 
@@ -159,12 +162,12 @@ const TahunAjaranPage: React.FC = () => {
                         style={{ padding: '8px', background: '#fef2f2', color: '#ef4444', opacity: item.is_active ? 0.5 : 1, cursor: item.is_active ? 'not-allowed' : 'pointer' }}
                         onClick={() => {
                           if (item.is_active) {
-                            alert('Tidak dapat menghapus tahun ajaran yang sedang aktif.');
+                            toast.error('Tidak dapat menghapus tahun ajaran yang sedang aktif.');
                             return;
                           }
-                          if (window.confirm('Apakah Anda yakin ingin menghapus tahun ajaran ini?')) {
+                          showConfirm('Apakah Anda yakin ingin menghapus tahun ajaran ini?', () => {
                             deleteMutation.mutate(item.id);
-                          }
+                          });
                         }}
                       >
                         <Trash2 size={16} />

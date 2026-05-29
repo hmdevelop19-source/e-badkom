@@ -2,9 +2,12 @@ import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { CheckCircle, XCircle, Clock, Printer } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useDialog } from '../contexts/DialogContext';
 import { TablePagination } from '../components/TablePagination';
 
 const ValidasiBoyongPage: React.FC = () => {
+  const { showConfirm } = useDialog();
   const queryClient = useQueryClient();
 
   // Pagination State
@@ -24,10 +27,10 @@ const ValidasiBoyongPage: React.FC = () => {
       api.put(`/boyong/${data.id}/status`, { status: data.status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boyong-menunggu'] });
-      alert('Status berhasil diperbarui.');
+      toast.success('Status berhasil diperbarui.');
     },
     onError: (err: any) => {
-      alert(err.response?.data?.message || 'Gagal memperbarui status.');
+      toast.error(err.response?.data?.message || 'Gagal memperbarui status.');
     }
   });
 
@@ -90,7 +93,7 @@ const ValidasiBoyongPage: React.FC = () => {
                               const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
                               window.open(fileURL, '_blank');
                             } catch (error) {
-                              alert('Gagal memuat PDF');
+                              toast.error('Gagal memuat PDF');
                             }
                           }}
                           title="Cetak Surat Kelulusan"
@@ -101,9 +104,9 @@ const ValidasiBoyongPage: React.FC = () => {
                           className="btn" 
                           style={{ padding: '8px', background: '#dcfce7', color: '#166534' }}
                           onClick={() => {
-                            if(window.confirm('Setujui pengajuan ini dan terbitkan Surat Kelulusan?')) {
+                            showConfirm('Setujui pengajuan ini dan terbitkan Surat Kelulusan?', () => {
                               updateStatusMutation.mutate({ id: b.id, status: 'Disetujui' });
-                            }
+                            });
                           }}
                           title="Setujui & Luluskan"
                         >
@@ -113,9 +116,9 @@ const ValidasiBoyongPage: React.FC = () => {
                           className="btn" 
                           style={{ padding: '8px', background: '#fee2e2', color: '#991b1b' }}
                           onClick={() => {
-                            if(window.confirm('Tolak pengajuan ini?')) {
+                            showConfirm('Tolak pengajuan ini?', () => {
                               updateStatusMutation.mutate({ id: b.id, status: 'Ditolak' });
-                            }
+                            });
                           }}
                           title="Tolak"
                         >

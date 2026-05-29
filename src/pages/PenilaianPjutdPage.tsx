@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { Award, Search, Edit2, FileText } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Modal from '../components/Modal';
 import { TablePagination } from '../components/TablePagination';
 
@@ -93,7 +94,7 @@ const PenilaianPjutdPage: React.FC = () => {
 
   const openPenilaianModal = (pjutd: Pjutd) => {
     if (!selectedTahunAjaranId) {
-        alert('Silakan pilih Tahun Ajaran aktif terlebih dahulu dari dropdown pencarian.');
+        toast.error('Silakan pilih Tahun Ajaran aktif terlebih dahulu dari dropdown pencarian.');
         return;
     }
     setSelectedPjutd(pjutd);

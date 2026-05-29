@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
+import toast from "react-hot-toast";
 import { AlertCircle, Clock, CheckCircle, Printer } from 'lucide-react';
 
 interface TahunAjaran {
@@ -165,7 +166,7 @@ const LaporanMasukInsidentalPage: React.FC = () => {
                         const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
                         window.open(fileURL, '_blank');
                       } catch (error) {
-                        alert('Gagal memuat PDF');
+                        toast.error('Gagal memuat PDF');
                       }
                     }}
                   >

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { MapPin, Search, Edit2, Trash2, Printer } from 'lucide-react';
+import toast from "react-hot-toast";
+import { useDialog } from "../contexts/DialogContext";
 import Modal from '../components/Modal';
 import { SearchableSelect } from '../components/SearchableSelect';
 import { TablePagination } from '../components/TablePagination';
@@ -30,6 +32,7 @@ interface Utd {
 }
 
 const PenugasanPage: React.FC = () => {
+  const { showConfirm } = useDialog();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -100,7 +103,7 @@ const PenugasanPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['utd'] });
     },
     onError: () => {
-      alert('Gagal menghapus penugasan.');
+      toast.error('Gagal menghapus penugasan.');
     }
   });
 
@@ -168,7 +171,7 @@ const PenugasanPage: React.FC = () => {
                 const fileURL = URL.createObjectURL(file);
                 window.open(fileURL, '_blank');
               } catch (error) {
-                alert('Gagal membuat PDF');
+                toast.error('Gagal membuat PDF');
               }
             }}
           >
@@ -235,9 +238,9 @@ const PenugasanPage: React.FC = () => {
                         className="btn" 
                         style={{ padding: '8px', background: '#fef2f2', color: '#ef4444' }}
                         onClick={() => {
-                          if (window.confirm('Apakah Anda yakin ingin menghapus penugasan ini?')) {
+                          showConfirm('Apakah Anda yakin ingin menghapus penugasan ini?', () => {
                             deleteMutation.mutate(utd.id);
-                          }
+                          });
                         }}
                       >
                         <Trash2 size={16} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { UserPlus, Search, Edit2, Trash2, Eye, Download, Upload, FileText, FileSpreadsheet } from 'lucide-react';
+import toast from "react-hot-toast";
 import Modal from '../components/Modal';
 import { ActionDropdown } from '../components/ActionDropdown';
 import { TablePagination } from '../components/TablePagination';
@@ -175,10 +176,10 @@ const SantriPage: React.FC = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       queryClient.invalidateQueries({ queryKey: ['santri'] });
-      alert('Data santri berhasil diimport');
+      toast.success('Data santri berhasil diimport');
     } catch (err) {
       console.error(err);
-      alert('Gagal mengimport data');
+      toast.error('Gagal mengimport data');
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -195,7 +196,7 @@ const SantriPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengekspor data.');
+      toast.error('Gagal mengekspor data.');
     }
   };
 
@@ -211,7 +212,7 @@ const SantriPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengunduh template.');
+      toast.error('Gagal mengunduh template.');
     }
   };
 
@@ -228,10 +229,10 @@ const SantriPage: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert(response.data.message);
+      toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: ['santri'] });
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Gagal mengimpor file Excel.');
+      toast.error(error.response?.data?.message || 'Gagal mengimpor file Excel.');
     }
     if (excelInputRef.current) excelInputRef.current.value = '';
   };
@@ -248,7 +249,7 @@ const SantriPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengekspor data Excel.');
+      toast.error('Gagal mengekspor data Excel.');
     }
   };
 
@@ -264,7 +265,7 @@ const SantriPage: React.FC = () => {
       link.remove();
     } catch (error) {
       console.error(error);
-      alert('Gagal mengunduh template Excel.');
+      toast.error('Gagal mengunduh template Excel.');
     }
   };
 
@@ -391,7 +392,7 @@ const SantriPage: React.FC = () => {
                           setIsDetailModalOpen(true);
                         }).catch(err => {
                           console.error(err);
-                          alert('Gagal mengambil data detail santri. Pastikan backend berjalan dengan baik atau coba restart php artisan serve.');
+                          toast.error('Gagal mengambil data detail santri. Pastikan backend berjalan dengan baik atau coba restart php artisan serve.');
                         });
                       }}
                       style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#0284c7' }} title="Lihat Detail"
@@ -475,7 +476,7 @@ const SantriPage: React.FC = () => {
                             no_hp_wali: res.data.data.no_hp,
                             email_wali: res.data.data.email
                           }));
-                          alert('Data Wali berhasil ditemukan dan diisi otomatis.');
+                          toast.success('Data Wali berhasil ditemukan dan diisi otomatis.');
                         }
                       }).catch(err => console.error(err));
                     }

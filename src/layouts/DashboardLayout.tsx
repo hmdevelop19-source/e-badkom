@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, LogOut, ChevronDown, ChevronRight, 
-  Settings, Database, ClipboardCheck, Archive, Briefcase, Award, Bell
+  Settings, Database, ClipboardCheck, Archive, Briefcase, Award, Bell, AlertTriangle
 } from 'lucide-react';
 import logoBadkom from '../assets/LOGOBADKOM.png';
+import Modal from '../components/Modal';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
@@ -17,6 +18,11 @@ const DashboardLayout: React.FC = () => {
     'Sistem & Pengaturan': location.pathname.includes('/admin/users') || location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/pengaturan'),
   });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  // Auto-logout states
+  const [showLogoutWarning, setShowLogoutWarning] = useState(false);
+  const [logoutCountdown, setLogoutCountdown] = useState(60);
+  const [logoutReason, setLogoutReason] = useState('');
   
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -102,43 +108,74 @@ const DashboardLayout: React.FC = () => {
   };
 
   React.useEffect(() => {
-    const performAutoLogout = (reason: string) => {
-      alert(reason);
+    let idleTimeoutId: ReturnType<typeof setTimeout>;
+    let countdownIntervalId: ReturnType<typeof setInterval>;
+
+    const performAutoLogout = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       navigate('/login');
     };
 
-    // 1. Auto logout when offline
-    const handleOffline = () => {
-      performAutoLogout("Koneksi internet terputus. Sesi Anda telah diakhiri demi keamanan.");
+    const startCountdown = (reason: string, seconds: number) => {
+      setLogoutReason(reason);
+      setLogoutCountdown(seconds);
+      setShowLogoutWarning(true);
+
+      clearInterval(countdownIntervalId);
+      
+      let timeLeft = seconds;
+      countdownIntervalId = setInterval(() => {
+        timeLeft -= 1;
+        setLogoutCountdown(timeLeft);
+        
+        if (timeLeft <= 0) {
+          clearInterval(countdownIntervalId);
+          performAutoLogout();
+        }
+      }, 1000);
     };
+
+    const handleOffline = () => {
+      startCountdown("Koneksi internet Anda terputus.", 5);
+    };
+
     window.addEventListener('offline', handleOffline);
 
-    // 2. Auto logout after 10 minutes of inactivity
-    let timeoutId: ReturnType<typeof setTimeout>;
-    const resetTimer = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        performAutoLogout("Sesi Anda telah berakhir karena tidak ada aktivitas selama 10 menit.");
-      }, 600000); // 10 minutes in ms
+    const resetIdleTimer = () => {
+      if (showLogoutWarning) return; // Do not reset if warning is already showing
+      
+      clearTimeout(idleTimeoutId);
+      // Show warning after 9 minutes of inactivity
+      idleTimeoutId = setTimeout(() => {
+        startCountdown("Tidak ada aktivitas yang terdeteksi.", 60);
+      }, 540000); 
     };
 
-    resetTimer(); // Start timer immediately
+    resetIdleTimer();
 
     const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+    
+    // Only add listeners if warning is not showing, to prevent accidental resets
+    // Actually, we'll keep listeners but the resetIdleTimer checks showLogoutWarning
     activityEvents.forEach(event => {
-      document.addEventListener(event, resetTimer, true);
+      document.addEventListener(event, resetIdleTimer, true);
     });
 
     return () => {
       window.removeEventListener('offline', handleOffline);
-      clearTimeout(timeoutId);
+      clearTimeout(idleTimeoutId);
+      clearInterval(countdownIntervalId);
       activityEvents.forEach(event => {
-        document.removeEventListener(event, resetTimer, true);
+        document.removeEventListener(event, resetIdleTimer, true);
       });
     };
-  }, [navigate]);
+  }, [navigate, showLogoutWarning]);
+
+  const handleStayLoggedIn = () => {
+    setShowLogoutWarning(false);
+    // The useEffect will re-run and reset the timers because showLogoutWarning changed
+  };
 
   return (
     <div className="layout-container">
@@ -307,6 +344,44 @@ const DashboardLayout: React.FC = () => {
           &copy; {new Date().getFullYear()} E-Badkom - Sistem Informasi Manajemen Tugas & Evaluasi. Hak Cipta Dilindungi.
         </footer>
       </div>
+
+      <Modal 
+        isOpen={showLogoutWarning} 
+        onClose={() => {}} // Prevent closing by clicking outside
+        title="Peringatan Keamanan Sesi"
+        maxWidth="400px"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '16px', padding: '10px 0' }}>
+          <div style={{ background: '#fef3c7', padding: '16px', borderRadius: '50%', color: '#d97706' }}>
+            <AlertTriangle size={48} />
+          </div>
+          <div>
+            <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)', fontSize: '1.25rem' }}>Sesi Akan Berakhir</h3>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5 }}>
+              {logoutReason} Sesi Anda akan otomatis diakhiri dalam:
+            </p>
+          </div>
+          <div style={{ fontSize: '3rem', fontWeight: 700, color: '#ef4444', fontFamily: 'monospace' }}>
+            {logoutCountdown}s
+          </div>
+          <div style={{ display: 'flex', gap: '12px', width: '100%', marginTop: '8px' }}>
+            <button 
+              className="btn" 
+              style={{ flex: 1, background: '#f1f5f9', color: '#475569' }}
+              onClick={handleLogout}
+            >
+              Keluar Sekarang
+            </button>
+            <button 
+              className="btn btn-primary" 
+              style={{ flex: 1 }}
+              onClick={handleStayLoggedIn}
+            >
+              Tetap Login
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
