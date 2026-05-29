@@ -11,11 +11,14 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.10",
+    "@types/nprogress": "^0.2.3",
     "axios": "^1.16.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.16.0",
+    "nprogress": "^0.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.15.1"
   },
   "devDependencies": {
