@@ -24,6 +24,7 @@ interface LaporanMendesak {
 const LaporanMasukInsidentalPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedTahunAjaran, setSelectedTahunAjaran] = useState<number | ''>('');
+  const [activeRoleTab, setActiveRoleTab] = useState<'utd' | 'pjutd' | 'badkom_wilayah'>('utd');
   
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -63,6 +64,8 @@ const LaporanMasukInsidentalPage: React.FC = () => {
     l.tahun_ajaran_id === selectedTahunAjaran
   );
 
+  const displayedReports = incomingReports.filter(l => l.user?.level === activeRoleTab);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
@@ -87,10 +90,32 @@ const LaporanMasukInsidentalPage: React.FC = () => {
             </select>
           </div>
         </div>
+        
+        {/* Role Tabs */}
+        <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '24px' }}>
+          <button 
+            style={{ padding: '8px 16px', border: 'none', background: activeRoleTab === 'utd' ? 'var(--primary)' : 'transparent', color: activeRoleTab === 'utd' ? 'white' : '#64748b', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+            onClick={() => setActiveRoleTab('utd')}
+          >
+            Laporan UTD (Santri)
+          </button>
+          <button 
+            style={{ padding: '8px 16px', border: 'none', background: activeRoleTab === 'pjutd' ? 'var(--primary)' : 'transparent', color: activeRoleTab === 'pjutd' ? 'white' : '#64748b', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+            onClick={() => setActiveRoleTab('pjutd')}
+          >
+            Laporan PJ UT-D
+          </button>
+          <button 
+            style={{ padding: '8px 16px', border: 'none', background: activeRoleTab === 'badkom_wilayah' ? 'var(--primary)' : 'transparent', color: activeRoleTab === 'badkom_wilayah' ? 'white' : '#64748b', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+            onClick={() => setActiveRoleTab('badkom_wilayah')}
+          >
+            Laporan Badkom Wilayah
+          </button>
+        </div>
 
         {isLoading ? <p>Memuat laporan masuk...</p> : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {incomingReports.map(laporan => (
+            {displayedReports.map(laporan => (
               <div key={laporan.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '20px', background: laporan.status_penyelesaian === 'Selesai' ? '#f8fafc' : '#fff' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <h4 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.125rem' }}>{laporan.judul}</h4>
@@ -150,10 +175,10 @@ const LaporanMasukInsidentalPage: React.FC = () => {
               </div>
             ))}
             
-            {incomingReports.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '8px', color: '#94a3b8' }}>
-                <AlertCircle size={48} style={{ opacity: 0.2, margin: '0 auto 16px' }} />
-                <p>Belum ada laporan insidental dari bawahan Anda pada Tahun Ajaran yang dipilih.</p>
+            {displayedReports.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                <AlertCircle size={40} color="#94a3b8" style={{ margin: '0 auto 12px auto' }} />
+                <p style={{ color: '#64748b', margin: 0, fontWeight: 500 }}>Belum ada laporan insidental dari {activeRoleTab === 'utd' ? 'UTD' : activeRoleTab === 'pjutd' ? 'PJ UT-D' : 'Badkom Wilayah'} pada tahun ajaran ini.</p>
               </div>
             )}
           </div>
