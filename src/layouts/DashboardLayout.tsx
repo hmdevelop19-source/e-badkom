@@ -22,6 +22,13 @@ const DashboardLayout: React.FC = () => {
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const level = currentUser?.level || 'user';
 
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || !currentUserStr) {
+      navigate('/login');
+    }
+  }, [navigate, currentUserStr]);
+
   const allNavItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
     { 
