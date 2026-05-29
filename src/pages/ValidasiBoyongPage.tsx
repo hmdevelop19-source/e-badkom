@@ -84,8 +84,14 @@ const ValidasiBoyongPage: React.FC = () => {
                         <button 
                           className="btn"
                           style={{ padding: '8px', background: '#f1f5f9', color: '#475569', display: 'flex', alignItems: 'center', gap: '4px' }}
-                          onClick={() => {
-                            window.open(`http://localhost:8001/api/cetak/surat-lulus-tugas/${b.santri?.id}`, '_blank');
+                          onClick={async () => {
+                            try {
+                              const response = await api.get(`/cetak/surat-lulus-tugas/${b.santri?.id}`, { responseType: 'blob', skipToast: true } as any);
+                              const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+                              window.open(fileURL, '_blank');
+                            } catch (error) {
+                              alert('Gagal memuat PDF');
+                            }
                           }}
                           title="Cetak Surat Kelulusan"
                         >

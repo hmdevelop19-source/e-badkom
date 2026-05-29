@@ -91,8 +91,14 @@ const AlumniPage: React.FC = () => {
                     <button 
                       className="btn btn-primary" 
                       style={{ padding: '8px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                      onClick={() => {
-                        window.open(`http://localhost:8001/api/cetak/surat-lulus-tugas/${a.id}`, '_blank');
+                      onClick={async () => {
+                        try {
+                          const response = await api.get(`/cetak/surat-lulus-tugas/${a.id}`, { responseType: 'blob', skipToast: true } as any);
+                          const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+                          window.open(fileURL, '_blank');
+                        } catch (error) {
+                          alert('Gagal memuat PDF');
+                        }
                       }}
                     >
                       <Printer size={16} /> Cetak Surat

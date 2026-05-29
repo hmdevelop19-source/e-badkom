@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { MapPin, Search, Edit2, Trash2 } from 'lucide-react';
+import { MapPin, Search, Edit2, Trash2, Printer } from 'lucide-react';
 import Modal from '../components/Modal';
 import { SearchableSelect } from '../components/SearchableSelect';
 import { TablePagination } from '../components/TablePagination';
@@ -11,7 +11,7 @@ interface Utd {
   santri_id: number;
   pjutd_id: number;
   tahun_ajaran_id: number;
-  tahunAjaran?: {
+  tahun_ajaran?: {
     id: number;
     nama_tahun_ajaran: string;
     is_active: boolean;
@@ -153,6 +153,25 @@ const PenugasanPage: React.FC = () => {
               <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : '(Arsip)'}</option>
             ))}
           </select>
+          <button 
+            className="btn" 
+            style={{ background: '#f1f5f9', color: '#334155' }}
+            onClick={async () => {
+              try {
+                const url = `/cetak/penugasan${selectedTahunAjaranId ? '?tahun_ajaran_id=' + selectedTahunAjaranId : ''}`;
+                // Cast skipToast since we added it to interceptor config
+                const response = await api.get(url, { responseType: 'blob', skipToast: true } as any);
+                const file = new Blob([response.data], { type: 'application/pdf' });
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL, '_blank');
+              } catch (error) {
+                alert('Gagal membuat PDF');
+              }
+            }}
+          >
+            <Printer size={18} />
+            Cetak Penempatan
+          </button>
           <button className="btn btn-primary" onClick={() => { setFormData({ santri_id: undefined, pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
             <MapPin size={18} />
             Tambah Penugasan
@@ -191,8 +210,8 @@ const PenugasanPage: React.FC = () => {
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {utd.pjutd?.kode_lembaga}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.tahunAjaran?.nama_tahun_ajaran}</div>
-                    {!utd.tahunAjaran?.is_active && (
+                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.tahun_ajaran?.nama_tahun_ajaran}</div>
+                    {utd.tahun_ajaran && !utd.tahun_ajaran.is_active && (
                       <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 6px', borderRadius: '4px' }}>Arsip</span>
                     )}
                   </td>
@@ -259,7 +278,9 @@ const PenugasanPage: React.FC = () => {
           <div className="form-group">
             <label className="form-label">Santri</label>
             <SearchableSelect 
-              options={santris.map((s: any) => ({ value: s.id, label: `${s.nis} - ${s.nama}` }))}
+              options={santris
+                .filter((s: any) => !utds.some(u => u.santri_id === s.id) || s.id === formData.santri_id)
+                .map((s: any) => ({ value: s.id, label: `${s.nis} - ${s.nama}` }))}
               value={formData.santri_id}
               onChange={(val) => setFormData({...formData, santri_id: Number(val)})}
               placeholder="-- Cari dan Pilih Santri --"
@@ -270,7 +291,9 @@ const PenugasanPage: React.FC = () => {
           <div className="form-group">
             <label className="form-label">PJ UTD (Lokasi Tugas)</label>
             <SearchableSelect 
-              options={pjutds.map((p: any) => ({ value: p.id, label: `${p.kode_lembaga} - ${p.nama_pjutd}` }))}
+              options={pjutds
+                .filter((p: any) => !utds.some(u => u.pjutd_id === p.id) || p.id === formData.pjutd_id)
+                .map((p: any) => ({ value: p.id, label: `${p.kode_lembaga} - ${p.nama_pjutd}` }))}
               value={formData.pjutd_id}
               onChange={(val) => setFormData({...formData, pjutd_id: Number(val)})}
               placeholder="-- Cari dan Pilih PJ UTD --"

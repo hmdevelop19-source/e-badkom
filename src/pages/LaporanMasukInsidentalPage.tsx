@@ -134,7 +134,15 @@ const LaporanMasukInsidentalPage: React.FC = () => {
                   <button 
                     className="btn" 
                     style={{ padding: '8px 16px', fontSize: '0.875rem', background: '#f1f5f9', color: '#334155', marginLeft: 'auto' }}
-                    onClick={() => window.open(`http://localhost:8001/api/cetak/laporan-insidental/${laporan.id}`, '_blank')}
+                    onClick={async () => {
+                      try {
+                        const response = await api.get(`/cetak/laporan-insidental/${laporan.id}`, { responseType: 'blob', skipToast: true } as any);
+                        const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+                        window.open(fileURL, '_blank');
+                      } catch (error) {
+                        alert('Gagal memuat PDF');
+                      }
+                    }}
                   >
                     <Printer size={16} /> Cetak Laporan PDF
                   </button>

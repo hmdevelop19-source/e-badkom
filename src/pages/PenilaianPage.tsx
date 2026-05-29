@@ -29,7 +29,7 @@ interface Utd {
     kode_lembaga: string;
     nama_pjutd: string;
   };
-  tahunAjaran?: {
+  tahun_ajaran?: {
     id: number;
     nama_tahun_ajaran: string;
     is_active: boolean;
