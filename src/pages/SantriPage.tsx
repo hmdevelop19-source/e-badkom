@@ -47,7 +47,6 @@ interface Santri {
       id: number;
       keterangan: string;
       predikat: string;
-      status_badkom_wilayah: string;
       status_badkom_pusat: string;
     };
     created_at: string;
@@ -367,7 +366,7 @@ const SantriPage: React.FC = () => {
                 <td style={{ padding: '16px 24px' }}>
                   {(() => {
                     const target = getTargetTugasWajib();
-                    const validLulus = s.utds?.filter(u => u.penilaian?.keterangan === 'Lulus' && u.penilaian?.status_badkom_wilayah === 'Disetujui' && u.penilaian?.status_badkom_pusat === 'Disetujui').length || 0;
+                    const validLulus = s.utds?.filter(u => u.penilaian?.keterangan === 'Lulus').length || 0;
 
                     return (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -751,7 +750,7 @@ const SantriPage: React.FC = () => {
                                 </span>
                               </div>
                               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                Wilayah: {utd.penilaian.status_badkom_wilayah} | Pusat: {utd.penilaian.status_badkom_pusat}
+                                Pusat: {utd.penilaian.status_badkom_pusat}
                               </div>
                             </div>
                           ) : (

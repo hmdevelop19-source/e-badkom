@@ -23,8 +23,9 @@ interface Utd {
   };
   pjutd?: {
     id: number;
-    kode_lembaga: string;
     nama_pjutd: string;
+    nama_madrasah?: string;
+    yayasan?: string;
   };
 }
 
@@ -115,7 +116,9 @@ const PenugasanPage: React.FC = () => {
   const filteredUtds = utds.filter(utd => 
     utd.santri?.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
     utd.santri?.nis.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    utd.pjutd?.nama_pjutd.toLowerCase().includes(searchQuery.toLowerCase())
+    utd.pjutd?.nama_pjutd.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (utd.pjutd?.nama_madrasah || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (utd.pjutd?.yayasan || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredUtds.length / itemsPerPage);
@@ -206,7 +209,7 @@ const PenugasanPage: React.FC = () => {
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>NIS: {utd.santri?.nis}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.pjutd?.nama_pjutd}</div>
+                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.pjutd?.nama_madrasah || utd.pjutd?.yayasan || utd.pjutd?.nama_pjutd}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {utd.pjutd?.kode_lembaga}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
@@ -293,7 +296,7 @@ const PenugasanPage: React.FC = () => {
             <SearchableSelect 
               options={pjutds
                 .filter((p: any) => !utds.some(u => u.pjutd_id === p.id) || p.id === formData.pjutd_id)
-                .map((p: any) => ({ value: p.id, label: `${p.kode_lembaga} - ${p.nama_pjutd}` }))}
+                .map((p: any) => ({ value: p.id, label: `${p.kode_lembaga} - ${p.nama_madrasah || p.yayasan || p.nama_pjutd}` }))}
               value={formData.pjutd_id}
               onChange={(val) => setFormData({...formData, pjutd_id: Number(val)})}
               placeholder="-- Cari dan Pilih PJ UTD --"

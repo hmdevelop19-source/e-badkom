@@ -101,7 +101,7 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-text-fill-color: transparent;
 }
 
-input, select, textarea {
+input, select, textarea, .form-control {
   width: 100%;
   padding: 12px 16px;
   border-radius: 6px;
@@ -112,7 +112,7 @@ input, select, textarea {
   font-family: 'Inter', sans-serif;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus, select:focus, textarea:focus, .form-control:focus, .form-control:focus-within {
   outline: none;
   border-color: var(--secondary);
   box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);

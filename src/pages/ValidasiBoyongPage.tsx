@@ -65,7 +65,7 @@ const ValidasiBoyongPage: React.FC = () => {
               </tr>
             ) : (
               paginatedBoyongs.map((b: any) => {
-                const validLulus = b.santri?.utds?.filter((u: any) => u.penilaian?.keterangan === 'Lulus' && u.penilaian?.status_badkom_wilayah === 'Disetujui' && u.penilaian?.status_badkom_pusat === 'Disetujui').length || 0;
+                const validLulus = b.santri?.utds?.filter((u: any) => u.penilaian?.keterangan === 'Lulus').length || 0;
                 
                 return (
                   <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
