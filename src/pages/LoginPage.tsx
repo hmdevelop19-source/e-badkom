@@ -4,6 +4,7 @@ import { Lock, User, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import api from '../api/client';
+import logoBadkom from '../assets/LOGOBADKOM.png';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -59,9 +60,7 @@ const LoginPage: React.FC = () => {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '16px', background: 'var(--primary)', color: 'var(--secondary)', marginBottom: '24px', boxShadow: '0 8px 16px rgba(15, 23, 42, 0.15)' }}>
-            <Shield size={32} />
-          </div>
+          <img src={logoBadkom} alt="Logo E-Badkom" style={{ width: '80px', height: '80px', marginBottom: '16px', objectFit: 'contain' }} />
           <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '8px', color: 'var(--primary)' }}>E-Badkom</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Sistem Informasi Manajemen Tugas & Evaluasi</p>
         </div>

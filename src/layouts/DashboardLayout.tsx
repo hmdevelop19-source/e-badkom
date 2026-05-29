@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, LogOut, Shield, ChevronDown, ChevronRight, 
-  Settings, Database, ClipboardCheck, Archive, Briefcase, Award
+  LayoutDashboard, LogOut, ChevronDown, ChevronRight, 
+  Settings, Database, ClipboardCheck, Archive, Briefcase, Award, Bell
 } from 'lucide-react';
+import logoBadkom from '../assets/LOGOBADKOM.png';
 
 const DashboardLayout: React.FC = () => {
   const location = useLocation();
@@ -15,6 +16,7 @@ const DashboardLayout: React.FC = () => {
     'Manajemen Laporan': location.pathname.includes('/admin/laporan'),
     'Sistem & Pengaturan': location.pathname.includes('/admin/users') || location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/pengaturan'),
   });
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -96,9 +98,7 @@ const DashboardLayout: React.FC = () => {
     <div className="layout-container">
       <aside className="sidebar">
         <div style={{ padding: '0 16px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ background: 'var(--secondary)', color: 'var(--primary)', padding: '8px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Shield size={24} />
-          </div>
+          <img src={logoBadkom} alt="Logo E-Badkom" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--secondary)', margin: 0 }}>E-Badkom</h2>
         </div>
         
@@ -153,30 +153,100 @@ const DashboardLayout: React.FC = () => {
             );
           })}
         </nav>
-
-        <button 
-          className="nav-link" 
-          onClick={handleLogout}
-          style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
-        >
-          <LogOut size={20} />
-          Logout
-        </button>
       </aside>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <header className="top-header">
-          <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>
-            {location.pathname === '/admin' ? 'Dashboard' : 
-             allNavItems.flatMap(i => [i, ...(i.subItems || [])]).find(i => i.path === location.pathname)?.label || 'E-Badkom'}
-          </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ fontWeight: 600, margin: 0, lineHeight: 1.2 }}>{currentUser?.fullname || 'Administrator'}</p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, marginTop: '2px' }}>{level.toUpperCase()}</p>
-            </div>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: 700 }}>
-              {currentUser?.fullname?.charAt(0).toUpperCase() || 'A'}
+        <header className="top-header" style={{ 
+          background: 'rgba(255, 255, 255, 0.9)', 
+          backdropFilter: 'blur(12px)', 
+          WebkitBackdropFilter: 'blur(12px)',
+          position: 'sticky', 
+          top: 0, 
+          padding: '12px 32px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+        }}>
+          <div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '2px', fontWeight: 500 }}>
+              Selamat datang kembali,
+            </p>
+            <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700, color: 'var(--primary)', letterSpacing: '-0.02em' }}>
+              {location.pathname === '/admin' ? 'Dashboard Overview' : 
+               allNavItems.flatMap(i => [i, ...(i.subItems || [])]).find(i => i.path === location.pathname)?.label || 'E-Badkom'}
+            </h1>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <button 
+              style={{ background: '#F8FAFC', border: '1px solid var(--border)', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', transition: 'all 0.2s', position: 'relative' }} 
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.color = 'var(--primary)'; }} 
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+            >
+              <Bell size={18} />
+              <span style={{ position: 'absolute', top: '6px', right: '8px', width: '6px', height: '6px', background: 'var(--error)', borderRadius: '50%', border: '2px solid #fff' }}></span>
+            </button>
+            
+            <div style={{ width: '1px', height: '28px', background: 'var(--border)' }}></div>
+
+            <div style={{ position: 'relative' }}>
+              <div 
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '4px 8px', borderRadius: '30px', transition: 'all 0.2s', border: '1px solid transparent' }}
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+              >
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontWeight: 600, margin: 0, lineHeight: 1.2, color: 'var(--text-primary)', fontSize: '0.875rem' }}>{currentUser?.fullname || 'Administrator'}</p>
+                  <p style={{ fontSize: '0.7rem', color: 'var(--secondary)', margin: 0, marginTop: '2px', fontWeight: 600 }}>{level.toUpperCase()}</p>
+                </div>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '1rem', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
+                  {currentUser?.fullname?.charAt(0).toUpperCase() || 'A'}
+                </div>
+                <ChevronDown size={14} color="var(--text-secondary)" style={{ marginLeft: '-4px', transition: 'transform 0.2s', transform: isProfileOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
+              </div>
+            
+            {isProfileOpen && (
+              <>
+                <div 
+                  style={{ position: 'fixed', inset: 0, zIndex: 99 }} 
+                  onClick={() => setIsProfileOpen(false)}
+                />
+                <div style={{ 
+                  position: 'absolute', 
+                  top: '100%', 
+                  right: 0, 
+                  marginTop: '8px', 
+                  background: 'var(--surface)', 
+                  borderRadius: '8px', 
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)', 
+                  border: '1px solid var(--border)',
+                  zIndex: 100,
+                  minWidth: '200px',
+                  overflow: 'hidden'
+                }}>
+                  <button 
+                    onClick={handleLogout}
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px 16px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '12px', 
+                      background: 'none', 
+                      border: 'none', 
+                      cursor: 'pointer',
+                      color: 'var(--error)',
+                      fontWeight: 500,
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
             </div>
           </div>
         </header>

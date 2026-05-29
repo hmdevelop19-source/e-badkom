@@ -2,18 +2,18 @@
 @import 'nprogress/nprogress.css';
 
 :root {
-  --primary: #0F172A; /* Deep Navy */
-  --secondary: #C5A059; /* Muted Gold */
-  --accent: #D4AF37; /* Gold Accent */
-  --background: #FDFBF7; /* Warm Cream / Off-White */
+  --primary: #422F6F; /* Dark Purple/Navy from logo */
+  --secondary: #008FD7; /* Bright Blue from logo */
+  --accent: #9FD8F5; /* Light Blue from logo */
+  --background: #F8FAFC; /* Cool off-white */
   --surface: #ffffff;
-  --text-primary: #2C3338; /* Charcoal */
-  --text-secondary: #64748b;
-  --border: #E5E0D8; /* Warm Grey Border */
+  --text-primary: #1E293B; /* Slate 800 */
+  --text-secondary: #64748b; /* Slate 500 */
+  --border: #E2E8F0; /* Slate 200 */
   --error: #ef4444;
-  --success: #166534; /* Darker green */
-  --glass: rgba(253, 251, 247, 0.85);
-  --glass-border: rgba(229, 224, 216, 0.5);
+  --success: #166534;
+  --glass: rgba(248, 250, 252, 0.85);
+  --glass-border: rgba(226, 232, 240, 0.5);
 }
 
 * {
