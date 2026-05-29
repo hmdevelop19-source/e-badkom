@@ -46,6 +46,25 @@ api.interceptors.response.use(
     NProgress.done();
     
     const skipToast = (error.config as any)?.skipToast;
+    
+    if (error.response?.status === 401) {
+      // Clear user session
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      
+      // Prevent spamming the toast and redirect to login
+      if (!skipToast) {
+        toast.error('Sesi telah berakhir, silakan login kembali');
+      }
+      
+      // Redirect to login after a brief delay so toast can be seen
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1000);
+      
+      return Promise.reject(error);
+    }
+    
     if (!skipToast) {
       const msg = error.response?.data?.message || 'Terjadi kesalahan pada server.';
       toast.error(msg);
