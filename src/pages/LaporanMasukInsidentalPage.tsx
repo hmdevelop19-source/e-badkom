@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { AlertCircle, Clock, CheckCircle } from 'lucide-react';
+import { AlertCircle, Clock, CheckCircle, Printer } from 'lucide-react';
 
 interface TahunAjaran {
   id: number;
@@ -130,6 +130,13 @@ const LaporanMasukInsidentalPage: React.FC = () => {
                     disabled={laporan.status_penyelesaian === 'Selesai'}
                   >
                     <CheckCircle size={16} /> Tandai Masalah Selesai
+                  </button>
+                  <button 
+                    className="btn" 
+                    style={{ padding: '8px 16px', fontSize: '0.875rem', background: '#f1f5f9', color: '#334155', marginLeft: 'auto' }}
+                    onClick={() => window.open(`http://localhost:8001/api/cetak/laporan-insidental/${laporan.id}`, '_blank')}
+                  >
+                    <Printer size={16} /> Cetak Laporan PDF
                   </button>
                 </div>
               </div>

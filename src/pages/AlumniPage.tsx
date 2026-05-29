@@ -91,7 +91,9 @@ const AlumniPage: React.FC = () => {
                     <button 
                       className="btn btn-primary" 
                       style={{ padding: '8px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                      onClick={() => alert(`Mencetak surat ${a.boyong?.no_surat} untuk ${a.nama}... (Fitur Cetak PDF dapat diintegrasikan di sini)`)}
+                      onClick={() => {
+                        window.open(`http://localhost:8001/api/cetak/surat-lulus-tugas/${a.id}`, '_blank');
+                      }}
                     >
                       <Printer size={16} /> Cetak Surat
                     </button>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, LogOut, Shield, ChevronDown, ChevronRight, 
-  Settings, Database, ClipboardCheck, Archive, Briefcase
+  Settings, Database, ClipboardCheck, Archive, Briefcase, Award
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -39,7 +39,15 @@ const DashboardLayout: React.FC = () => {
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
       subItems: [
         { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-        { label: 'Penilaian', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+      ]
+    },
+    {
+      label: 'Evaluasi',
+      icon: Award,
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
+      subItems: [
+        { label: 'Penilaian Santri (UTD)', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Penilaian PJ UTD', path: '/admin/penilaian-pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
     { 
@@ -47,7 +55,6 @@ const DashboardLayout: React.FC = () => {
       icon: ClipboardCheck, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
       subItems: [
-        { label: 'Validasi Penilaian', path: '/admin/validasi-penilaian', roles: ['admin', 'badkom_pusat'] },
         { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
         { label: 'Validasi Boyong', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] },
         { label: 'Daftar Alumni', path: '/admin/alumni', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },

@@ -210,9 +210,6 @@ const PenilaianPage: React.FC = () => {
                             <FileText size={12} /> {utd.penilaian.catatan}
                           </div>
                         )}
-                        <div style={{ marginTop: '8px', fontSize: '0.75rem' }}>
-                          Status Validasi: <span style={{ fontWeight: 600, color: utd.penilaian.status_badkom_pusat === 'Disetujui' ? '#166534' : utd.penilaian.status_badkom_pusat === 'Ditolak' ? '#991b1b' : '#854d0e' }}>{utd.penilaian.status_badkom_pusat || 'Menunggu'}</span>
-                        </div>
                       </div>
                     ) : (
                       <span style={{ fontSize: '0.875rem', color: '#94a3b8', fontStyle: 'italic' }}>Belum dinilai</span>

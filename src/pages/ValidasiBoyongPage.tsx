@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Printer } from 'lucide-react';
 import { TablePagination } from '../components/TablePagination';
 
 const ValidasiBoyongPage: React.FC = () => {
@@ -81,6 +81,16 @@ const ValidasiBoyongPage: React.FC = () => {
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <button 
+                          className="btn"
+                          style={{ padding: '8px', background: '#f1f5f9', color: '#475569', display: 'flex', alignItems: 'center', gap: '4px' }}
+                          onClick={() => {
+                            window.open(`http://localhost:8001/api/cetak/surat-lulus-tugas/${b.santri?.id}`, '_blank');
+                          }}
+                          title="Cetak Surat Kelulusan"
+                        >
+                          <Printer size={16} /> Cetak
+                        </button>
                         <button 
                           className="btn" 
                           style={{ padding: '8px', background: '#dcfce7', color: '#166534' }}

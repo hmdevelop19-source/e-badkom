@@ -9,10 +9,10 @@ import PjutdPage from './pages/PjutdPage';
 import PenugasanPage from './pages/PenugasanPage';
 import TahunAjaranPage from './pages/TahunAjaranPage';
 import PenilaianPage from './pages/PenilaianPage';
+import PenilaianPjutdPage from './pages/PenilaianPjutdPage';
 import LaporanPage from './pages/LaporanPage';
 import SuratPage from './pages/SuratPage';
 import UserPage from './pages/UserPage';
-import PenilaianValidasiPage from './pages/PenilaianValidasiPage';
 import SettingsPage from './pages/SettingsPage';
 import ValidasiBoyongPage from './pages/ValidasiBoyongPage';
 import PengajuanBoyongPage from './pages/PengajuanBoyongPage';
@@ -38,7 +38,7 @@ function App() {
             <Route path="tahun-ajaran" element={<TahunAjaranPage />} />
             <Route path="penugasan" element={<PenugasanPage />} />
             <Route path="penilaian" element={<PenilaianPage />} />
-            <Route path="validasi-penilaian" element={<PenilaianValidasiPage />} />
+            <Route path="penilaian-pjutd" element={<PenilaianPjutdPage />} />
             <Route path="pengajuan-boyong" element={<PengajuanBoyongPage />} />
             <Route path="validasi-boyong" element={<ValidasiBoyongPage />} />
             <Route path="alumni" element={<AlumniPage />} />

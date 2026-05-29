@@ -96,7 +96,22 @@ const SettingsPage: React.FC = () => {
             />
           </div>
 
-          {/* Anda dapat menambahkan pengaturan lain di sini di masa depan */}
+          {/* Nama Koordinator Tugas */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Nama Koordinator Tugas & Da'i</label>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
+              Nama penanggung jawab yang akan menandatangani Surat Kelulusan Tugas (Surat Boyong).
+            </p>
+            <input 
+              type="text" 
+              className="form-control" 
+              value={formData['nama_koordinator_tugas'] || ''} 
+              onChange={(e) => handleInputChange('nama_koordinator_tugas', e.target.value)}
+              placeholder="Contoh: SAIFUL BARI"
+              required
+              style={{ maxWidth: '400px' }}
+            />
+          </div>
 
           <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
             <button 
