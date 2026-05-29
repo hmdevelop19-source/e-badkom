@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/login', { username, password });
+      const response = await api.post('/login', { username, password }, { skipToast: true } as any);
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       navigate('/admin');
