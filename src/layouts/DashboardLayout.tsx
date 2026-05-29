@@ -101,6 +101,45 @@ const DashboardLayout: React.FC = () => {
     navigate('/login');
   };
 
+  React.useEffect(() => {
+    const performAutoLogout = (reason: string) => {
+      alert(reason);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+    };
+
+    // 1. Auto logout when offline
+    const handleOffline = () => {
+      performAutoLogout("Koneksi internet terputus. Sesi Anda telah diakhiri demi keamanan.");
+    };
+    window.addEventListener('offline', handleOffline);
+
+    // 2. Auto logout after 10 minutes of inactivity
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        performAutoLogout("Sesi Anda telah berakhir karena tidak ada aktivitas selama 10 menit.");
+      }, 600000); // 10 minutes in ms
+    };
+
+    resetTimer(); // Start timer immediately
+
+    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+    activityEvents.forEach(event => {
+      document.addEventListener(event, resetTimer, true);
+    });
+
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+      clearTimeout(timeoutId);
+      activityEvents.forEach(event => {
+        document.removeEventListener(event, resetTimer, true);
+      });
+    };
+  }, [navigate]);
+
   return (
     <div className="layout-container">
       <aside className="sidebar">
