@@ -11,11 +11,12 @@ const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
-    'Data Master': location.pathname.includes('/admin/santri') || location.pathname.includes('/admin/badkom') || location.pathname.includes('/admin/pjutd') || location.pathname.includes('/admin/tahun-ajaran'),
-    'Manajemen Tugas': location.pathname.includes('/admin/penugasan') || location.pathname.includes('/admin/penilaian') && !location.pathname.includes('/validasi'),
-    'Validasi & Kelulusan': location.pathname.includes('/admin/validasi') || location.pathname.includes('/admin/pengajuan-boyong') || location.pathname.includes('/admin/alumni'),
-    'Manajemen Laporan': location.pathname.includes('/admin/laporan'),
-    'Sistem & Pengaturan': location.pathname.includes('/admin/users') || location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/pengaturan'),
+    'Data Master': location.pathname.includes('/admin/santri') || location.pathname.includes('/admin/badkom') || location.pathname.includes('/admin/pjutd') || location.pathname.includes('/admin/alumni'),
+    'Manajemen Tugas': location.pathname.includes('/admin/penugasan'),
+    'Evaluasi': location.pathname.includes('/admin/penilaian') && !location.pathname.includes('/validasi'),
+    'Validasi Kelulusan': location.pathname.includes('/admin/validasi') || location.pathname.includes('/admin/pengajuan-boyong'),
+    'Manajemen Laporan': location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/laporan-masuk') || location.pathname.includes('/admin/laporan-saya'),
+    'Pengaturan': location.pathname.includes('/admin/users') || location.pathname.includes('/admin/pengaturan') || location.pathname.includes('/admin/tahun-ajaran') || (location.pathname === '/admin/soal-laporan'),
   });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -42,10 +43,10 @@ const DashboardLayout: React.FC = () => {
       icon: Database, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
-        { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', roles: ['admin', 'badkom_pusat'] },
-        { label: 'Badkom', path: '/admin/badkom', roles: ['admin', 'badkom_pusat'] },
-        { label: 'PJ UTD', path: '/admin/pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-        { label: 'Santri', path: '/admin/santri', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Data Calon UT-D (Santri)', path: '/admin/santri', roles: ['admin', 'badkom_pusat'] },
+        { label: 'Data BADKOM', path: '/admin/badkom', roles: ['admin', 'badkom_pusat'] },
+        { label: 'Data PJU-TD / Lembaga', path: '/admin/pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Data Alumni', path: '/admin/alumni', roles: ['admin', 'badkom_pusat'] },
       ]
     },
     { 
@@ -61,18 +62,17 @@ const DashboardLayout: React.FC = () => {
       icon: Award,
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
       subItems: [
-        { label: 'Penilaian Santri (UTD)', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
-        { label: 'Penilaian PJ UTD', path: '/admin/penilaian-pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Penilaian UT-D', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Penilaian PJU-TD', path: '/admin/penilaian-pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
     { 
-      label: 'Validasi & Kelulusan', 
+      label: 'Validasi Kelulusan', 
       icon: ClipboardCheck, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
       subItems: [
         { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
         { label: 'Validasi Boyong', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] },
-        { label: 'Daftar Alumni', path: '/admin/alumni', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
     { 
@@ -80,19 +80,21 @@ const DashboardLayout: React.FC = () => {
       icon: Archive, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'],
       subItems: [
-        { label: 'Laporan Saya', path: '/admin/laporan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
-        { label: 'Laporan Wajib Masuk', path: '/admin/laporan-masuk/wajib', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-        { label: 'Laporan Insidental Masuk', path: '/admin/laporan-masuk/insidental', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Laporan Saya (Isi Laporan)', path: '/admin/laporan-saya', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
+        { label: 'Surat', path: '/admin/surat', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Laporan Wajib (Laporan Masuk)', path: '/admin/laporan-masuk/wajib', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Laporan Insidental (Laporan Masuk)', path: '/admin/laporan-masuk/insidental', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
     { 
-      label: 'Sistem & Pengaturan', 
+      label: 'Pengaturan', 
       icon: Settings, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
+        { label: 'Laporan (Pembuatan Soal)', path: '/admin/soal-laporan', roles: ['admin', 'badkom_pusat'] },
         { label: 'Manajemen Akun', path: '/admin/users', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-        { label: 'Surat', path: '/admin/surat', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-        { label: 'Pengaturan', path: '/admin/pengaturan', roles: ['admin', 'badkom_pusat'] },
+        { label: 'Pengaturan Sistem', path: '/admin/pengaturan', roles: ['admin', 'badkom_pusat'] },
+        { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', roles: ['admin', 'badkom_pusat'] },
       ]
     }
   ];
