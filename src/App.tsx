@@ -15,6 +15,7 @@ import PenilaianPjutdPage from './pages/PenilaianPjutdPage';
 import LaporanSayaPage from './pages/LaporanSayaPage';
 import SoalLaporanPage from './pages/SoalLaporanPage';
 import SuratPage from './pages/SuratPage';
+import MutasiPage from './pages/MutasiPage';
 import UserPage from './pages/UserPage';
 import SettingsPage from './pages/SettingsPage';
 import ValidasiBoyongPage from './pages/ValidasiBoyongPage';
@@ -42,6 +43,7 @@ function App() {
               <Route path="pjutd" element={<PjutdPage />} />
               <Route path="tahun-ajaran" element={<TahunAjaranPage />} />
               <Route path="penugasan" element={<PenugasanPage />} />
+              <Route path="mutasi" element={<MutasiPage />} />
               <Route path="penilaian" element={<PenilaianPage />} />
               <Route path="penilaian-pjutd" element={<PenilaianPjutdPage />} />
               <Route path="pengajuan-boyong" element={<PengajuanBoyongPage />} />

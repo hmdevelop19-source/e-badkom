@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { Network, Search, Edit2, Trash2, Download, Upload, FileText, FileSpreadsheet } from 'lucide-react';
+import { Network, Search, Edit2, Trash2, Download, Upload, FileText, FileSpreadsheet, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useDialog } from '../contexts/DialogContext';
 import Modal from '../components/Modal';
@@ -29,6 +29,17 @@ interface Pjutd {
   id_kec?: number;
   id_kel?: number;
   alamat?: string;
+  utds?: Array<{
+    id: number;
+    tahun_ajaran?: {
+      nama_tahun_ajaran: string;
+    };
+    santri?: {
+      nama: string;
+      nik: string;
+      nis: string;
+    };
+  }>;
 }
 
 const PjutdPage: React.FC = () => {
@@ -38,6 +49,9 @@ const PjutdPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const excelInputRef = useRef<HTMLInputElement>(null);
+
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedPjutd, setSelectedPjutd] = useState<Pjutd | null>(null);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -389,6 +403,16 @@ const PjutdPage: React.FC = () => {
                 <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                     <button 
+                      onClick={() => {
+                        setSelectedPjutd(p);
+                        setIsDetailModalOpen(true);
+                      }}
+                      style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                      title="Lihat Detail & Riwayat UTD"
+                    >
+                      <Eye size={16} />
+                    </button>
+                    <button 
                       onClick={() => handleEdit(p)}
                       style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
                       title="Edit PJ UTD"
@@ -602,6 +626,96 @@ const PjutdPage: React.FC = () => {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal Detail PJ UTD */}
+      <Modal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        title="Detail PJ-UTD & Riwayat Penugasan"
+        maxWidth="800px"
+      >
+        {selectedPjutd && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>Profil Lembaga</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Kode / Nama Lembaga</span>
+                    <span style={{ fontWeight: 500 }}>{selectedPjutd.kode_lembaga} - {selectedPjutd.nama_pjutd}</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Nama Madrasah</span>
+                    <span style={{ fontWeight: 500 }}>{selectedPjutd.nama_madrasah || '-'}</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Yayasan</span>
+                    <span style={{ fontWeight: 500 }}>{selectedPjutd.yayasan || '-'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>Kontak & Afiliasi</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Badan Koordinasi (Badkom)</span>
+                    <span style={{ fontWeight: 500 }}>{selectedPjutd.badkom?.kode_badkom} ({selectedPjutd.badkom?.wilayah_koordinasi})</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Nomor HP</span>
+                    <span style={{ fontWeight: 500 }}>{selectedPjutd.no_hp || '-'}</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Alamat Lengkap</span>
+                    <span style={{ fontWeight: 500 }}>{selectedPjutd.alamat || 'Alamat belum diisi'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
+              <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '16px 20px', background: '#f8fafc', margin: 0, borderBottom: '1px solid #e2e8f0' }}>Riwayat Ustadz Tugas Daerah (UT-D)</h3>
+              {selectedPjutd.utds && selectedPjutd.utds.length > 0 ? (
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead style={{ background: '#f1f5f9' }}>
+                    <tr>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Tahun Ajaran</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Nama UTD (Santri)</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>NIS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedPjutd.utds.map((utd) => (
+                      <tr key={utd.id} style={{ borderTop: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem', fontWeight: 500 }}>
+                          {utd.tahun_ajaran?.nama_tahun_ajaran || '-'}
+                        </td>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem', fontWeight: 500 }}>
+                          {utd.santri?.nama || '-'}
+                        </td>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
+                          {utd.santri?.nis || '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>
+                  Belum ada riwayat UTD di lembaga ini.
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
+              <button className="btn" onClick={() => setIsDetailModalOpen(false)} style={{ background: '#f1f5f9', color: '#475569', fontWeight: 600 }}>
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

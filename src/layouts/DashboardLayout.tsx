@@ -12,7 +12,7 @@ const DashboardLayout: React.FC = () => {
   const navigate = useNavigate();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     'Data Master': location.pathname.includes('/admin/santri') || location.pathname.includes('/admin/badkom') || location.pathname.includes('/admin/pjutd') || location.pathname.includes('/admin/alumni'),
-    'Manajemen Tugas': location.pathname.includes('/admin/penugasan'),
+    'Manajemen Tugas': location.pathname.includes('/admin/penugasan') || location.pathname.includes('/admin/mutasi'),
     'Evaluasi': location.pathname.includes('/admin/penilaian') && !location.pathname.includes('/validasi'),
     'Validasi Kelulusan': location.pathname.includes('/admin/validasi') || location.pathname.includes('/admin/pengajuan-boyong'),
     'Manajemen Laporan': location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/laporan-masuk') || location.pathname.includes('/admin/laporan-saya'),
@@ -54,7 +54,8 @@ const DashboardLayout: React.FC = () => {
       icon: Briefcase, 
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
       subItems: [
-        { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Mutasi', path: '/admin/mutasi', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
     {

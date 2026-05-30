@@ -50,6 +50,17 @@ interface Santri {
       predikat: string;
       status_badkom_pusat: string;
     };
+    mutasis?: Array<{
+      id: number;
+      tanggal_mutasi: string;
+      alasan: string;
+      asalPjutd: {
+        nama_pjutd: string;
+      };
+      tujuanPjutd: {
+        nama_pjutd: string;
+      };
+    }>;
     created_at: string;
   }>;
 }
@@ -731,7 +742,8 @@ const SantriPage: React.FC = () => {
                   </thead>
                   <tbody>
                     {selectedSantri.utds.map((utd) => (
-                      <tr key={utd.id} style={{ borderTop: '1px solid #e2e8f0' }}>
+                      <React.Fragment key={utd.id}>
+                        <tr style={{ borderTop: '1px solid #e2e8f0' }}>
                         <td style={{ padding: '12px 20px', fontSize: '0.875rem', fontWeight: 500 }}>
                           {utd.tahun_ajaran?.nama_tahun_ajaran || '-'}
                         </td>
@@ -759,6 +771,27 @@ const SantriPage: React.FC = () => {
                           )}
                         </td>
                       </tr>
+                      {utd.mutasis && utd.mutasis.length > 0 && (
+                        <tr>
+                          <td colSpan={3} style={{ padding: '0 20px 16px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                            <div style={{ padding: '12px', background: '#fff', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                              <h4 style={{ margin: '0 0 8px 0', fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b' }}>Riwayat Mutasi pada Penugasan Ini</h4>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {utd.mutasis.map(mutasi => (
+                                  <div key={mutasi.id} style={{ fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                      <span style={{ fontWeight: 600 }}>{new Date(mutasi.tanggal_mutasi).toLocaleDateString('id-ID')}</span>
+                                      <span style={{ color: '#ef4444' }}>{mutasi.asalPjutd.nama_pjutd} &rarr; <span style={{ color: '#10b981' }}>{mutasi.tujuanPjutd.nama_pjutd}</span></span>
+                                    </div>
+                                    <div style={{ color: '#64748b', fontSize: '0.75rem' }}>Alasan: {mutasi.alasan}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                     ))}
                   </tbody>
                 </table>
