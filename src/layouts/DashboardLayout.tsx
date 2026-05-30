@@ -22,6 +22,7 @@ const DashboardLayout: React.FC = () => {
 
   // Auto-logout states
   const [showLogoutWarning, setShowLogoutWarning] = useState(false);
+  const showLogoutWarningRef = React.useRef(false);
   const [logoutCountdown, setLogoutCountdown] = useState(60);
   const [logoutReason, setLogoutReason] = useState('');
   
@@ -124,6 +125,7 @@ const DashboardLayout: React.FC = () => {
       setLogoutReason(reason);
       setLogoutCountdown(seconds);
       setShowLogoutWarning(true);
+      showLogoutWarningRef.current = true;
 
       clearInterval(countdownIntervalId);
       
@@ -146,7 +148,7 @@ const DashboardLayout: React.FC = () => {
     window.addEventListener('offline', handleOffline);
 
     const resetIdleTimer = () => {
-      if (showLogoutWarning) return; // Do not reset if warning is already showing
+      if (showLogoutWarningRef.current) return; // Do not reset if warning is already showing
       
       clearTimeout(idleTimeoutId);
       // Show warning after 9 minutes of inactivity
@@ -173,11 +175,13 @@ const DashboardLayout: React.FC = () => {
         document.removeEventListener(event, resetIdleTimer, true);
       });
     };
-  }, [navigate, showLogoutWarning]);
+  }, [navigate]);
 
   const handleStayLoggedIn = () => {
     setShowLogoutWarning(false);
-    // The useEffect will re-run and reset the timers because showLogoutWarning changed
+    showLogoutWarningRef.current = false;
+    // We need to trigger resetIdleTimer here so it starts the 9 min timer again.
+    // Wait, the activity listeners will pick up user activity immediately, so it's fine.
   };
 
   return (
