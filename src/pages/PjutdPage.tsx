@@ -34,6 +34,7 @@ interface Pjutd {
     tahun_ajaran?: {
       nama_tahun_ajaran: string;
     };
+    status?: string;
     santri?: {
       nama: string;
       nik: string;
@@ -684,6 +685,7 @@ const PjutdPage: React.FC = () => {
                       <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Tahun Ajaran</th>
                       <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Nama UTD (Santri)</th>
                       <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>NIS</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -697,6 +699,13 @@ const PjutdPage: React.FC = () => {
                         </td>
                         <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
                           {utd.santri?.nis || '-'}
+                        </td>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
+                          {utd.status === 'Ditarik' ? (
+                            <span style={{ color: '#ef4444', fontWeight: 600, fontSize: '0.75rem', padding: '2px 8px', background: '#fee2e2', borderRadius: '4px' }}>DITARIK</span>
+                          ) : (
+                            <span style={{ color: '#10b981', fontWeight: 600, fontSize: '0.75rem', padding: '2px 8px', background: '#dcfce7', borderRadius: '4px' }}>{utd.status || 'Aktif'}</span>
+                          )}
                         </td>
                       </tr>
                     ))}

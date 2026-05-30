@@ -54,7 +54,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card:hover {
+.card:not(.modal-card):hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06), 0 4px 8px rgba(15, 23, 42, 0.04);
 }

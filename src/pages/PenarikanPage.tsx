@@ -34,22 +34,20 @@ interface Utd {
   pjutd: Pjutd;
 }
 
-interface Mutasi {
+interface Penarikan {
   id: number;
   utd_id: number;
   asal_pjutd_id: number;
-  tujuan_pjutd_id: number;
   alasan: string;
-  tanggal_mutasi: string;
+  tanggal_penarikan: string;
   diproses_oleh: number;
   utd: Utd;
   asalPjutd: Pjutd;
-  tujuanPjutd: Pjutd;
   user: any;
   created_at: string;
 }
 
-const MutasiPage: React.FC = () => {
+const PenarikanPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,9 +56,8 @@ const MutasiPage: React.FC = () => {
 
   const [formData, setFormData] = useState({
     utd_id: '',
-    tujuan_pjutd_id: '',
     alasan: '',
-    tanggal_mutasi: new Date().toISOString().split('T')[0]
+    tanggal_penarikan: new Date().toISOString().split('T')[0]
   });
 
   const currentUserStr = localStorage.getItem('user');
@@ -78,11 +75,11 @@ const MutasiPage: React.FC = () => {
 
   const activeTahunAjaran = tahunAjaranList.find(t => t.is_active);
 
-  // Fetch mutasi list
-  const { data: mutasiList = [], isLoading } = useQuery<Mutasi[]>({
-    queryKey: ['mutasi'],
+  // Fetch penarikan list
+  const { data: penarikanList = [], isLoading } = useQuery<Penarikan[]>({
+    queryKey: ['penarikan'],
     queryFn: async () => {
-      const res = await api.get('/mutasi');
+      const res = await api.get('/penarikan');
       return res.data;
     }
   });
@@ -97,27 +94,19 @@ const MutasiPage: React.FC = () => {
     enabled: !!activeTahunAjaran && isModalOpen
   });
 
-  // Fetch pjutd (lembaga) for dropdown
-  const { data: pjutdList = [] } = useQuery<Pjutd[]>({
-    queryKey: ['pjutd'],
-    queryFn: async () => {
-      const res = await api.get('/pjutd');
-      return res.data;
-    },
-    enabled: isModalOpen
-  });
+
 
   const submitMutation = useMutation({
-    mutationFn: (data: any) => api.post('/mutasi', data),
+    mutationFn: (data: any) => api.post('/penarikan', data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mutasi'] });
+      queryClient.invalidateQueries({ queryKey: ['penarikan'] });
       queryClient.invalidateQueries({ queryKey: ['utd'] });
       setIsModalOpen(false);
-      setFormData({ utd_id: '', tujuan_pjutd_id: '', alasan: '', tanggal_mutasi: new Date().toISOString().split('T')[0] });
-      toast.success('Mutasi berhasil diproses');
+      setFormData({ utd_id: '', alasan: '', tanggal_penarikan: new Date().toISOString().split('T')[0] });
+      toast.success('Penarikan berhasil diproses');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Terjadi kesalahan saat memproses mutasi');
+      toast.error(error.response?.data?.message || 'Terjadi kesalahan saat memproses penarikan');
     }
   });
 
@@ -126,21 +115,13 @@ const MutasiPage: React.FC = () => {
     submitMutation.mutate(formData);
   };
 
-  const filteredMutasi = mutasiList.filter(m => 
+  const filteredPenarikan = penarikanList.filter(m => 
     m.utd?.santri?.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.alasan.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredMutasi.length / itemsPerPage);
-  const paginatedMutasi = filteredMutasi.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const availableTujuanPjutd = pjutdList.filter(p => {
-    // If wilayah, only show PJUTD in their wilayah
-    if (isWilayah) {
-      return p.badkom_id === currentUser.badkom_id;
-    }
-    return true;
-  });
+  const totalPages = Math.ceil(filteredPenarikan.length / itemsPerPage);
+  const paginatedPenarikan = filteredPenarikan.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // Filter UTD for Wilayah
   const availableUtd = utdList.filter(u => {
@@ -150,7 +131,6 @@ const MutasiPage: React.FC = () => {
     return true;
   });
 
-  const selectedUtd = utdList.find(u => u.id === Number(formData.utd_id));
 
   return (
     <>
@@ -159,7 +139,7 @@ const MutasiPage: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <RefreshCcw size={24} style={{ color: 'var(--primary)' }} />
           <div>
-            <h2 style={{ margin: 0 }}>Riwayat Mutasi Tugas</h2>
+            <h2 style={{ margin: 0 }}>Riwayat Penarikan Tugas</h2>
             <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.875rem' }}>Daftar kepindahan tugas ustadz/ustadzah daerah</p>
           </div>
         </div>
@@ -173,7 +153,7 @@ const MutasiPage: React.FC = () => {
             style={{ minWidth: '250px' }}
           />
           <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-            <Plus size={18} /> Ajukan Mutasi
+            <Plus size={18} /> Ajukan Penarikan
           </button>
         </div>
       </div>
@@ -186,45 +166,43 @@ const MutasiPage: React.FC = () => {
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Tanggal</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Ustadz Tugas</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Lembaga Asal</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Lembaga Tujuan</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Alasan</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Diproses Oleh</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedMutasi.map((mutasi) => (
-                <tr key={mutasi.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <td style={{ padding: '12px 16px' }}>{new Date(mutasi.tanggal_mutasi).toLocaleDateString('id-ID')}</td>
+              {paginatedPenarikan.map((penarikan) => (
+                <tr key={penarikan.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                  <td style={{ padding: '12px 16px' }}>{new Date(penarikan.tanggal_penarikan).toLocaleDateString('id-ID')}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <div style={{ fontWeight: 500 }}>{mutasi.utd?.santri?.nama_lengkap}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>NIK: {mutasi.utd?.santri?.nik}</div>
+                    <div style={{ fontWeight: 500 }}>{penarikan.utd?.santri?.nama_lengkap}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>NIK: {penarikan.utd?.santri?.nik}</div>
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#ef4444' }}>{mutasi.asalPjutd?.nama_pjutd}</td>
-                  <td style={{ padding: '12px 16px', color: '#10b981' }}>{mutasi.tujuanPjutd?.nama_pjutd}</td>
+                  <td style={{ padding: '12px 16px', color: '#ef4444' }}>{penarikan.asalPjutd?.nama_pjutd}</td>
                   <td style={{ padding: '12px 16px', maxWidth: '200px' }}>
-                    <div style={{ fontSize: '0.875rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={mutasi.alasan}>
-                      {mutasi.alasan}
+                    <div style={{ fontSize: '0.875rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={penarikan.alasan}>
+                      {penarikan.alasan}
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: '0.875rem' }}>{mutasi.user?.name}</td>
+                  <td style={{ padding: '12px 16px', fontSize: '0.875rem' }}>{penarikan.user?.name}</td>
                 </tr>
               ))}
-              {paginatedMutasi.length === 0 && (
+              {paginatedPenarikan.length === 0 && (
                 <tr>
                   <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#94a3b8' }}>
-                    Belum ada riwayat mutasi
+                    Belum ada riwayat penarikan
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
 
-          {filteredMutasi.length > 0 && (
+          {filteredPenarikan.length > 0 && (
             <div style={{ marginTop: '24px' }}>
               <TablePagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                totalItems={filteredMutasi.length}
+                totalItems={filteredPenarikan.length}
                 itemsPerPage={itemsPerPage}
                 onPageChange={setCurrentPage}
                 onItemsPerPageChange={(limit) => {
@@ -239,11 +217,11 @@ const MutasiPage: React.FC = () => {
 
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Formulir Mutasi Ustadz Tugas">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Formulir Penarikan Ustadz Tugas">
         {!activeTahunAjaran ? (
           <div style={{ padding: '16px', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertCircle size={20} />
-            Tidak ada Tahun Ajaran aktif. Tidak bisa melakukan mutasi.
+            Tidak ada Tahun Ajaran aktif. Tidak bisa melakukan penarikan.
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -263,39 +241,18 @@ const MutasiPage: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Lembaga Tujuan Mutasi</label>
-              <select 
-                className="form-control" 
-                required 
-                value={formData.tujuan_pjutd_id}
-                onChange={e => setFormData({...formData, tujuan_pjutd_id: e.target.value})}
-              >
-                <option value="">-- Pilih Lembaga Tujuan --</option>
-                {availableTujuanPjutd.map(p => (
-                  <option 
-                    key={p.id} 
-                    value={p.id} 
-                    disabled={selectedUtd?.pjutd_id === p.id}
-                  >
-                    {p.nama_pjutd} {selectedUtd?.pjutd_id === p.id ? '(Lembaga Saat Ini)' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Tanggal Mutasi</label>
+              <label className="form-label">Tanggal Penarikan</label>
               <input 
                 type="date" 
                 className="form-control" 
                 required 
-                value={formData.tanggal_mutasi}
-                onChange={e => setFormData({...formData, tanggal_mutasi: e.target.value})}
+                value={formData.tanggal_penarikan}
+                onChange={e => setFormData({...formData, tanggal_penarikan: e.target.value})}
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Alasan Mutasi</label>
+              <label className="form-label">Alasan Penarikan</label>
               <textarea 
                 className="form-control" 
                 rows={4} 
@@ -309,7 +266,7 @@ const MutasiPage: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
               <button type="button" className="btn" onClick={() => setIsModalOpen(false)}>Batal</button>
               <button type="submit" className="btn btn-primary" disabled={submitMutation.isPending}>
-                {submitMutation.isPending ? 'Memproses...' : 'Proses Mutasi'}
+                {submitMutation.isPending ? 'Memproses...' : 'Proses Penarikan'}
               </button>
             </div>
           </form>
@@ -319,4 +276,4 @@ const MutasiPage: React.FC = () => {
   );
 };
 
-export default MutasiPage;
+export default PenarikanPage;

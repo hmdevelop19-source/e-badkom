@@ -16,6 +16,7 @@ import LaporanSayaPage from './pages/LaporanSayaPage';
 import SoalLaporanPage from './pages/SoalLaporanPage';
 import SuratPage from './pages/SuratPage';
 import MutasiPage from './pages/MutasiPage';
+import PenarikanPage from './pages/PenarikanPage';
 import UserPage from './pages/UserPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
@@ -46,6 +47,7 @@ function App() {
               <Route path="tahun-ajaran" element={<TahunAjaranPage />} />
               <Route path="penugasan" element={<PenugasanPage />} />
               <Route path="mutasi" element={<MutasiPage />} />
+              <Route path="penarikan" element={<PenarikanPage />} />
               <Route path="penilaian" element={<PenilaianPage />} />
               <Route path="penilaian-pjutd" element={<PenilaianPjutdPage />} />
               <Route path="pengajuan-boyong" element={<PengajuanBoyongPage />} />
