@@ -6,11 +6,13 @@ import { Send, AlertCircle, CheckCircle } from 'lucide-react';
 const PengajuanBoyongPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [nis, setNis] = useState('');
+  const [tahunMondok, setTahunMondok] = useState('');
+  const [tahunTugas, setTahunTugas] = useState('');
   const [keterangan, setKeterangan] = useState('');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const mutation = useMutation({
-    mutationFn: (data: { nis: string, keterangan: string }) => {
+    mutationFn: (data: { nis: string, tahun_mondok: string, tahun_tugas: string, keterangan: string }) => {
       return api.post('/boyong', data);
     },
     onSuccess: (res) => {
@@ -18,6 +20,8 @@ const PengajuanBoyongPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['boyong-menunggu'] });
       setMessage({ type: 'success', text: res.data.message || 'Pengajuan boyong berhasil dikirim dan menunggu validasi admin.' });
       setNis('');
+      setTahunMondok('');
+      setTahunTugas('');
       setKeterangan('');
     },
     onError: (err: any) => {
@@ -33,7 +37,7 @@ const PengajuanBoyongPage: React.FC = () => {
       setMessage({ type: 'error', text: 'NIS tidak boleh kosong.' });
       return;
     }
-    mutation.mutate({ nis, keterangan });
+    mutation.mutate({ nis, tahun_mondok: tahunMondok, tahun_tugas: tahunTugas, keterangan });
   };
 
   return (
@@ -77,6 +81,30 @@ const PengajuanBoyongPage: React.FC = () => {
               placeholder="Masukkan Nomor Induk Santri (NIS)"
               required
             />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Tahun Mondok</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={tahunMondok}
+                onChange={(e) => setTahunMondok(e.target.value)}
+                placeholder="Contoh: 1440/1441"
+              />
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Tahun Tugas</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={tahunTugas}
+                onChange={(e) => setTahunTugas(e.target.value)}
+                placeholder="Contoh: 1445/1446"
+              />
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
