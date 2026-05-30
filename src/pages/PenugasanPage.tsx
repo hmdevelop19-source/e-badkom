@@ -44,6 +44,10 @@ const PenugasanPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
+  const currentUserStr = localStorage.getItem('user');
+  const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+  const isWilayah = currentUser?.level === 'badkom_wilayah';
+
   const { data: tahunAjarans = [] } = useQuery({
     queryKey: ['tahun-ajaran'],
     queryFn: async () => {
@@ -178,10 +182,12 @@ const PenugasanPage: React.FC = () => {
             <Printer size={18} />
             Cetak Penempatan
           </button>
-          <button className="btn btn-primary" onClick={() => { setFormData({ santri_id: undefined, pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
-            <MapPin size={18} />
-            Tambah Penugasan
-          </button>
+          {!isWilayah && (
+            <button className="btn btn-primary" onClick={() => { setFormData({ santri_id: undefined, pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
+              <MapPin size={18} />
+              Tambah Penugasan
+            </button>
+          )}
         </div>
       </div>
 
@@ -192,7 +198,7 @@ const PenugasanPage: React.FC = () => {
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Santri</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Lokasi PJ UTD</th>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Tahun Ajaran</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>
+              {!isWilayah && <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>}
             </tr>
           </thead>
           <tbody>
@@ -221,32 +227,34 @@ const PenugasanPage: React.FC = () => {
                       <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 6px', borderRadius: '4px' }}>Arsip</span>
                     )}
                   </td>
-                  <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                      <button 
-                        className="btn" 
-                        style={{ padding: '8px', background: '#f1f5f9', color: '#475569' }}
-                        onClick={() => {
-                          setFormData(utd);
-                          setIsModalOpen(true);
-                          setError('');
-                        }}
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button 
-                        className="btn" 
-                        style={{ padding: '8px', background: '#fef2f2', color: '#ef4444' }}
-                        onClick={() => {
-                          showConfirm('Apakah Anda yakin ingin menghapus penugasan ini?', () => {
-                            deleteMutation.mutate(utd.id);
-                          });
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+                  {!isWilayah && (
+                    <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <button 
+                          className="btn" 
+                          style={{ padding: '8px', background: '#f1f5f9', color: '#475569' }}
+                          onClick={() => {
+                            setFormData(utd);
+                            setIsModalOpen(true);
+                            setError('');
+                          }}
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button 
+                          className="btn" 
+                          style={{ padding: '8px', background: '#fef2f2', color: '#ef4444' }}
+                          onClick={() => {
+                            showConfirm('Apakah Anda yakin ingin menghapus penugasan ini?', () => {
+                              deleteMutation.mutate(utd.id);
+                            });
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             )}
