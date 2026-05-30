@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, LogOut, ChevronDown, ChevronRight, 
-  Settings, Database, ClipboardCheck, Archive, Briefcase, Award, Bell, AlertTriangle
+  Settings, Database, ClipboardCheck, Archive, Briefcase, Award, Bell, AlertTriangle, User
 } from 'lucide-react';
 import logoBadkom from '../assets/LOGOBADKOM.png';
 import Modal from '../components/Modal';
@@ -26,7 +26,7 @@ const DashboardLayout: React.FC = () => {
   const [logoutCountdown, setLogoutCountdown] = useState(60);
   const [logoutReason, setLogoutReason] = useState('');
   
-  const currentUserStr = localStorage.getItem('user');
+  const [currentUserStr, setCurrentUserStr] = useState(localStorage.getItem('user'));
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const level = currentUser?.level || 'user';
 
@@ -36,6 +36,16 @@ const DashboardLayout: React.FC = () => {
       navigate('/login');
     }
   }, [navigate, currentUserStr]);
+
+  React.useEffect(() => {
+    const handleProfileUpdate = () => {
+      setCurrentUserStr(localStorage.getItem('user'));
+    };
+    window.addEventListener('user-profile-updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('user-profile-updated', handleProfileUpdate);
+    };
+  }, []);
 
   const allNavItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
@@ -288,9 +298,13 @@ const DashboardLayout: React.FC = () => {
                   <p style={{ fontWeight: 600, margin: 0, lineHeight: 1.2, color: 'var(--text-primary)', fontSize: '0.875rem' }}>{currentUser?.fullname || 'Administrator'}</p>
                   <p style={{ fontSize: '0.7rem', color: 'var(--secondary)', margin: 0, marginTop: '2px', fontWeight: 600 }}>{level.toUpperCase()}</p>
                 </div>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '1rem', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
-                  {currentUser?.fullname?.charAt(0).toUpperCase() || 'A'}
-                </div>
+                {currentUser?.foto_profil ? (
+                  <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '')}${currentUser.foto_profil}`} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }} />
+                ) : (
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '1rem', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
+                    {currentUser?.fullname?.charAt(0).toUpperCase() || 'A'}
+                  </div>
+                )}
                 <ChevronDown size={14} color="var(--text-secondary)" style={{ marginLeft: '-4px', transition: 'transform 0.2s', transform: isProfileOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
               </div>
             
@@ -311,8 +325,28 @@ const DashboardLayout: React.FC = () => {
                   border: '1px solid var(--border)',
                   zIndex: 100,
                   minWidth: '200px',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}>
+                  <Link 
+                    to="/admin/profil"
+                    onClick={() => setIsProfileOpen(false)}
+                    style={{ 
+                      padding: '12px 16px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '12px', 
+                      color: 'var(--text-primary)',
+                      textDecoration: 'none',
+                      borderBottom: '1px solid var(--border)'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <User size={18} />
+                    Profil Saya
+                  </Link>
                   <button 
                     onClick={handleLogout}
                     style={{ 

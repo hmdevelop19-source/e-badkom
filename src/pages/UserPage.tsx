@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { Search, Edit2, Trash2, Shield, Plus } from 'lucide-react';
+import { Search, Edit2, Trash2, Shield, Plus, KeyRound } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useDialog } from '../contexts/DialogContext';
 import Modal from '../components/Modal';
@@ -99,6 +99,16 @@ const UserPage: React.FC = () => {
     },
     onError: () => {
       toast.error('Gagal menghapus akun');
+    }
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: (id: number) => api.post(`/users/${id}/reset-password`),
+    onSuccess: (res: any) => {
+      toast.success(res.data.message || 'Password berhasil direset');
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Gagal mereset password');
     }
   });
 
@@ -280,6 +290,19 @@ const UserPage: React.FC = () => {
                         title="Hapus Akun"
                       >
                         <Trash2 size={16} />
+                      </button>
+                      <button 
+                        className="btn" 
+                        style={{ padding: '8px', background: '#fef3c7', color: '#d97706' }}
+                        onClick={() => {
+                          showConfirm(`Yakin ingin mereset password untuk ${user.fullname}? Password akan diubah ke default.`, () => {
+                            resetPasswordMutation.mutate(user.id);
+                          });
+                        }}
+                        disabled={user.id === currentUser?.id}
+                        title="Reset Password"
+                      >
+                        <KeyRound size={16} />
                       </button>
                     </div>
                   </td>

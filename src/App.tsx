@@ -17,6 +17,7 @@ import SoalLaporanPage from './pages/SoalLaporanPage';
 import SuratPage from './pages/SuratPage';
 import MutasiPage from './pages/MutasiPage';
 import UserPage from './pages/UserPage';
+import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import ValidasiBoyongPage from './pages/ValidasiBoyongPage';
 import PengajuanBoyongPage from './pages/PengajuanBoyongPage';
@@ -38,6 +39,7 @@ function App() {
             <Route path="/admin" element={<DashboardLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="users" element={<UserPage />} />
+              <Route path="profil" element={<ProfilePage />} />
               <Route path="santri" element={<SantriPage />} />
               <Route path="badkom" element={<BadkomPage />} />
               <Route path="pjutd" element={<PjutdPage />} />
