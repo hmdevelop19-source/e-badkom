@@ -82,9 +82,9 @@ const DashboardLayout: React.FC = () => {
     { 
       label: 'Validasi Kelulusan', 
       icon: ClipboardCheck, 
-      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
+      roles: ['admin', 'badkom_pusat'],
       subItems: [
-        { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', roles: ['admin', 'badkom_pusat'] },
         { label: 'Validasi Boyong', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] },
       ]
     },
