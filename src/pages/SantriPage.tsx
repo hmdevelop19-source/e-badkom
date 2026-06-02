@@ -61,6 +61,7 @@ interface Santri {
         nama_pjutd: string;
       };
     }>;
+    status: string;
     created_at: string;
   }>;
 }
@@ -737,6 +738,7 @@ const SantriPage: React.FC = () => {
                     <tr>
                       <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Tahun Ajaran</th>
                       <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Tempat Tugas</th>
+                      <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Status</th>
                       <th style={{ padding: '12px 20px', fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>Penilaian</th>
                     </tr>
                   </thead>
@@ -750,6 +752,39 @@ const SantriPage: React.FC = () => {
                         <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
                           <div style={{ fontWeight: 500 }}>{utd.pjutd?.nama_pjutd || '-'}</div>
                           <div style={{ color: 'var(--text-secondary)' }}>{utd.pjutd?.kode_lembaga}</div>
+                        </td>
+                        <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
+                          {(() => {
+                            let displayStatus = utd.status || 'Aktif';
+                            if (displayStatus === 'Aktif' && utd.tahun_ajaran && !utd.tahun_ajaran.is_active) {
+                              displayStatus = 'Selesai';
+                            }
+
+                            const getBadgeStyle = (status: string) => {
+                              switch(status) {
+                                case 'Aktif': return { bg: '#e0f2fe', color: '#0284c7' }; // blue
+                                case 'Ditarik': return { bg: '#fee2e2', color: '#dc2626' }; // red
+                                case 'Dimutasi': return { bg: '#fef3c7', color: '#d97706' }; // orange
+                                case 'Selesai': return { bg: '#dcfce7', color: '#166534' }; // green
+                                default: return { bg: '#f1f5f9', color: '#475569' };
+                              }
+                            };
+
+                            const badgeStyle = getBadgeStyle(displayStatus);
+
+                            return (
+                              <span style={{ 
+                                padding: '4px 10px', 
+                                borderRadius: '12px', 
+                                fontSize: '0.75rem', 
+                                fontWeight: 600,
+                                background: badgeStyle.bg,
+                                color: badgeStyle.color
+                              }}>
+                                {displayStatus}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
                           {utd.penilaian ? (
@@ -773,7 +808,7 @@ const SantriPage: React.FC = () => {
                       </tr>
                       {utd.mutasis && utd.mutasis.length > 0 && (
                         <tr>
-                          <td colSpan={3} style={{ padding: '0 20px 16px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                          <td colSpan={4} style={{ padding: '0 20px 16px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                             <div style={{ padding: '12px', background: '#fff', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
                               <h4 style={{ margin: '0 0 8px 0', fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b' }}>Riwayat Mutasi pada Penugasan Ini</h4>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

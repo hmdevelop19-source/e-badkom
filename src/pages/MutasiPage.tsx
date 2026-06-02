@@ -14,8 +14,9 @@ interface TahunAjaran {
 
 interface Santri {
   id: number;
-  nama_lengkap: string;
+  nama: string;
   nik: string;
+  nis: string;
 }
 
 interface Pjutd {
@@ -41,6 +42,7 @@ interface Mutasi {
   tujuan_pjutd_id: number;
   alasan: string;
   tanggal_mutasi: string;
+  status_penyelesaian: string;
   diproses_oleh: number;
   utd: Utd;
   asalPjutd: Pjutd;
@@ -60,7 +62,8 @@ const MutasiPage: React.FC = () => {
     utd_id: '',
     tujuan_pjutd_id: '',
     alasan: '',
-    tanggal_mutasi: new Date().toISOString().split('T')[0]
+    tanggal_mutasi: new Date().toISOString().split('T')[0],
+    status_penyelesaian: 'Tidak Tuntas'
   });
 
   const currentUserStr = localStorage.getItem('user');
@@ -113,7 +116,7 @@ const MutasiPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['mutasi'] });
       queryClient.invalidateQueries({ queryKey: ['utd'] });
       setIsModalOpen(false);
-      setFormData({ utd_id: '', tujuan_pjutd_id: '', alasan: '', tanggal_mutasi: new Date().toISOString().split('T')[0] });
+      setFormData({ utd_id: '', tujuan_pjutd_id: '', alasan: '', tanggal_mutasi: new Date().toISOString().split('T')[0], status_penyelesaian: 'Tidak Tuntas' });
       toast.success('Mutasi berhasil diproses');
     },
     onError: (error: any) => {
@@ -127,7 +130,7 @@ const MutasiPage: React.FC = () => {
   };
 
   const filteredMutasi = mutasiList.filter(m => 
-    m.utd?.santri?.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.utd?.santri?.nama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.alasan.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -187,6 +190,7 @@ const MutasiPage: React.FC = () => {
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Ustadz Tugas</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Lembaga Asal</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Lembaga Tujuan</th>
+                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Status di Tempat Lama</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Alasan</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Diproses Oleh</th>
               </tr>
@@ -196,17 +200,26 @@ const MutasiPage: React.FC = () => {
                 <tr key={mutasi.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
                   <td style={{ padding: '12px 16px' }}>{new Date(mutasi.tanggal_mutasi).toLocaleDateString('id-ID')}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <div style={{ fontWeight: 500 }}>{mutasi.utd?.santri?.nama_lengkap}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>NIK: {mutasi.utd?.santri?.nik}</div>
+                    <div style={{ fontWeight: 500 }}>{mutasi.utd?.santri?.nama}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>NIS: {mutasi.utd?.santri?.nis}</div>
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#ef4444' }}>{mutasi.asalPjutd?.nama_pjutd}</td>
-                  <td style={{ padding: '12px 16px', color: '#10b981' }}>{mutasi.tujuanPjutd?.nama_pjutd}</td>
+                  <td style={{ padding: '12px 16px', color: '#ef4444' }}>{mutasi.asalPjutd?.yayasan || mutasi.asalPjutd?.nama_pjutd}</td>
+                  <td style={{ padding: '12px 16px', color: '#10b981' }}>{mutasi.tujuanPjutd?.yayasan || mutasi.tujuanPjutd?.nama_pjutd}</td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <span style={{ 
+                      padding: '4px 8px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 600,
+                      background: mutasi.status_penyelesaian === 'Tuntas' ? '#dcfce7' : '#fee2e2',
+                      color: mutasi.status_penyelesaian === 'Tuntas' ? '#166534' : '#991b1b'
+                    }}>
+                      {mutasi.status_penyelesaian || 'Tidak Tuntas'}
+                    </span>
+                  </td>
                   <td style={{ padding: '12px 16px', maxWidth: '200px' }}>
                     <div style={{ fontSize: '0.875rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={mutasi.alasan}>
                       {mutasi.alasan}
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: '0.875rem' }}>{mutasi.user?.name}</td>
+                  <td style={{ padding: '12px 16px', fontSize: '0.875rem' }}>{mutasi.user?.fullname || mutasi.user?.username}</td>
                 </tr>
               ))}
               {paginatedMutasi.length === 0 && (
@@ -257,7 +270,7 @@ const MutasiPage: React.FC = () => {
               >
                 <option value="">-- Pilih Ustadz --</option>
                 {availableUtd.map(u => (
-                  <option key={u.id} value={u.id}>{u.santri?.nama_lengkap} - (Lembaga Saat Ini: {u.pjutd?.nama_pjutd})</option>
+                  <option key={u.id} value={u.id}>{u.santri?.nama} - (Lembaga Saat Ini: {u.pjutd?.nama_pjutd})</option>
                 ))}
               </select>
             </div>
@@ -292,6 +305,19 @@ const MutasiPage: React.FC = () => {
                 value={formData.tanggal_mutasi}
                 onChange={e => setFormData({...formData, tanggal_mutasi: e.target.value})}
               />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Status Penyelesaian di Lembaga Lama</label>
+              <select 
+                className="form-control" 
+                required 
+                value={formData.status_penyelesaian}
+                onChange={e => setFormData({...formData, status_penyelesaian: e.target.value})}
+              >
+                <option value="Tidak Tuntas">Tidak Tuntas (Diberi Nilai D di tempat lama)</option>
+                <option value="Tuntas">Tuntas (Lulus / Diberi Nilai B di tempat lama)</option>
+              </select>
             </div>
 
             <div className="form-group">
