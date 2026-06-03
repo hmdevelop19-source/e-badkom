@@ -26,6 +26,7 @@ import PengajuanBoyongPage from './pages/PengajuanBoyongPage';
 import AlumniPage from './pages/AlumniPage';
 
 import LaporanMasukWajibPage from './pages/LaporanMasukWajibPage';
+import JadwalLaporanPage from './pages/JadwalLaporanPage';
 import LaporanMasukInsidentalPage from './pages/LaporanMasukInsidentalPage';
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ function App() {
               <Route path="alumni" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><AlumniPage /></ProtectedRoute>} />
               <Route path="laporan-saya" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd']}><LaporanSayaPage /></ProtectedRoute>} />
               <Route path="soal-laporan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><SoalLaporanPage /></ProtectedRoute>} />
+              <Route path="jadwal-laporan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><JadwalLaporanPage /></ProtectedRoute>} />
               <Route path="laporan-masuk/wajib" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><LaporanMasukWajibPage /></ProtectedRoute>} />
               <Route path="laporan-masuk/insidental" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><LaporanMasukInsidentalPage /></ProtectedRoute>} />
               <Route path="surat" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd']}><SuratPage /></ProtectedRoute>} />

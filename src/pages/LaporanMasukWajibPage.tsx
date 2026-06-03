@@ -15,6 +15,8 @@ interface LaporanWajib {
   kategori_bulan: string;
   tahun_ajaran_id: number;
   status: string;
+  status_waktu?: string;
+  created_at: string;
   user: any;
   jawabans: any[];
   tahunAjaran?: TahunAjaran;
@@ -110,8 +112,20 @@ const LaporanMasukWajibPage: React.FC = () => {
                     <span style={{ padding: '2px 8px', borderRadius: '12px', background: '#e0e7ff', color: '#4338ca', fontSize: '0.75rem', marginLeft: '8px' }}>
                       {laporan.user?.level.toUpperCase()}
                     </span>
-                    <div style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '4px' }}>
-                      Kategori: {laporan.kategori_bulan} | Dikirim pada: {laporan.bulan_tahun} | T.A: {laporan.tahunAjaran?.nama_tahun_ajaran}
+                    <div style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>Kategori: {laporan.kategori_bulan} | Dikirim pada: {new Date(laporan.created_at).toLocaleDateString('id-ID')} | T.A: {laporan.tahunAjaran?.nama_tahun_ajaran}</span>
+                      {laporan.status_waktu && (
+                        <span style={{ 
+                          padding: '2px 8px', 
+                          borderRadius: '12px', 
+                          fontSize: '0.7rem', 
+                          fontWeight: 600,
+                          background: laporan.status_waktu === 'Tepat Waktu' ? '#ecfdf5' : '#fef2f2',
+                          color: laporan.status_waktu === 'Tepat Waktu' ? '#10b981' : '#ef4444'
+                        }}>
+                          {laporan.status_waktu}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>

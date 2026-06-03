@@ -16,7 +16,7 @@ const DashboardLayout: React.FC = () => {
     'Evaluasi': location.pathname.includes('/admin/penilaian') && !location.pathname.includes('/validasi'),
     'Validasi Kelulusan': location.pathname.includes('/admin/validasi') || location.pathname.includes('/admin/pengajuan-boyong'),
     'Manajemen Laporan': location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/laporan-masuk') || location.pathname.includes('/admin/laporan-saya'),
-    'Pengaturan': location.pathname.includes('/admin/users') || location.pathname.includes('/admin/pengaturan') || location.pathname.includes('/admin/tahun-ajaran') || (location.pathname === '/admin/soal-laporan'),
+    'Pengaturan': location.pathname.includes('/admin/users') || location.pathname.includes('/admin/pengaturan') || location.pathname.includes('/admin/tahun-ajaran') || location.pathname === '/admin/soal-laporan' || location.pathname === '/admin/jadwal-laporan',
   });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -105,6 +105,7 @@ const DashboardLayout: React.FC = () => {
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
         { label: 'Laporan (Pembuatan Soal)', path: '/admin/soal-laporan', roles: ['admin', 'badkom_pusat'] },
+        { label: 'Jadwal Laporan Wajib', path: '/admin/jadwal-laporan', roles: ['admin', 'badkom_pusat'] },
         { label: 'Manajemen Akun', path: '/admin/users', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
         { label: 'Pengaturan Sistem', path: '/admin/pengaturan', roles: ['admin', 'badkom_pusat'] },
         { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', roles: ['admin', 'badkom_pusat'] },

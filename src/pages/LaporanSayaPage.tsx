@@ -25,6 +25,7 @@ interface LaporanWajib {
   kategori_bulan: string;
   tahun_ajaran_id: number;
   status: string;
+  status_waktu?: string;
   user: any;
   jawabans: any[];
   tahunAjaran?: TahunAjaran;
@@ -106,6 +107,19 @@ const LaporanSayaPage: React.FC = () => {
       return res.data;
     }
   });
+
+  const { data: jadwalData = [] } = useQuery({
+    queryKey: ['jadwal-laporan', selectedTahunAjaran],
+    queryFn: async () => {
+      if (!selectedTahunAjaran) return [];
+      const res = await api.get('/jadwal-laporan-wajib', { params: { tahun_ajaran_id: selectedTahunAjaran } });
+      return res.data;
+    },
+    enabled: !!selectedTahunAjaran
+  });
+
+  const currentJadwal = jadwalData.find((j: any) => j.kategori_bulan === selectedKategoriBulan);
+  const isLate = currentJadwal ? new Date() > new Date(currentJadwal.batas_tanggal) : false;
 
   // Mutations
   const submitWajibMutation = useMutation({
@@ -204,16 +218,23 @@ const LaporanSayaPage: React.FC = () => {
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
-                {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                  <button 
-                    className="btn btn-primary" 
-                    onClick={() => { setJawabanForm({}); setIsSubmitWajibModalOpen(true); }}
-                    disabled={hasSubmittedWajib}
-                    style={{ padding: '6px 16px' }}
-                  >
-                    {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan Ini'}
-                  </button>
-                )}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                  {isSender && selectedTahunAjaran === activeTahunAjaran?.id && !hasSubmittedWajib && currentJadwal && (
+                    <span style={{ fontSize: '0.75rem', color: isLate ? '#ef4444' : '#64748b' }}>
+                      Batas Akhir: {new Date(currentJadwal.batas_tanggal).toLocaleDateString('id-ID')} {isLate && '(Terlambat)'}
+                    </span>
+                  )}
+                  {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => { setJawabanForm({}); setIsSubmitWajibModalOpen(true); }}
+                      disabled={hasSubmittedWajib}
+                      style={{ padding: '6px 16px' }}
+                    >
+                      {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan Ini'}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -225,6 +246,19 @@ const LaporanSayaPage: React.FC = () => {
                       <div>
                         <strong>{laporan.kategori_bulan}</strong> 
                         <span style={{ color: '#94a3b8', fontSize: '0.875rem', marginLeft: '8px' }}>(Dikirim: {laporan.bulan_tahun})</span>
+                        {laporan.status_waktu && (
+                          <span style={{ 
+                            marginLeft: '8px', 
+                            padding: '2px 8px', 
+                            borderRadius: '12px', 
+                            fontSize: '0.7rem', 
+                            fontWeight: 600,
+                            background: laporan.status_waktu === 'Tepat Waktu' ? '#ecfdf5' : '#fef2f2',
+                            color: laporan.status_waktu === 'Tepat Waktu' ? '#10b981' : '#ef4444'
+                          }}>
+                            {laporan.status_waktu}
+                          </span>
+                        )}
                       </div>
                       <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
                         <CheckCircle size={14} /> Terkirim
