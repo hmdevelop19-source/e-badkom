@@ -264,18 +264,7 @@ const PenarikanPage: React.FC = () => {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Status Penyelesaian Tugas</label>
-              <select 
-                className="form-control" 
-                required 
-                value={formData.status_penyelesaian}
-                onChange={e => setFormData({...formData, status_penyelesaian: e.target.value})}
-              >
-                <option value="Tidak Tuntas">Tidak Tuntas (Nilai D)</option>
-                <option value="Tuntas">Tuntas (Lulus / Nilai B)</option>
-              </select>
-            </div>
+
 
             <div className="form-group">
               <label className="form-label">Alasan Penarikan</label>
