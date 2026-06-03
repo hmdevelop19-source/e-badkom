@@ -37,8 +37,9 @@ const PenugasanPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<string>('');
-  const [formData, setFormData] = useState<Partial<Utd>>({ santri_id: undefined, pjutd_id: undefined });
+  const [formData, setFormData] = useState<{id?: number, santri_ids: (number | undefined)[], pjutd_id?: number}>({ santri_ids: [undefined], pjutd_id: undefined });
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,24 +82,6 @@ const PenugasanPage: React.FC = () => {
     }
   });
 
-  const mutation = useMutation({
-    mutationFn: (data: Partial<Utd>) => {
-      if (data.id) {
-        return api.put(`/utd/${data.id}`, data);
-      }
-      return api.post('/utd', data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['utd'] });
-      setIsModalOpen(false);
-      setFormData({ santri_id: undefined, pjutd_id: undefined });
-      setError('');
-    },
-    onError: (err: any) => {
-      setError(err.response?.data?.message || 'Gagal menyimpan penugasan. Pastikan santri belum ditugaskan di tempat lain.');
-    }
-  });
-
   const deleteMutation = useMutation({
     mutationFn: (id: number) => {
       return api.delete(`/utd/${id}`);
@@ -111,13 +94,32 @@ const PenugasanPage: React.FC = () => {
     }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.santri_id || !formData.pjutd_id) {
-      setError('Santri dan PJ UTD harus dipilih');
+    if (!formData.pjutd_id || formData.santri_ids.some(id => !id)) {
+      setError('Semua field Santri dan PJ UTD harus diisi');
       return;
     }
-    mutation.mutate(formData);
+
+    setIsSubmitting(true);
+    setError('');
+    try {
+      if (formData.id) {
+        await api.put(`/utd/${formData.id}`, { santri_id: formData.santri_ids[0], pjutd_id: formData.pjutd_id });
+      } else {
+        await Promise.all(formData.santri_ids.map(s_id => 
+          api.post('/utd', { santri_id: s_id, pjutd_id: formData.pjutd_id })
+        ));
+      }
+      queryClient.invalidateQueries({ queryKey: ['utd'] });
+      setIsModalOpen(false);
+      setFormData({ santri_ids: [undefined], pjutd_id: undefined });
+      toast.success('Penugasan berhasil disimpan');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Gagal menyimpan penugasan. Pastikan santri belum ditugaskan di tempat lain.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const filteredUtds = utds.filter(utd => 
@@ -183,7 +185,7 @@ const PenugasanPage: React.FC = () => {
             Cetak Penempatan
           </button>
           {!isWilayah && (
-            <button className="btn btn-primary" onClick={() => { setFormData({ santri_id: undefined, pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
+            <button className="btn btn-primary" onClick={() => { setFormData({ santri_ids: [undefined], pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
               <MapPin size={18} />
               Tambah Penugasan
             </button>
@@ -234,7 +236,7 @@ const PenugasanPage: React.FC = () => {
                           className="btn" 
                           style={{ padding: '8px', background: '#f1f5f9', color: '#475569' }}
                           onClick={() => {
-                            setFormData(utd);
+                            setFormData({ id: utd.id, santri_ids: [utd.santri_id], pjutd_id: utd.pjutd_id });
                             setIsModalOpen(true);
                             setError('');
                           }}
@@ -289,24 +291,50 @@ const PenugasanPage: React.FC = () => {
             </div>
           )}
 
-          <div className="form-group">
-            <label className="form-label">Santri</label>
-            <SearchableSelect 
-              options={santris
-                .filter((s: any) => !utds.some(u => u.santri_id === s.id) || s.id === formData.santri_id)
-                .map((s: any) => ({ value: s.id, label: `${s.nis} - ${s.nama}` }))}
-              value={formData.santri_id}
-              onChange={(val) => setFormData({...formData, santri_id: Number(val)})}
-              placeholder="-- Cari dan Pilih Santri --"
-              required
-            />
-          </div>
+          {formData.santri_ids.map((s_id, index) => (
+            <div className="form-group" key={index}>
+              <label className="form-label">Santri {formData.santri_ids.length > 1 ? index + 1 : ''}</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ flex: 1 }}>
+                  <SearchableSelect 
+                    options={santris
+                      .filter((s: any) => !utds.some(u => u.santri_id === s.id) || s.id === s_id)
+                      .map((s: any) => ({ value: s.id, label: `${s.nis} - ${s.nama}` }))}
+                    value={s_id}
+                    onChange={(val) => {
+                      const newIds = [...formData.santri_ids];
+                      newIds[index] = Number(val);
+                      setFormData({...formData, santri_ids: newIds});
+                    }}
+                    placeholder="-- Cari dan Pilih Santri --"
+                    required
+                  />
+                </div>
+                {!formData.id && formData.santri_ids.length > 1 && (
+                  <button type="button" className="btn" style={{ background: '#fef2f2', color: '#ef4444', padding: '0 12px' }} onClick={() => {
+                    const newIds = [...formData.santri_ids];
+                    newIds.splice(index, 1);
+                    setFormData({...formData, santri_ids: newIds});
+                  }}>
+                    <Trash2 size={18} />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {!formData.id && (
+            <button type="button" className="btn" style={{ background: '#f1f5f9', color: '#475569', alignSelf: 'flex-start' }} onClick={() => {
+              setFormData({...formData, santri_ids: [...formData.santri_ids, undefined]});
+            }}>
+              + Tambah Santri Lain
+            </button>
+          )}
 
           <div className="form-group">
             <label className="form-label">PJ UTD (Lokasi Tugas)</label>
             <SearchableSelect 
               options={pjutds
-                .filter((p: any) => !utds.some(u => u.pjutd_id === p.id) || p.id === formData.pjutd_id)
                 .map((p: any) => ({ value: p.id, label: `${p.kode_lembaga} - ${p.nama_madrasah || p.yayasan || p.nama_pjutd}` }))}
               value={formData.pjutd_id}
               onChange={(val) => setFormData({...formData, pjutd_id: Number(val)})}
@@ -317,8 +345,8 @@ const PenugasanPage: React.FC = () => {
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" className="btn" onClick={() => setIsModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn btn-primary" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Menyimpan...' : 'Simpan'}
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Menyimpan...' : 'Simpan'}
             </button>
           </div>
         </form>
