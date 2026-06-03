@@ -24,6 +24,8 @@ interface Pjutd {
   nama_pjutd: string;
   yayasan: string;
   badkom_id?: number;
+  nama_madrasah?: string;
+  kode_lembaga?: string;
 }
 
 interface Utd {
@@ -44,7 +46,7 @@ interface Penarikan {
   status_penyelesaian: string;
   diproses_oleh: number;
   utd: Utd;
-  asalPjutd: Pjutd;
+  pjutd: Pjutd;
   user: any;
   created_at: string;
 }
@@ -59,8 +61,7 @@ const PenarikanPage: React.FC = () => {
   const [formData, setFormData] = useState({
     utd_id: '',
     alasan: '',
-    tanggal_penarikan: new Date().toISOString().split('T')[0],
-    status_penyelesaian: 'Tidak Tuntas'
+    tanggal_penarikan: new Date().toISOString().split('T')[0]
   });
 
   const currentUserStr = localStorage.getItem('user');
@@ -105,7 +106,7 @@ const PenarikanPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['penarikan'] });
       queryClient.invalidateQueries({ queryKey: ['utd'] });
       setIsModalOpen(false);
-      setFormData({ utd_id: '', alasan: '', tanggal_penarikan: new Date().toISOString().split('T')[0], status_penyelesaian: 'Tidak Tuntas' });
+      setFormData({ utd_id: '', alasan: '', tanggal_penarikan: new Date().toISOString().split('T')[0] });
       toast.success('Penarikan berhasil diproses');
     },
     onError: (error: any) => {
@@ -169,7 +170,6 @@ const PenarikanPage: React.FC = () => {
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Tanggal</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Ustadz Tugas</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Lembaga Asal</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Status Penyelesaian</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Alasan</th>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Diproses Oleh</th>
               </tr>
@@ -182,16 +182,7 @@ const PenarikanPage: React.FC = () => {
                     <div style={{ fontWeight: 500 }}>{penarikan.utd?.santri?.nama}</div>
                     <div style={{ fontSize: '0.75rem', color: '#64748b' }}>NIS: {penarikan.utd?.santri?.nis}</div>
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#ef4444' }}>{penarikan.pjutd?.yayasan || penarikan.pjutd?.nama_pjutd}</td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <span style={{ 
-                      padding: '4px 8px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 600,
-                      background: penarikan.status_penyelesaian === 'Tuntas' ? '#dcfce7' : '#fee2e2',
-                      color: penarikan.status_penyelesaian === 'Tuntas' ? '#166534' : '#991b1b'
-                    }}>
-                      {penarikan.status_penyelesaian || 'Tidak Tuntas'}
-                    </span>
-                  </td>
+                  <td style={{ padding: '12px 16px', color: '#ef4444' }}>{penarikan.pjutd?.nama_madrasah || penarikan.pjutd?.yayasan || penarikan.pjutd?.nama_pjutd}</td>
                   <td style={{ padding: '12px 16px', maxWidth: '200px' }}>
                     <div style={{ fontSize: '0.875rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={penarikan.alasan}>
                       {penarikan.alasan}
@@ -248,7 +239,7 @@ const PenarikanPage: React.FC = () => {
               >
                 <option value="">-- Pilih Ustadz --</option>
                 {availableUtd.map(u => (
-                  <option key={u.id} value={u.id}>{u.santri?.nama} - (Lembaga Saat Ini: {u.pjutd?.nama_pjutd})</option>
+                  <option key={u.id} value={u.id}>{u.santri?.nama} - (Lembaga Saat Ini: {u.pjutd?.nama_madrasah || u.pjutd?.yayasan || u.pjutd?.nama_pjutd})</option>
                 ))}
               </select>
             </div>

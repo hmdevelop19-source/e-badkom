@@ -28,6 +28,8 @@ interface Utd {
     id: number;
     kode_lembaga: string;
     nama_pjutd: string;
+    nama_madrasah?: string;
+    yayasan?: string;
   };
   tahun_ajaran?: {
     id: number;
@@ -185,7 +187,7 @@ const PenilaianPage: React.FC = () => {
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>NIS: {utd.santri?.nis}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.pjutd?.nama_pjutd}</div>
+                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.pjutd?.nama_madrasah || utd.pjutd?.yayasan || utd.pjutd?.nama_pjutd}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {utd.pjutd?.kode_lembaga}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
@@ -277,7 +279,7 @@ const PenilaianPage: React.FC = () => {
             <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '8px' }}>
               <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Menilai Santri:</div>
               <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{selectedUtd.santri?.nama} ({selectedUtd.santri?.nis})</div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Lokasi: {selectedUtd.pjutd?.nama_pjutd}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Lokasi: {selectedUtd.pjutd?.nama_madrasah || selectedUtd.pjutd?.yayasan || selectedUtd.pjutd?.nama_pjutd}</div>
             </div>
           )}
 

@@ -28,6 +28,7 @@ interface Utd {
     nama_pjutd: string;
     nama_madrasah?: string;
     yayasan?: string;
+    kode_lembaga?: string;
   };
 }
 

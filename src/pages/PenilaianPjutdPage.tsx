@@ -21,6 +21,8 @@ interface Pjutd {
   badkom?: {
     id: number;
     nama_pj: string;
+    kode_badkom: string;
+    wilayah_koordinasi: string;
   };
   penilaian_pjutds?: PenilaianPjutd[];
 }
@@ -192,7 +194,7 @@ const PenilaianPjutdPage: React.FC = () => {
                         <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {pjutd.kode_lembaga}</div>
                       </td>
                       <td style={{ padding: '16px 24px' }}>
-                        <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{pjutd.badkom?.nama_pj}</div>
+                        <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{pjutd.badkom?.wilayah_koordinasi ? `${pjutd.badkom.kode_badkom} - ${pjutd.badkom.wilayah_koordinasi}` : pjutd.badkom?.kode_badkom || '-'}</div>
                       </td>
                       <td style={{ padding: '16px 24px' }}>
                         {penilaian ? (

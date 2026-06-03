@@ -39,6 +39,8 @@ interface Santri {
       id: number;
       nama_pjutd: string;
       kode_lembaga: string;
+      nama_madrasah?: string;
+      yayasan?: string;
     };
     tahun_ajaran?: {
       id: number;
@@ -55,11 +57,15 @@ interface Santri {
       id: number;
       tanggal_mutasi: string;
       alasan: string;
-      asalPjutd: {
+      asal_pjutd?: {
         nama_pjutd: string;
+        nama_madrasah?: string;
+        yayasan?: string;
       };
-      tujuanPjutd: {
+      tujuan_pjutd?: {
         nama_pjutd: string;
+        nama_madrasah?: string;
+        yayasan?: string;
       };
     }>;
     status: string;
@@ -759,7 +765,7 @@ const SantriPage: React.FC = () => {
                           {utd.tahun_ajaran?.nama_tahun_ajaran || '-'}
                         </td>
                         <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
-                          <div style={{ fontWeight: 500 }}>{utd.pjutd?.nama_pjutd || '-'}</div>
+                          <div style={{ fontWeight: 500 }}>{utd.pjutd?.nama_madrasah || utd.pjutd?.yayasan || utd.pjutd?.nama_pjutd || '-'}</div>
                           <div style={{ color: 'var(--text-secondary)' }}>{utd.pjutd?.kode_lembaga}</div>
                         </td>
                         <td style={{ padding: '12px 20px', fontSize: '0.875rem' }}>
@@ -825,7 +831,7 @@ const SantriPage: React.FC = () => {
                                   <div key={mutasi.id} style={{ fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                       <span style={{ fontWeight: 600 }}>{new Date(mutasi.tanggal_mutasi).toLocaleDateString('id-ID')}</span>
-                                      <span style={{ color: '#ef4444' }}>{mutasi.asalPjutd.nama_pjutd} &rarr; <span style={{ color: '#10b981' }}>{mutasi.tujuanPjutd.nama_pjutd}</span></span>
+                                      <span style={{ color: '#ef4444' }}>{mutasi.asal_pjutd?.nama_madrasah || mutasi.asal_pjutd?.yayasan || mutasi.asal_pjutd?.nama_pjutd || '-'} &rarr; <span style={{ color: '#10b981' }}>{mutasi.tujuan_pjutd?.nama_madrasah || mutasi.tujuan_pjutd?.yayasan || mutasi.tujuan_pjutd?.nama_pjutd || '-'}</span></span>
                                     </div>
                                     <div style={{ color: '#64748b', fontSize: '0.75rem' }}>Alasan: {mutasi.alasan}</div>
                                   </div>
