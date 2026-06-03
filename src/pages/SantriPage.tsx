@@ -11,6 +11,7 @@ interface Santri {
   id: number;
   nis: string;
   nama: string;
+  keahlian?: string;
   status_santri?: string;
   nik?: string;
   jenis_kelamin?: string;
@@ -184,9 +185,7 @@ const SantriPage: React.FC = () => {
     formData.append('file', file);
 
     try {
-      await api.post('/santri/import/csv', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await api.post('/santri/import/csv', formData);
       queryClient.invalidateQueries({ queryKey: ['santri'] });
       toast.success('Data santri berhasil diimport');
     } catch (err) {
@@ -236,11 +235,7 @@ const SantriPage: React.FC = () => {
     formDataFile.append('file', file);
 
     try {
-      const response = await api.post('/santri/import/excel', formDataFile, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post('/santri/import/excel', formDataFile);
       toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: ['santri'] });
     } catch (error: any) {
@@ -607,6 +602,16 @@ const SantriPage: React.FC = () => {
                 />
               </div>
             </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '16px' }}>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KEAHLIAN KHUSUS (OPSIONAL)</label>
+              <input
+                type="text"
+                placeholder="Contoh: Qori, Kaligrafi, Bahasa Arab, dll"
+                value={formData.keahlian || ''}
+                onChange={(e) => setFormData({ ...formData, keahlian: e.target.value })}
+              />
+            </div>
           </div>
 
           {/* Section: Alamat Lengkap */}
@@ -707,6 +712,10 @@ const SantriPage: React.FC = () => {
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Jenis Kelamin</span>
                     <span style={{ fontWeight: 500 }}>{selectedSantri.jenis_kelamin === 'L' ? 'Laki-laki' : selectedSantri.jenis_kelamin === 'P' ? 'Perempuan' : '-'}</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Keahlian Khusus</span>
+                    <span style={{ fontWeight: 500 }}>{selectedSantri.keahlian || '-'}</span>
                   </div>
                 </div>
               </div>
