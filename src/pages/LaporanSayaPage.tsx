@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import { FileText, Plus, Search, Filter, AlertCircle, RefreshCcw, CheckCircle, Clock, Trash2, Edit3, Printer, FilePlus } from 'lucide-react';
+import { CetakLaporanWajibUtd } from '../components/CetakLaporanWajibUtd';
+import { CetakLaporanWajibPjutd } from '../components/CetakLaporanWajibPjutd';
 import Modal from '../components/Modal';
 
 interface Soal {
@@ -60,6 +62,8 @@ const LaporanSayaPage: React.FC = () => {
   const currentMonthYear = new Date().toISOString().slice(0, 7); // YYYY-MM
   const [selectedKategoriBulan, setSelectedKategoriBulan] = useState('Bulan Ke-1');
   const [selectedTahunAjaran, setSelectedTahunAjaran] = useState<number | ''>('');
+  const [printLaporan, setPrintLaporan] = useState<any>(null);
+  const [printBlankoType, setPrintBlankoType] = useState<'utd' | 'pjutd' | null>(null);
 
   const { data: settings = [] } = useQuery({
     queryKey: ['settings'],
@@ -71,6 +75,21 @@ const LaporanSayaPage: React.FC = () => {
 
   const maxBulanLaporan = settings.find((s: any) => s.key === 'max_bulan_laporan')?.value || 12;
   const KATEGORI_BULAN_OPTIONS = Array.from({ length: parseInt(maxBulanLaporan) }, (_, i) => `Bulan Ke-${i + 1}`);
+
+  useEffect(() => {
+    if (printLaporan || printBlankoType) {
+      setTimeout(() => window.print(), 500);
+    }
+  }, [printLaporan, printBlankoType]);
+
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setPrintLaporan(null);
+      setPrintBlankoType(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
 
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -176,8 +195,16 @@ const LaporanSayaPage: React.FC = () => {
   const myLaporanWajibList = laporanWajibList.filter(l => l.user?.id === currentUser?.id && l.tahun_ajaran_id === selectedTahunAjaran);
   const myLaporanMendesakList = laporanMendesakList.filter(l => l.user?.id === currentUser?.id && l.tahun_ajaran_id === selectedTahunAjaran);
 
+  const getKopUrl = (type: 'utd' | 'pjutd') => {
+    const key = type === 'utd' ? 'kop_laporan_utd' : 'kop_laporan_pjutd';
+    const path = settings.find((s: any) => s.key === key)?.value;
+    if (path) return import.meta.env.VITE_API_URL.replace('/api', '') + '/' + path;
+    return undefined;
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
@@ -247,6 +274,18 @@ const LaporanSayaPage: React.FC = () => {
                   )}
                 </div>
               </div>
+              
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '16px' }}>
+                {isSender && (
+                  <button 
+                    className="btn btn-outline" 
+                    onClick={() => setPrintBlankoType(currentUser?.level === 'utd' ? 'utd' : 'pjutd')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', fontSize: '0.875rem' }}
+                  >
+                    <FilePlus size={16} /> Cetak Blanko Laporan
+                  </button>
+                )}
+              </div>
             </div>
 
             {loadingWajib ? <p>Memuat riwayat...</p> : (
@@ -271,9 +310,18 @@ const LaporanSayaPage: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
-                        <CheckCircle size={14} /> Terkirim
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
+                          <CheckCircle size={14} /> Terkirim
+                        </span>
+                        <button 
+                          className="btn btn-primary" 
+                          onClick={() => setPrintLaporan(laporan)}
+                          style={{ padding: '6px 12px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          <Printer size={16} /> Cetak
+                        </button>
+                      </div>
                     </div>
                     <div>
                       {laporan.jawabans.map((j: any) => (
@@ -421,7 +469,40 @@ const LaporanSayaPage: React.FC = () => {
         </form>
       </Modal>
 
-    </div>
+      {/* Empty block to close the main div */}
+      </div>
+
+      {/* Print Areas */}
+      {(printLaporan || printBlankoType) && (
+        <div className="print-area">
+          {printLaporan && currentUser?.level === 'utd' && (
+            <CetakLaporanWajibUtd laporan={printLaporan} kopSuratUrl={getKopUrl('utd')} />
+          )}
+          {printLaporan && currentUser?.level === 'pjutd' && (
+            <CetakLaporanWajibPjutd laporan={printLaporan} kopSuratUrl={getKopUrl('pjutd')} />
+          )}
+          
+          {printBlankoType === 'utd' && !printLaporan && (
+            <CetakLaporanWajibUtd 
+              laporan={{
+                user: { fullname: currentUser?.fullname, santri: currentUser?.santri },
+                jawabans: []
+              }} 
+              kopSuratUrl={getKopUrl('utd')} 
+            />
+          )}
+          {printBlankoType === 'pjutd' && !printLaporan && (
+            <CetakLaporanWajibPjutd 
+              laporan={{
+                user: { fullname: currentUser?.fullname, pjutd: currentUser?.pjutd },
+                jawabans: []
+              }} 
+              kopSuratUrl={getKopUrl('pjutd')} 
+            />
+          )}
+        </div>
+      )}
+    </>
   );
 };
 

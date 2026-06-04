@@ -22,6 +22,38 @@
   box-sizing: border-box;
 }
 
+.bg-success-light { background: #dcfce7; }
+.bg-danger-light { background: #fee2e2; }
+
+/* PRINT STYLES FOR F4 SIZE */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  @page {
+    size: 215mm 330mm; /* F4 Folio Size */
+    margin: 0; 
+  }
+  .cetak-laporan-container {
+    width: 215mm !important;
+    height: 330mm !important;
+    padding: 10mm 15mm !important;
+    box-sizing: border-box;
+    page-break-after: always;
+  }
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--background);

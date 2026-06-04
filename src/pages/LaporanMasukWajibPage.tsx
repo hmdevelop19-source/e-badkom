@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../api/client';
-import { FileText, CheckCircle } from 'lucide-react';
+import { FileText, CheckCircle, Printer, FilePlus } from 'lucide-react';
+import { CetakLaporanWajibUtd } from '../components/CetakLaporanWajibUtd';
+import { CetakLaporanWajibPjutd } from '../components/CetakLaporanWajibPjutd';
 
 interface TahunAjaran {
   id: number;
@@ -27,6 +29,8 @@ interface LaporanWajib {
 const LaporanMasukWajibPage: React.FC = () => {
   const [selectedKategoriBulan, setSelectedKategoriBulan] = useState('Bulan Ke-1');
   const [selectedTahunAjaran, setSelectedTahunAjaran] = useState<number | ''>('');
+  const [printLaporan, setPrintLaporan] = useState<LaporanWajib | null>(null);
+  const [printBlankoType, setPrintBlankoType] = useState<'utd' | 'pjutd' | null>(null);
 
   const { data: settings = [] } = useQuery({
     queryKey: ['settings'],
@@ -63,6 +67,25 @@ const LaporanMasukWajibPage: React.FC = () => {
     }
   });
 
+  useEffect(() => {
+    if (printLaporan || printBlankoType) {
+      setTimeout(() => {
+        window.print();
+        // Option to reset state after printing could go here, but usually users close the print dialog.
+        // We'll reset it when the window gains focus just in case, or provide a close button.
+      }, 500);
+    }
+  }, [printLaporan, printBlankoType]);
+
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setPrintLaporan(null);
+      setPrintBlankoType(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
+
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
 
@@ -73,8 +96,16 @@ const LaporanMasukWajibPage: React.FC = () => {
     l.tahun_ajaran_id === selectedTahunAjaran
   );
 
+  const getKopUrl = (type: 'utd' | 'pjutd') => {
+    const key = type === 'utd' ? 'kop_laporan_utd' : 'kop_laporan_pjutd';
+    const path = settings.find((s: any) => s.key === key)?.value;
+    if (path) return import.meta.env.VITE_API_URL.replace('/api', '') + '/' + path;
+    return undefined;
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
@@ -110,6 +141,21 @@ const LaporanMasukWajibPage: React.FC = () => {
                 ))}
               </select>
             </div>
+            
+            <button 
+              className="btn btn-outline" 
+              onClick={() => setPrintBlankoType('utd')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', fontSize: '0.875rem' }}
+            >
+              <FilePlus size={16} /> Blanko UT-D
+            </button>
+            <button 
+              className="btn btn-outline" 
+              onClick={() => setPrintBlankoType('pjutd')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', fontSize: '0.875rem' }}
+            >
+              <FilePlus size={16} /> Blanko PJUT-D
+            </button>
           </div>
         </div>
 
@@ -139,9 +185,18 @@ const LaporanMasukWajibPage: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
-                    <CheckCircle size={14} /> Terkirim
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
+                      <CheckCircle size={14} /> Terkirim
+                    </span>
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => setPrintLaporan(laporan)}
+                      style={{ padding: '6px 12px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Printer size={16} /> Cetak
+                    </button>
+                  </div>
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -164,8 +219,39 @@ const LaporanMasukWajibPage: React.FC = () => {
           </div>
         )}
       </div>
-
-    </div>
+      </div>
+      
+      {/* Print Areas */}
+      {(printLaporan || printBlankoType) && (
+        <div className="print-area">
+          {printLaporan && printLaporan.user?.level === 'utd' && (
+            <CetakLaporanWajibUtd laporan={printLaporan} kopSuratUrl={getKopUrl('utd')} />
+          )}
+          {printLaporan && printLaporan.user?.level === 'pjutd' && (
+            <CetakLaporanWajibPjutd laporan={printLaporan} kopSuratUrl={getKopUrl('pjutd')} />
+          )}
+          
+          {printBlankoType === 'utd' && !printLaporan && (
+            <CetakLaporanWajibUtd 
+              laporan={{
+                user: { fullname: '.........................', santri: { desa: '................', kecamatan: '................' } },
+                jawabans: []
+              }} 
+              kopSuratUrl={getKopUrl('utd')} 
+            />
+          )}
+          {printBlankoType === 'pjutd' && !printLaporan && (
+            <CetakLaporanWajibPjutd 
+              laporan={{
+                user: { fullname: '.........................', pjutd: { nama_pjutd: '.........................', desa: '................', kecamatan: '................', nama_madrasah: '.........................' } },
+                jawabans: []
+              }} 
+              kopSuratUrl={getKopUrl('pjutd')} 
+            />
+          )}
+        </div>
+      )}
+    </>
   );
 };
 

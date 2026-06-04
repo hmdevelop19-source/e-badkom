@@ -9,8 +9,16 @@ const SettingsPage: React.FC = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [kopFile, setKopFile] = useState<File | null>(null);
   const [kopPreview, setKopPreview] = useState<string | null>(null);
+  const [kopLaporanUtdFile, setKopLaporanUtdFile] = useState<File | null>(null);
+  const [kopLaporanUtdPreview, setKopLaporanUtdPreview] = useState<string | null>(null);
+  const [kopLaporanPjutdFile, setKopLaporanPjutdFile] = useState<File | null>(null);
+  const [kopLaporanPjutdPreview, setKopLaporanPjutdPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputUtdRef = useRef<HTMLInputElement>(null);
+  const fileInputPjutdRef = useRef<HTMLInputElement>(null);
   const [isHoveringUpload, setIsHoveringUpload] = useState(false);
+  const [isHoveringUploadUtd, setIsHoveringUploadUtd] = useState(false);
+  const [isHoveringUploadPjutd, setIsHoveringUploadPjutd] = useState(false);
 
   const { data: settings = [], isLoading } = useQuery({
     queryKey: ['settings'],
@@ -64,6 +72,46 @@ const SettingsPage: React.FC = () => {
     }
   });
 
+  const uploadKopLaporanUtdMutation = useMutation({
+    mutationFn: (file: File) => {
+      const formPayload = new FormData();
+      formPayload.append('kop_laporan_utd', file);
+      return api.post('/settings/kop-laporan-utd', formPayload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      setKopLaporanUtdFile(null);
+      setMessage({ type: 'success', text: 'Kop Surat Laporan UT-D berhasil diunggah!' });
+      setTimeout(() => setMessage(null), 3000);
+    },
+    onError: (err: any) => {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Gagal mengunggah Kop Surat Laporan UT-D.' });
+      setTimeout(() => setMessage(null), 3000);
+    }
+  });
+
+  const uploadKopLaporanPjutdMutation = useMutation({
+    mutationFn: (file: File) => {
+      const formPayload = new FormData();
+      formPayload.append('kop_laporan_pjutd', file);
+      return api.post('/settings/kop-laporan-pjutd', formPayload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      setKopLaporanPjutdFile(null);
+      setMessage({ type: 'success', text: 'Kop Surat Laporan PJUT-D berhasil diunggah!' });
+      setTimeout(() => setMessage(null), 3000);
+    },
+    onError: (err: any) => {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Gagal mengunggah Kop Surat Laporan PJUT-D.' });
+      setTimeout(() => setMessage(null), 3000);
+    }
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = Object.keys(formData).map(key => ({
@@ -75,15 +123,26 @@ const SettingsPage: React.FC = () => {
     if (kopFile) {
       uploadKopMutation.mutate(kopFile);
     }
+    if (kopLaporanUtdFile) {
+      uploadKopLaporanUtdMutation.mutate(kopLaporanUtdFile);
+    }
+    if (kopLaporanPjutdFile) {
+      uploadKopLaporanPjutdMutation.mutate(kopLaporanPjutdFile);
+    }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'utama' | 'utd' | 'pjutd' = 'utama') => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setKopFile(file);
+      if (type === 'utama') setKopFile(file);
+      else if (type === 'utd') setKopLaporanUtdFile(file);
+      else if (type === 'pjutd') setKopLaporanPjutdFile(file);
+
       const reader = new FileReader();
       reader.onload = (e) => {
-        setKopPreview(e.target?.result as string);
+        if (type === 'utama') setKopPreview(e.target?.result as string);
+        else if (type === 'utd') setKopLaporanUtdPreview(e.target?.result as string);
+        else if (type === 'pjutd') setKopLaporanPjutdPreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -402,6 +461,106 @@ const SettingsPage: React.FC = () => {
               </div>
             </div>
 
+            <div style={{ height: '1px', background: '#f1f5f9' }}></div>
+
+            <div className="setting-row">
+              <div className="setting-label-group">
+                <h3>Kop Surat Laporan UT-D (Khusus Laporan Wajib)</h3>
+                <p>Kop surat spesifik untuk format laporan wajib dari Ustadz Tugas (UT-D).</p>
+              </div>
+              <div className="setting-input-group">
+                <input 
+                  type="file" 
+                  ref={fileInputUtdRef}
+                  style={{ display: 'none' }}
+                  accept="image/jpeg,image/png,image/jpg"
+                  onChange={(e) => handleFileChange(e, 'utd')}
+                />
+                
+                <div 
+                  className={`upload-zone ${isHoveringUploadUtd ? 'drag-active' : ''}`}
+                  onClick={() => fileInputUtdRef.current?.click()}
+                  onMouseEnter={() => setIsHoveringUploadUtd(true)}
+                  onMouseLeave={() => setIsHoveringUploadUtd(false)}
+                >
+                  {(kopLaporanUtdPreview || formData['kop_laporan_utd']) ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ padding: '8px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                        <img 
+                          src={kopLaporanUtdPreview || (import.meta.env.VITE_API_URL.replace('/api', '') + '/' + formData['kop_laporan_utd'])} 
+                          alt="Kop Laporan UT-D Preview" 
+                          style={{ maxWidth: '100%', maxHeight: '120px', objectFit: 'contain', borderRadius: '4px' }} 
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 600 }}>
+                        <Upload size={16} /> {kopLaporanUtdFile ? kopLaporanUtdFile.name : 'Klik untuk mengubah gambar'}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                        <ImageIcon size={24} />
+                      </div>
+                      <div>
+                        <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Klik untuk mengunggah</span> atau seret gambar ke sini
+                      </div>
+                      <div style={{ fontSize: '0.875rem' }}>PNG, JPG maksimal 2MB</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ height: '1px', background: '#f1f5f9' }}></div>
+
+            <div className="setting-row">
+              <div className="setting-label-group">
+                <h3>Kop Surat Laporan PJUT-D (Khusus Laporan Wajib)</h3>
+                <p>Kop surat spesifik untuk format laporan wajib dari Penanggung Jawab Ustadz Tugas Daerah (PJUT-D).</p>
+              </div>
+              <div className="setting-input-group">
+                <input 
+                  type="file" 
+                  ref={fileInputPjutdRef}
+                  style={{ display: 'none' }}
+                  accept="image/jpeg,image/png,image/jpg"
+                  onChange={(e) => handleFileChange(e, 'pjutd')}
+                />
+                
+                <div 
+                  className={`upload-zone ${isHoveringUploadPjutd ? 'drag-active' : ''}`}
+                  onClick={() => fileInputPjutdRef.current?.click()}
+                  onMouseEnter={() => setIsHoveringUploadPjutd(true)}
+                  onMouseLeave={() => setIsHoveringUploadPjutd(false)}
+                >
+                  {(kopLaporanPjutdPreview || formData['kop_laporan_pjutd']) ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ padding: '8px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                        <img 
+                          src={kopLaporanPjutdPreview || (import.meta.env.VITE_API_URL.replace('/api', '') + '/' + formData['kop_laporan_pjutd'])} 
+                          alt="Kop Laporan PJUT-D Preview" 
+                          style={{ maxWidth: '100%', maxHeight: '120px', objectFit: 'contain', borderRadius: '4px' }} 
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 600 }}>
+                        <Upload size={16} /> {kopLaporanPjutdFile ? kopLaporanPjutdFile.name : 'Klik untuk mengubah gambar'}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                        <ImageIcon size={24} />
+                      </div>
+                      <div>
+                        <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Klik untuk mengunggah</span> atau seret gambar ke sini
+                      </div>
+                      <div style={{ fontSize: '0.875rem' }}>PNG, JPG maksimal 2MB</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -414,7 +573,7 @@ const SettingsPage: React.FC = () => {
           <button 
             type="submit" 
             className="btn btn-primary" 
-            disabled={updateSettingsMutation.isPending || uploadKopMutation.isPending}
+            disabled={updateSettingsMutation.isPending || uploadKopMutation.isPending || uploadKopLaporanUtdMutation.isPending || uploadKopLaporanPjutdMutation.isPending}
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -427,7 +586,7 @@ const SettingsPage: React.FC = () => {
             }}
           >
             <Save size={20} />
-            {updateSettingsMutation.isPending || uploadKopMutation.isPending ? 'Menyimpan...' : 'Simpan Pengaturan'}
+            {updateSettingsMutation.isPending || uploadKopMutation.isPending || uploadKopLaporanUtdMutation.isPending || uploadKopLaporanPjutdMutation.isPending ? 'Menyimpan...' : 'Simpan Pengaturan'}
           </button>
         </div>
 
