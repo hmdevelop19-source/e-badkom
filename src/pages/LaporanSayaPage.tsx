@@ -206,19 +206,33 @@ const LaporanSayaPage: React.FC = () => {
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
+      {/* Segmented Control Tabs */}
+      <div style={{ display: 'flex', background: '#f8fafc', padding: '6px', borderRadius: '16px', gap: '8px', marginBottom: '8px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
         <button 
-          className="btn" 
-          style={{ background: activeTab === 'wajib' ? 'var(--primary-color)' : '#f1f5f9', color: activeTab === 'wajib' ? 'white' : '#475569' }}
           onClick={() => setActiveTab('wajib')}
+          style={{ 
+            padding: '10px 20px', 
+            borderRadius: '12px', 
+            background: activeTab === 'wajib' ? 'var(--primary)' : 'transparent',
+            color: activeTab === 'wajib' ? 'white' : '#64748b',
+            border: 'none',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', transition: 'all 0.3s'
+          }}
         >
           <FileText size={18} /> Laporan Wajib (Rutin)
         </button>
         <button 
-          className="btn" 
-          style={{ background: activeTab === 'mendesak' ? 'var(--primary-color)' : '#f1f5f9', color: activeTab === 'mendesak' ? 'white' : '#475569' }}
           onClick={() => setActiveTab('mendesak')}
+          style={{ 
+            padding: '10px 20px', 
+            borderRadius: '12px', 
+            background: activeTab === 'mendesak' ? 'var(--primary)' : 'transparent',
+            color: activeTab === 'mendesak' ? 'white' : '#64748b',
+            border: 'none',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', transition: 'all 0.3s'
+          }}
         >
           <AlertCircle size={18} /> Laporan Mendesak
         </button>
@@ -229,61 +243,73 @@ const LaporanSayaPage: React.FC = () => {
           
           {/* Pengumpulan / Riwayat Saya */}
           <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
-              <h3 style={{ margin: 0 }}>Laporan Wajib Saya</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(79, 70, 229, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <FileText size={24} />
+                </div>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Laporan Wajib Saya</h2>
+                  <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Kirim dan pantau riwayat laporan rutin Anda</div>
+                </div>
+              </div>
               
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '0.875rem', color: '#64748b' }}>T.A:</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>T.A:</span>
                   <select 
-                    className="form-control" 
+                    className="styled-input" 
                     value={selectedTahunAjaran} 
                     onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
-                    style={{ padding: '6px 12px' }}
+                    style={{ minWidth: '160px' }}
                   >
                     {tahunAjaranList.map(ta => (
                       <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
                     ))}
                   </select>
                 </div>
-                <select 
-                  className="form-control" 
-                  value={selectedKategoriBulan} 
-                  onChange={e => setSelectedKategoriBulan(e.target.value)}
-                  style={{ padding: '6px 12px' }}
-                >
-                  {KATEGORI_BULAN_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                  {isSender && selectedTahunAjaran === activeTahunAjaran?.id && !hasSubmittedWajib && currentJadwal && (
-                    <span style={{ fontSize: '0.75rem', color: isLate ? '#ef4444' : '#64748b' }}>
-                      Batas Akhir: {new Date(currentJadwal.batas_tanggal).toLocaleDateString('id-ID')} {isLate && '(Terlambat)'}
-                    </span>
-                  )}
-                  {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                    <button 
-                      className="btn btn-primary" 
-                      onClick={() => { setJawabanForm({}); setIsSubmitWajibModalOpen(true); }}
-                      disabled={hasSubmittedWajib}
-                      style={{ padding: '6px 16px' }}
-                    >
-                      {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan Ini'}
-                    </button>
-                  )}
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Bulan:</span>
+                  <select 
+                    className="styled-input" 
+                    value={selectedKategoriBulan} 
+                    onChange={e => setSelectedKategoriBulan(e.target.value)}
+                    style={{ minWidth: '120px' }}
+                  >
+                    {KATEGORI_BULAN_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
                 </div>
-              </div>
-              
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '16px' }}>
+
                 {isSender && (
                   <button 
                     className="btn btn-outline" 
                     onClick={() => setPrintBlankoType(currentUser?.level === 'utd' ? 'utd' : 'pjutd')}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', fontSize: '0.875rem' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600 }}
                   >
-                    <FilePlus size={16} /> Cetak Blanko Laporan
+                    <FilePlus size={18} /> Cetak Blanko
                   </button>
+                )}
+
+                {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
+                  <div style={{ position: 'relative' }}>
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => { setJawabanForm({}); setIsSubmitWajibModalOpen(true); }}
+                      disabled={hasSubmittedWajib}
+                      style={{ padding: '10px 20px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center', boxShadow: hasSubmittedWajib ? 'none' : '0 4px 12px rgba(79, 70, 229, 0.3)' }}
+                    >
+                      <Plus size={18} />
+                      {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan'}
+                    </button>
+                    {!hasSubmittedWajib && currentJadwal && (
+                      <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, fontSize: '0.75rem', color: isLate ? '#ef4444' : '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                        Batas: {new Date(currentJadwal.batas_tanggal).toLocaleDateString('id-ID')} {isLate && '(Terlambat)'}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -291,50 +317,62 @@ const LaporanSayaPage: React.FC = () => {
             {loadingWajib ? <p>Memuat riwayat...</p> : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).map(laporan => (
-                  <div key={laporan.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
-                      <div>
-                        <strong>{laporan.kategori_bulan}</strong> 
-                        <span style={{ color: '#94a3b8', fontSize: '0.875rem', marginLeft: '8px' }}>(Dikirim: {laporan.bulan_tahun})</span>
+                  <div key={laporan.id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', background: 'white', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', transition: 'all 0.3s' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ background: 'rgba(79, 70, 229, 0.1)', color: 'var(--primary)', padding: '10px', borderRadius: '10px' }}>
+                          <FileText size={24} />
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1.1rem' }}>{laporan.kategori_bulan}</div> 
+                          <div style={{ color: '#94a3b8', fontSize: '0.875rem', marginTop: '2px' }}>Dikirim: {laporan.bulan_tahun}</div>
+                        </div>
                         {laporan.status_waktu && (
                           <span style={{ 
                             marginLeft: '8px', 
-                            padding: '2px 8px', 
-                            borderRadius: '12px', 
-                            fontSize: '0.7rem', 
+                            padding: '4px 12px', 
+                            borderRadius: '20px', 
+                            fontSize: '0.75rem', 
                             fontWeight: 600,
                             background: laporan.status_waktu === 'Tepat Waktu' ? '#ecfdf5' : '#fef2f2',
-                            color: laporan.status_waktu === 'Tepat Waktu' ? '#10b981' : '#ef4444'
+                            color: laporan.status_waktu === 'Tepat Waktu' ? '#10b981' : '#ef4444',
+                            border: `1px solid ${laporan.status_waktu === 'Tepat Waktu' ? '#a7f3d0' : '#fecaca'}`,
+                            display: 'flex', alignItems: 'center', gap: '4px'
                           }}>
+                            {laporan.status_waktu === 'Tepat Waktu' ? <CheckCircle size={12} /> : <AlertCircle size={12} />}
                             {laporan.status_waktu}
                           </span>
                         )}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ color: 'green', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
-                          <CheckCircle size={14} /> Terkirim
+                        <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600, background: '#ecfdf5', padding: '8px 12px', borderRadius: '8px' }}>
+                          <CheckCircle size={16} /> Terkirim
                         </span>
                         <button 
-                          className="btn btn-primary" 
+                          className="btn btn-outline" 
                           onClick={() => setPrintLaporan(laporan)}
-                          style={{ padding: '6px 12px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                          style={{ padding: '8px 16px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, borderRadius: '8px' }}
                         >
                           <Printer size={16} /> Cetak
                         </button>
                       </div>
                     </div>
-                    <div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
                       {laporan.jawabans.map((j: any) => (
-                        <div key={j.id} style={{ marginBottom: '12px' }}>
-                          <div style={{ fontSize: '0.875rem', color: '#64748b' }}>Q: {j.soal_laporan?.pertanyaan}</div>
-                          <div>A: {j.jawaban}</div>
+                        <div key={j.id} style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>{j.soal_laporan?.pertanyaan}</div>
+                          <div style={{ color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: '1.4' }}>{j.jawaban || '-'}</div>
                         </div>
                       ))}
                     </div>
                   </div>
                 ))}
                 {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).length === 0 && (
-                  <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>Anda belum mengisi laporan untuk {selectedKategoriBulan} pada Tahun Ajaran ini.</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                    <FileText size={48} style={{ color: '#cbd5e1', marginBottom: '16px' }} />
+                    <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Belum Ada Laporan</h3>
+                    <p style={{ color: '#64748b', textAlign: 'center', margin: 0 }}>Anda belum mengisi laporan untuk {selectedKategoriBulan} pada Tahun Ajaran ini.</p>
+                  </div>
                 )}
               </div>
             )}
@@ -344,22 +382,38 @@ const LaporanSayaPage: React.FC = () => {
 
       {activeTab === 'mendesak' && (
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
-            <h3 style={{ margin: 0 }}>Laporan Mendesak Saya</h3>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.875rem', color: '#64748b' }}>Tahun Ajaran:</span>
-              <select 
-                className="form-control" 
-                value={selectedTahunAjaran} 
-                onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
-                style={{ padding: '6px 12px' }}
-              >
-                {tahunAjaranList.map(ta => (
-                  <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
-                ))}
-              </select>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <AlertCircle size={24} />
+              </div>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Laporan Mendesak</h2>
+                <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Laporan khusus untuk kejadian luar biasa / insidental</div>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>T.A:</span>
+                <select 
+                  className="styled-input" 
+                  value={selectedTahunAjaran} 
+                  onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
+                  style={{ minWidth: '160px' }}
+                >
+                  {tahunAjaranList.map(ta => (
+                    <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
+                  ))}
+                </select>
+              </div>
+              
               {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                <button className="btn btn-primary" onClick={() => setIsMendesakModalOpen(true)}>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => setIsMendesakModalOpen(true)}
+                  style={{ padding: '10px 20px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center', background: '#ef4444', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)' }}
+                >
                   <AlertCircle size={18} /> Buat Laporan Mendesak
                 </button>
               )}
@@ -369,28 +423,47 @@ const LaporanSayaPage: React.FC = () => {
           {loadingMendesak ? <p>Memuat laporan...</p> : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {myLaporanMendesakList.map(laporan => (
-                <div key={laporan.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', background: laporan.status_penyelesaian === 'Selesai' ? '#f8fafc' : '#fff' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <h4 style={{ margin: 0, color: 'var(--text-primary)' }}>{laporan.judul}</h4>
+                <div key={laporan.id} style={{ 
+                  border: '1px solid #e2e8f0', 
+                  borderRadius: '12px', 
+                  padding: '24px', 
+                  background: laporan.status_penyelesaian === 'Selesai' ? '#f8fafc' : 'white',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                  transition: 'all 0.3s'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '16px' }}>
+                    <div>
+                      <h4 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)', fontSize: '1.1rem' }}>{laporan.judul}</h4>
+                      <div style={{ fontSize: '0.875rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Clock size={14} /> {new Date(laporan.created_at).toLocaleString('id-ID')}
+                      </div>
+                    </div>
                     <span style={{ 
-                      padding: '4px 10px', 
-                      borderRadius: '16px', 
+                      padding: '6px 12px', 
+                      borderRadius: '20px', 
                       fontSize: '0.75rem', 
-                      fontWeight: 600,
+                      fontWeight: 700,
                       background: laporan.status_penyelesaian === 'Menunggu' ? '#fee2e2' : laporan.status_penyelesaian === 'Diproses' ? '#fef3c7' : '#dcfce7',
                       color: laporan.status_penyelesaian === 'Menunggu' ? '#b91c1c' : laporan.status_penyelesaian === 'Diproses' ? '#b45309' : '#15803d',
+                      border: `1px solid ${laporan.status_penyelesaian === 'Menunggu' ? '#fecaca' : laporan.status_penyelesaian === 'Diproses' ? '#fde68a' : '#bbf7d0'}`,
+                      whiteSpace: 'nowrap'
                     }}>
                       {laporan.status_penyelesaian}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '12px' }}>
-                    Dikirim: {new Date(laporan.created_at).toLocaleString('id-ID')}
+                  <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <p style={{ fontSize: '0.95rem', margin: 0, whiteSpace: 'pre-wrap', color: 'var(--text-primary)', lineHeight: '1.5' }}>
+                      {laporan.isi_laporan}
+                    </p>
                   </div>
-                  <p style={{ fontSize: '0.875rem', margin: '0 0 16px 0', whiteSpace: 'pre-wrap' }}>{laporan.isi_laporan}</p>
                 </div>
               ))}
               {myLaporanMendesakList.length === 0 && (
-                <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>Anda belum membuat laporan mendesak pada Tahun Ajaran ini.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                  <AlertCircle size={48} style={{ color: '#cbd5e1', marginBottom: '16px' }} />
+                  <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Belum Ada Laporan Mendesak</h3>
+                  <p style={{ color: '#64748b', textAlign: 'center', margin: 0 }}>Anda belum membuat laporan mendesak pada Tahun Ajaran ini.</p>
+                </div>
               )}
             </div>
           )}
@@ -401,29 +474,38 @@ const LaporanSayaPage: React.FC = () => {
       <Modal isOpen={isSubmitWajibModalOpen} onClose={() => setIsSubmitWajibModalOpen(false)} title={`Isi Laporan Wajib - ${selectedKategoriBulan}`}>
         <form onSubmit={handleWajibSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {loadingMySoal ? <p>Memuat pertanyaan...</p> : mySoal.length === 0 ? <p>Belum ada soal aktif untuk level Anda.</p> : (
-            mySoal.map(soal => (
-              <div key={soal.id} className="form-group">
-                <label className="form-label">{soal.pertanyaan}</label>
+            mySoal.map((soal, index) => (
+              <div key={soal.id} style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', fontSize: '0.95rem' }}>
+                  {index + 1}. {soal.pertanyaan}
+                </label>
                 {soal.tipe_soal === 'uraian' ? (
                   <textarea 
-                    className="form-control" 
-                    rows={3} 
+                    className="styled-input" 
+                    rows={4} 
                     required 
                     onChange={e => setJawabanForm({...jawabanForm, [soal.id]: e.target.value})}
+                    placeholder="Tulis jawaban Anda di sini..."
+                    style={{ width: '100%', resize: 'vertical' }}
                   />
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {soal.opsi_jawaban?.map((opsi, idx) => (
-                      <label key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '0.875rem', cursor: 'pointer', margin: 0 }}>
+                      <label key={idx} style={{ 
+                        display: 'flex', alignItems: 'center', gap: '12px', 
+                        padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', 
+                        background: 'white', cursor: 'pointer', transition: 'all 0.2s',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                      }}>
                         <input 
                           type="radio" 
                           name={`soal_${soal.id}`} 
                           value={opsi} 
                           required 
                           onChange={e => setJawabanForm({...jawabanForm, [soal.id]: e.target.value})}
-                          style={{ width: 'auto', marginTop: '4px', flexShrink: 0 }}
+                          style={{ width: '18px', height: '18px', cursor: 'pointer', margin: 0 }}
                         />
-                        <span style={{ lineHeight: '1.5' }}>{opsi}</span>
+                        <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>{opsi}</span>
                       </label>
                     ))}
                   </div>
@@ -432,39 +514,47 @@ const LaporanSayaPage: React.FC = () => {
             ))
           )}
           
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
-            <button type="button" className="btn" onClick={() => setIsSubmitWajibModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn btn-primary" disabled={mySoal.length === 0 || submitWajibMutation.isPending}>Kirim Laporan</button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
+            <button type="button" className="btn btn-outline" onClick={() => setIsSubmitWajibModalOpen(false)} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600 }}>Batal</button>
+            <button type="submit" className="btn btn-primary" disabled={mySoal.length === 0 || submitWajibMutation.isPending} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <CheckCircle size={18} /> Kirim Laporan
+            </button>
           </div>
         </form>
       </Modal>
 
       {/* Modal Isi Laporan Mendesak */}
       <Modal isOpen={isMendesakModalOpen} onClose={() => setIsMendesakModalOpen(false)} title="Buat Laporan Mendesak">
-        <form onSubmit={handleMendesakSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="form-group">
-            <label className="form-label">Judul Masalah / Laporan</label>
+        <form onSubmit={handleMendesakSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>Judul Masalah / Laporan</label>
             <input 
               type="text" 
-              className="form-control" 
+              className="styled-input" 
               value={mendesakForm.judul}
               onChange={e => setMendesakForm({...mendesakForm, judul: e.target.value})}
               required 
+              placeholder="Contoh: Atap asrama bocor..."
+              style={{ width: '100%' }}
             />
           </div>
-          <div className="form-group">
-            <label className="form-label">Deskripsi Lengkap</label>
+          <div>
+            <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>Deskripsi Lengkap</label>
             <textarea 
-              className="form-control" 
-              rows={5} 
+              className="styled-input" 
+              rows={6} 
               value={mendesakForm.isi_laporan}
               onChange={e => setMendesakForm({...mendesakForm, isi_laporan: e.target.value})}
               required 
+              placeholder="Jelaskan secara detail mengenai kejadian tersebut..."
+              style={{ width: '100%', resize: 'vertical' }}
             />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
-            <button type="button" className="btn" onClick={() => setIsMendesakModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn btn-primary" disabled={submitMendesakMutation.isPending}>Kirim Laporan</button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
+            <button type="button" className="btn btn-outline" onClick={() => setIsMendesakModalOpen(false)} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600 }}>Batal</button>
+            <button type="submit" className="btn btn-primary" disabled={submitMendesakMutation.isPending} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600, background: '#ef4444', border: 'none', display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <AlertCircle size={18} /> Kirim Laporan
+            </button>
           </div>
         </form>
       </Modal>
