@@ -66,6 +66,16 @@ const PenilaianPage: React.FC = () => {
     }
   });
 
+  const { data: settings = [] } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const response = await api.get('/settings');
+      return response.data;
+    }
+  });
+
+  const isPenilaianOpened = settings.find((s: any) => s.key === 'is_penilaian_opened')?.value === 'true';
+
   const { data: utds = [], isLoading } = useQuery<Utd[]>({
     queryKey: ['utd', selectedTahunAjaranId],
     queryFn: async () => {
@@ -161,6 +171,11 @@ const PenilaianPage: React.FC = () => {
       </div>
 
       <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+        {!isPenilaianOpened && (
+          <div style={{ padding: '16px', background: '#fff3cd', color: '#856404', borderBottom: '1px solid #ffeeba', fontSize: '0.875rem' }}>
+            <strong>Informasi:</strong> Akses penilaian saat ini sedang ditutup. Penilaian hanya dapat dilakukan pada bulan terakhir tahun ajaran.
+          </div>
+        )}
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
             <tr>
@@ -224,9 +239,13 @@ const PenilaianPage: React.FC = () => {
                         style={{ 
                           padding: '8px 12px', 
                           background: utd.penilaian ? '#f1f5f9' : undefined, 
-                          color: utd.penilaian ? '#475569' : undefined 
+                          color: utd.penilaian ? '#475569' : undefined,
+                          opacity: !isPenilaianOpened ? 0.5 : 1,
+                          cursor: !isPenilaianOpened ? 'not-allowed' : 'pointer'
                         }}
                         onClick={() => openPenilaianModal(utd)}
+                        disabled={!isPenilaianOpened}
+                        title={!isPenilaianOpened ? "Penilaian sedang ditutup" : ""}
                       >
                         {utd.penilaian ? (
                           <>

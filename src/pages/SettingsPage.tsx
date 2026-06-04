@@ -169,6 +169,23 @@ const SettingsPage: React.FC = () => {
             />
           </div>
 
+          {/* Status Akses Penilaian Akhir Tahun */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Status Akses Penilaian Akhir Tahun</label>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
+              Buka saklar ini ketika sudah memasuki akhir tahun ajaran (bulan terakhir pelaporan) untuk mengizinkan Wilayah & PJU-TD memberikan penilaian akhir.
+            </p>
+            <select 
+              className="form-control" 
+              value={formData['is_penilaian_opened'] || 'false'} 
+              onChange={(e) => handleInputChange('is_penilaian_opened', e.target.value)}
+              style={{ maxWidth: '200px' }}
+            >
+              <option value="false">🔒 Ditutup</option>
+              <option value="true">🔓 Dibuka</option>
+            </select>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed var(--border)' }}>
             <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Gambar Kop Surat (PDF)</label>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '16px' }}>
