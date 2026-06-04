@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { Settings, Save, Upload, Image as ImageIcon } from 'lucide-react';
+import { Settings, Save, Upload, Image as ImageIcon, CheckCircle, Shield, FileText, Calendar } from 'lucide-react';
 
 const SettingsPage: React.FC = () => {
   const queryClient = useQueryClient();
@@ -10,6 +10,7 @@ const SettingsPage: React.FC = () => {
   const [kopFile, setKopFile] = useState<File | null>(null);
   const [kopPreview, setKopPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isHoveringUpload, setIsHoveringUpload] = useState(false);
 
   const { data: settings = [], isLoading } = useQuery({
     queryKey: ['settings'],
@@ -39,14 +40,15 @@ const SettingsPage: React.FC = () => {
     },
     onError: (err: any) => {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Gagal menyimpan pengaturan.' });
+      setTimeout(() => setMessage(null), 3000);
     }
   });
 
   const uploadKopMutation = useMutation({
     mutationFn: (file: File) => {
-      const formData = new FormData();
-      formData.append('kop_surat', file);
-      return api.post('/settings/kop', formData, {
+      const formPayload = new FormData();
+      formPayload.append('kop_surat', file);
+      return api.post('/settings/kop', formPayload, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
     },
@@ -58,6 +60,7 @@ const SettingsPage: React.FC = () => {
     },
     onError: (err: any) => {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Gagal mengunggah Kop Surat.' });
+      setTimeout(() => setMessage(null), 3000);
     }
   });
 
@@ -91,151 +94,344 @@ const SettingsPage: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat pengaturan...</div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: 'var(--text-secondary)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          <p>Memuat Pengaturan Sistem...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px', margin: '0 auto' }}>
-      <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
-          <Settings size={24} style={{ color: 'var(--primary)' }} />
-          <h2 style={{ margin: 0 }}>Pengaturan Sistem</h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '900px', margin: '0 auto', animation: 'fadeIn 0.5s ease' }}>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .setting-section {
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          overflow: hidden;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          border: 1px solid #f1f5f9;
+        }
+        .setting-section:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+        }
+        .setting-header {
+          padding: 24px;
+          border-bottom: 1px solid #f1f5f9;
+          background: #f8fafc;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .setting-body {
+          padding: 32px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
+        .setting-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 32px;
+          align-items: start;
+        }
+        @media (max-width: 768px) {
+          .setting-row {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+        }
+        .setting-label-group h3 {
+          margin: 0 0 8px 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        .setting-label-group p {
+          margin: 0;
+          font-size: 0.875rem;
+          color: var(--text-secondary);
+          line-height: 1.5;
+        }
+        .setting-input-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .styled-input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 1rem;
+          transition: all 0.2s ease;
+          background: #f8fafc;
+        }
+        .styled-input:focus {
+          background: white;
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+          outline: none;
+        }
+        .styled-select {
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 16px center;
+          padding-right: 48px;
+        }
+        .upload-zone {
+          border: 2px dashed #cbd5e1;
+          border-radius: 12px;
+          padding: 32px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          background: #f8fafc;
+          position: relative;
+          overflow: hidden;
+        }
+        .upload-zone:hover, .upload-zone.drag-active {
+          border-color: var(--primary);
+          background: #f0fdf4;
+        }
+        .floating-save {
+          position: sticky;
+          bottom: 24px;
+          z-index: 50;
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(8px);
+          padding: 16px 24px;
+          border-radius: 16px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+      `}</style>
+
+      <div>
+        <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>Pengaturan Sistem</h1>
+        <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '1.1rem' }}>Kelola preferensi dan konfigurasi global aplikasi E-Badkom.</p>
+      </div>
+      
+      {message && (
+        <div style={{ 
+          padding: '16px 24px', 
+          borderRadius: '12px', 
+          background: message.type === 'success' ? '#dcfce7' : '#fee2e2',
+          color: message.type === 'success' ? '#166534' : '#991b1b',
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          animation: 'fadeIn 0.3s ease'
+        }}>
+          {message.type === 'success' ? <CheckCircle size={20} /> : <Shield size={20} />}
+          {message.text}
         </div>
+      )}
+
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         
-        {message && (
-          <div style={{ 
-            padding: '12px 16px', 
-            borderRadius: '8px', 
-            marginBottom: '24px',
-            background: message.type === 'success' ? '#dcfce7' : '#fee2e2',
-            color: message.type === 'success' ? '#166534' : '#991b1b',
-            fontWeight: 500
-          }}>
-            {message.text}
+        {/* Section: Penilaian & Laporan */}
+        <div className="setting-section">
+          <div className="setting-header">
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(79, 70, 229, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Calendar size={20} />
+            </div>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Laporan & Penilaian</h2>
           </div>
-        )}
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Target Tugas Wajib */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Target Penilaian Lulus (Tugas Wajib UTD)</label>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
-              Jumlah minimum nilai "Lulus" yang harus dicapai Santri (dan divalidasi oleh Wilayah/Pusat) agar status tanggungannya dianggap selesai.
-            </p>
-            <input 
-              type="number" 
-              className="form-control" 
-              value={formData['target_tugas_wajib'] || ''} 
-              onChange={(e) => handleInputChange('target_tugas_wajib', e.target.value)}
-              min="1"
-              max="20"
-              required
-              style={{ maxWidth: '200px' }}
-            />
-          </div>
-
-          {/* Jumlah Maksimal Bulan Laporan */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Jumlah Maksimal Bulan Laporan</label>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
-              Batas jumlah laporan wajib bulanan (contoh: 10 untuk lapor selama 10 bulan). Opsi bulan pada form laporan akan menyesuaikan nilai ini.
-            </p>
-            <input 
-              type="number" 
-              className="form-control" 
-              value={formData['max_bulan_laporan'] || ''} 
-              onChange={(e) => handleInputChange('max_bulan_laporan', e.target.value)}
-              min="1"
-              max="24"
-              required
-              style={{ maxWidth: '200px' }}
-            />
-          </div>
-
-          {/* Nama Koordinator Tugas */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Nama Koordinator Tugas & Da'i</label>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
-              Nama penanggung jawab yang akan menandatangani Surat Kelulusan Tugas (Surat Boyong).
-            </p>
-            <input 
-              type="text" 
-              className="form-control" 
-              value={formData['nama_koordinator_tugas'] || ''} 
-              onChange={(e) => handleInputChange('nama_koordinator_tugas', e.target.value)}
-              placeholder="Contoh: SAIFUL BARI"
-              required
-              style={{ maxWidth: '400px' }}
-            />
-          </div>
-
-          {/* Status Akses Penilaian Akhir Tahun */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Status Akses Penilaian Akhir Tahun</label>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
-              Buka saklar ini ketika sudah memasuki akhir tahun ajaran (bulan terakhir pelaporan) untuk mengizinkan Wilayah & PJU-TD memberikan penilaian akhir.
-            </p>
-            <select 
-              className="form-control" 
-              value={formData['is_penilaian_opened'] || 'false'} 
-              onChange={(e) => handleInputChange('is_penilaian_opened', e.target.value)}
-              style={{ maxWidth: '200px' }}
-            >
-              <option value="false">🔒 Ditutup</option>
-              <option value="true">🔓 Dibuka</option>
-            </select>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed var(--border)' }}>
-            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Gambar Kop Surat (PDF)</label>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '16px' }}>
-              Unggah gambar yang akan menjadi Kop Surat untuk seluruh dokumen PDF (Surat Lulus, Laporan, dll). Rasio memanjang disarankan.
-            </p>
+          <div className="setting-body">
             
-            {(kopPreview || formData['kop_surat']) && (
-              <div style={{ marginBottom: '16px', border: '1px solid var(--border)', padding: '16px', borderRadius: '8px', background: '#f8fafc', display: 'flex', justifyContent: 'center' }}>
-                <img 
-                  src={kopPreview || (import.meta.env.VITE_API_URL.replace('/api', '') + '/' + formData['kop_surat'])} 
-                  alt="Kop Preview" 
-                  style={{ maxWidth: '100%', maxHeight: '150px', objectFit: 'contain' }} 
+            <div className="setting-row">
+              <div className="setting-label-group">
+                <h3>Target Penilaian Lulus</h3>
+                <p>Jumlah minimum nilai "Lulus" yang harus dicapai Santri dari tugas UT-D agar status tanggungannya dianggap selesai.</p>
+              </div>
+              <div className="setting-input-group">
+                <input 
+                  type="number" 
+                  className="styled-input" 
+                  value={formData['target_tugas_wajib'] || ''} 
+                  onChange={(e) => handleInputChange('target_tugas_wajib', e.target.value)}
+                  min="1" max="20" required
                 />
               </div>
-            )}
-            
-            <div>
-              <input 
-                type="file" 
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                accept="image/jpeg,image/png,image/jpg"
-                onChange={handleFileChange}
-              />
-              <button 
-                type="button"
-                className="btn btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {kopFile ? <ImageIcon size={18} /> : <Upload size={18} />}
-                {kopFile ? 'Ubah Pilihan Gambar' : 'Pilih Gambar Kop Baru'}
-              </button>
-              {kopFile && <span style={{ marginLeft: '12px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{kopFile.name} (siap disimpan)</span>}
             </div>
-          </div>
 
-          <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              disabled={updateSettingsMutation.isPending || uploadKopMutation.isPending}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 24px' }}
-            >
-              <Save size={18} />
-              {updateSettingsMutation.isPending || uploadKopMutation.isPending ? 'Menyimpan...' : 'Simpan Pengaturan'}
-            </button>
+            <div style={{ height: '1px', background: '#f1f5f9' }}></div>
+
+            <div className="setting-row">
+              <div className="setting-label-group">
+                <h3>Jumlah Maksimal Bulan Laporan</h3>
+                <p>Batas jumlah laporan wajib bulanan. Dropdown bulan pada form pelaporan akan otomatis menyesuaikan batas ini.</p>
+              </div>
+              <div className="setting-input-group">
+                <input 
+                  type="number" 
+                  className="styled-input" 
+                  value={formData['max_bulan_laporan'] || ''} 
+                  onChange={(e) => handleInputChange('max_bulan_laporan', e.target.value)}
+                  min="1" max="24" required
+                />
+              </div>
+            </div>
+
           </div>
-        </form>
-      </div>
+        </div>
+
+        {/* Section: Akses & Keamanan */}
+        <div className="setting-section">
+          <div className="setting-header">
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Shield size={20} />
+            </div>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Akses & Keamanan</h2>
+          </div>
+          <div className="setting-body">
+            
+            <div className="setting-row">
+              <div className="setting-label-group">
+                <h3>Akses Penilaian Akhir Tahun</h3>
+                <p>Buka saklar ini hanya ketika memasuki akhir tahun ajaran. Ini akan memberikan izin kepada PJU-TD dan Wilayah untuk memberikan nilai kelulusan akhir.</p>
+              </div>
+              <div className="setting-input-group">
+                <select 
+                  className="styled-input styled-select" 
+                  value={formData['is_penilaian_opened'] || 'false'} 
+                  onChange={(e) => handleInputChange('is_penilaian_opened', e.target.value)}
+                  style={{ 
+                    background: formData['is_penilaian_opened'] === 'true' ? '#ecfdf5' : '#fff1f2',
+                    borderColor: formData['is_penilaian_opened'] === 'true' ? '#10b981' : '#ef4444',
+                    color: formData['is_penilaian_opened'] === 'true' ? '#065f46' : '#991b1b',
+                    fontWeight: 600
+                  }}
+                >
+                  <option value="false">🔒 Ditutup (Terkunci)</option>
+                  <option value="true">🔓 Dibuka (Bisa Dinilai)</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Section: Dokumen & Surat */}
+        <div className="setting-section">
+          <div className="setting-header">
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FileText size={20} />
+            </div>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Dokumen & Persuratan</h2>
+          </div>
+          <div className="setting-body">
+            
+            <div className="setting-row">
+              <div className="setting-label-group">
+                <h3>Koordinator Tugas & Da'i</h3>
+                <p>Nama penanggung jawab yang akan dicetak dan menandatangani Surat Kelulusan Tugas (Surat Boyong).</p>
+              </div>
+              <div className="setting-input-group">
+                <input 
+                  type="text" 
+                  className="styled-input" 
+                  value={formData['nama_koordinator_tugas'] || ''} 
+                  onChange={(e) => handleInputChange('nama_koordinator_tugas', e.target.value)}
+                  placeholder="Contoh: UST. SAIFUL BARI"
+                  required
+                />
+              </div>
+            </div>
+
+            <div style={{ height: '1px', background: '#f1f5f9' }}></div>
+
+            <div className="setting-row">
+              <div className="setting-label-group">
+                <h3>Kop Surat Resmi (PDF/Cetak)</h3>
+                <p>Unggah gambar dengan resolusi tinggi (rasio memanjang) yang akan digunakan sebagai kop surat resmi di seluruh dokumen aplikasi.</p>
+              </div>
+              <div className="setting-input-group">
+                <input 
+                  type="file" 
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  accept="image/jpeg,image/png,image/jpg"
+                  onChange={handleFileChange}
+                />
+                
+                <div 
+                  className={`upload-zone ${isHoveringUpload ? 'drag-active' : ''}`}
+                  onClick={() => fileInputRef.current?.click()}
+                  onMouseEnter={() => setIsHoveringUpload(true)}
+                  onMouseLeave={() => setIsHoveringUpload(false)}
+                >
+                  {(kopPreview || formData['kop_surat']) ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ padding: '8px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                        <img 
+                          src={kopPreview || (import.meta.env.VITE_API_URL.replace('/api', '') + '/' + formData['kop_surat'])} 
+                          alt="Kop Preview" 
+                          style={{ maxWidth: '100%', maxHeight: '120px', objectFit: 'contain', borderRadius: '4px' }} 
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 600 }}>
+                        <Upload size={16} /> {kopFile ? kopFile.name : 'Klik untuk mengubah gambar'}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                        <ImageIcon size={24} />
+                      </div>
+                      <div>
+                        <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Klik untuk mengunggah</span> atau seret gambar ke sini
+                      </div>
+                      <div style={{ fontSize: '0.875rem' }}>PNG, JPG maksimal 2MB</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Floating Save Button */}
+        <div className="floating-save">
+          <div>
+            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Simpan Perubahan</div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Jangan lupa menyimpan setelah mengubah konfigurasi.</div>
+          </div>
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            disabled={updateSettingsMutation.isPending || uploadKopMutation.isPending}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              padding: '12px 32px',
+              fontSize: '1rem',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
+              borderRadius: '30px'
+            }}
+          >
+            <Save size={20} />
+            {updateSettingsMutation.isPending || uploadKopMutation.isPending ? 'Menyimpan...' : 'Simpan Pengaturan'}
+          </button>
+        </div>
+
+      </form>
     </div>
   );
 };
