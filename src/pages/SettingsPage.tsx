@@ -134,6 +134,24 @@ const SettingsPage: React.FC = () => {
             />
           </div>
 
+          {/* Jumlah Maksimal Bulan Laporan */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Jumlah Maksimal Bulan Laporan</label>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '8px' }}>
+              Batas jumlah laporan wajib bulanan (contoh: 10 untuk lapor selama 10 bulan). Opsi bulan pada form laporan akan menyesuaikan nilai ini.
+            </p>
+            <input 
+              type="number" 
+              className="form-control" 
+              value={formData['max_bulan_laporan'] || ''} 
+              onChange={(e) => handleInputChange('max_bulan_laporan', e.target.value)}
+              min="1"
+              max="24"
+              required
+              style={{ maxWidth: '200px' }}
+            />
+          </div>
+
           {/* Nama Koordinator Tugas */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Nama Koordinator Tugas & Da'i</label>

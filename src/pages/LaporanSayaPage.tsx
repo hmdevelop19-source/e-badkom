@@ -43,7 +43,7 @@ interface LaporanMendesak {
   tahunAjaran?: TahunAjaran;
 }
 
-const KATEGORI_BULAN_OPTIONS = Array.from({ length: 12 }, (_, i) => `Bulan Ke-${i + 1}`);
+
 
 const LaporanSayaPage: React.FC = () => {
   const queryClient = useQueryClient();
@@ -60,6 +60,17 @@ const LaporanSayaPage: React.FC = () => {
   const currentMonthYear = new Date().toISOString().slice(0, 7); // YYYY-MM
   const [selectedKategoriBulan, setSelectedKategoriBulan] = useState('Bulan Ke-1');
   const [selectedTahunAjaran, setSelectedTahunAjaran] = useState<number | ''>('');
+
+  const { data: settings = [] } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const response = await api.get('/settings');
+      return response.data;
+    }
+  });
+
+  const maxBulanLaporan = settings.find((s: any) => s.key === 'max_bulan_laporan')?.value || 12;
+  const KATEGORI_BULAN_OPTIONS = Array.from({ length: parseInt(maxBulanLaporan) }, (_, i) => `Bulan Ke-${i + 1}`);
 
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;

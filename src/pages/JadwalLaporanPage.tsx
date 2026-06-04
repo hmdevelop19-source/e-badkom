@@ -8,18 +8,26 @@ interface JadwalLaporan {
   batas_tanggal: string;
 }
 
-const KATEGORI_BULAN_OPTIONS = Array.from({ length: 12 }, (_, i) => `Bulan Ke-${i + 1}`);
-
-const initialJadwals = KATEGORI_BULAN_OPTIONS.reduce((acc, cat) => {
-  acc[cat] = '';
-  return acc;
-}, {} as Record<string, string>);
-
 const JadwalLaporanPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<string>('');
-  
-  const [jadwals, setJadwals] = useState<Record<string, string>>(initialJadwals);
+  const [jadwals, setJadwals] = useState<Record<string, string>>({});
+
+  const { data: settings = [] } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const response = await api.get('/settings');
+      return response.data;
+    }
+  });
+
+  const maxBulanLaporan = settings.find((s: any) => s.key === 'max_bulan_laporan')?.value || 12;
+  const KATEGORI_BULAN_OPTIONS = Array.from({ length: parseInt(maxBulanLaporan) }, (_, i) => `Bulan Ke-${i + 1}`);
+
+  const initialJadwals = KATEGORI_BULAN_OPTIONS.reduce((acc, cat) => {
+    acc[cat] = '';
+    return acc;
+  }, {} as Record<string, string>);
 
   const { data: tahunAjarans = [] } = useQuery({
     queryKey: ['tahun-ajaran'],
@@ -53,7 +61,7 @@ const JadwalLaporanPage: React.FC = () => {
     } else {
       setJadwals(initialJadwals);
     }
-  }, [jadwalData]);
+  }, [jadwalData, maxBulanLaporan]);
 
   useEffect(() => {
     if (tahunAjarans.length > 0 && !selectedTahunAjaranId) {

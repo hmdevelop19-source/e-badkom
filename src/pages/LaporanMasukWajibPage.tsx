@@ -22,11 +22,22 @@ interface LaporanWajib {
   tahunAjaran?: TahunAjaran;
 }
 
-const KATEGORI_BULAN_OPTIONS = Array.from({ length: 12 }, (_, i) => `Bulan Ke-${i + 1}`);
+
 
 const LaporanMasukWajibPage: React.FC = () => {
   const [selectedKategoriBulan, setSelectedKategoriBulan] = useState('Bulan Ke-1');
   const [selectedTahunAjaran, setSelectedTahunAjaran] = useState<number | ''>('');
+
+  const { data: settings = [] } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const response = await api.get('/settings');
+      return response.data;
+    }
+  });
+
+  const maxBulanLaporan = settings.find((s: any) => s.key === 'max_bulan_laporan')?.value || 12;
+  const KATEGORI_BULAN_OPTIONS = Array.from({ length: parseInt(maxBulanLaporan) }, (_, i) => `Bulan Ke-${i + 1}`);
 
   const { data: tahunAjaranList = [] } = useQuery<TahunAjaran[]>({
     queryKey: ['tahun_ajaran'],
