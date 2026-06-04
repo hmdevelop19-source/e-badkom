@@ -72,8 +72,8 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
             </tr>
             <tr>
               <td></td>
-              <td style={{ width: '30%' }}>1. Nama</td>
-              <td>: {user?.fullname || '...................................................'}</td>
+              <td style={{ width: '35%' }}>1. Nama</td>
+              <td>: {user?.fullname || '...................................................'} Umur : ........... tahun</td>
             </tr>
             <tr>
               <td></td>
@@ -86,7 +86,7 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
               <td>: {getSStatus('wajib')} / {getSStatus("tathawwu'")} / {getSStatus("qadha'")} *)</td>
             </tr>
 
-            <tr><td colSpan={3} style={{ height: '10px' }}></td></tr>
+            <tr><td colSpan={3} style={{ height: '5px' }}></td></tr>
 
             <tr>
               <td style={{ verticalAlign: 'top', fontWeight: 'bold' }}>B.</td>
@@ -94,18 +94,23 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
             </tr>
             <tr>
               <td></td>
-              <td>1. Bertempat di instansi</td>
-              <td>: {getAnswer(1) || pjutd?.nama_madrasah || pjutd?.yayasan || '...................................................'}</td>
+              <td>1. Bertempat di Madrasah</td>
+              <td>: {pjutd?.nama_madrasah || pjutd?.yayasan || '...................................................'}</td>
             </tr>
             <tr>
               <td></td>
-              <td>2. Alamat Instansi</td>
+              <td>2. Alamat Madrasah</td>
               <td>: {pjutd?.desa || '.............................'}, {pjutd?.kecamatan || '.............................'}</td>
             </tr>
             <tr>
               <td></td>
               <td>3. Nama Penanggung Jawab</td>
               <td>: {pjutd?.nama_pjutd || '...................................................'}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>4. Nama Kepala Madrasah</td>
+              <td>: {pjutd?.nama_kepala_madrasah || '...................................................'}</td>
             </tr>
 
             <tr><td colSpan={3} style={{ height: '4px' }}></td></tr>
@@ -116,28 +121,77 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
             </tr>
             <tr>
               <td></td>
-              <td>1. Dimanfaatkan sebagai</td>
-              <td>: <S id={2} k="Wali" t="guru wali kelas" /> / <S id={2} k="Guru Fan" t="guru fan kelas" /> / <S id={2} k="Administrasi" t="tenaga administrasi" /> *)</td>
+              <td>1. Dimanfaatkan sebagai guru wali kelas</td>
+              <td>: <S id={2} k="1" t="1" />/<S id={2} k="2" t="2" />/<S id={2} k="3" t="3" />/<S id={2} k="4" t="4" />/<S id={2} k="5" t="5" />/<S id={2} k="6" t="6" /> *) tingkat : <S id={1} k="MI" t="MI" /> / <S id={1} k="MTs" t="MTs" /> / <S id={1} k="MA" t="MA" /> *)</td>
             </tr>
             <tr>
               <td></td>
-              <td>2. Kelas yang dimasuki berisi</td>
-              <td>: <S id={3} k="Banin" t="Banin" /> / <S id={3} k="Banat" t="Banat" /> / <S id={3} k="Campuran" t="Campuran" /> *)</td>
+              <td>2. Dimanfaatkan sebagai guru fan kelas</td>
+              <td>: <S id={4} k="1" t="1" />/<S id={4} k="2" t="2" />/<S id={4} k="3" t="3" />/<S id={4} k="4" t="4" />/<S id={4} k="5" t="5" />/<S id={4} k="6" t="6" /> *) tingkat : <S id={3} k="MI" t="MI" /> / <S id={3} k="MTs" t="MTs" /> / <S id={3} k="MA" t="MA" /> *)</td>
             </tr>
             <tr>
               <td></td>
-              <td>3. Masuk kelas setiap hari</td>
-              <td>: {getAnswer(4) || '.......'} jam pelajaran</td>
+              <td>3. Kelas yang dimasuki berisi murid</td>
+              <td>: <S id={5} k="Banin" t="Banin" /> / <S id={5} k="Banat" t="Banat" /> / <S id={5} k="Campuran" t="Campuran" /> *)</td>
             </tr>
             <tr>
               <td></td>
-              <td>4. Tidak masuk karena sakit</td>
-              <td>: {getAnswer(5) || '.......'} kali</td>
+              <td>4. Bulan ini masuk kelas sebanyak</td>
+              <td>: {getAnswer(6) || '.......'} hari = {getAnswer(7) || '.......'} jam pelajaran</td>
             </tr>
             <tr>
               <td></td>
-              <td>5. Tidak masuk karena pulang</td>
-              <td>: {getAnswer(6) || '.......'} kali</td>
+              <td>5. Tidak masuk kelas karena sakit</td>
+              <td>: {getAnswer(8) || '.......'} hari = {getAnswer(9) || '.......'} jam pelajaran</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>6. Tidak masuk kelas karena pulang</td>
+              <td>: {getAnswer(10) || '.......'} hari = {getAnswer(11) || '.......'} jam pelajaran</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>7. Tidak masuk kelas karena udzur lain</td>
+              <td>: {getAnswer(12) || '.......'} hari = {getAnswer(13) || '.......'} jam pelajaran</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>8. Jumlah tidak masuk selama satu bulan</td>
+              <td>: {getAnswer(14) || '.......'} hari = {getAnswer(15) || '.......'} jam pelajaran</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>9. Jumlah jam wajib mengajar bulan ini</td>
+              <td>: {getAnswer(16) || '.......'} hari = {getAnswer(17) || '.......'} jam pelajaran</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>10. Jumlah jam wajib mengajar sepekan</td>
+              <td>: {getAnswer(18) || '.......'} hari = {getAnswer(19) || '.......'} jam pelajaran</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td colSpan={2}>11. Menangani administrasi sekolah berupa :</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style={{ paddingLeft: '15px' }}>a. Absensi murid</td>
+              <td>: <S id={20} k="Ikut" t="ikut" /> / <S id={20} k="Tidak ikut" t="tidak ikut" /> *)</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style={{ paddingLeft: '15px' }}>b. Buku raport</td>
+              <td>: <S id={21} k="Ikut" t="ikut" /> / <S id={21} k="Tidak ikut" t="tidak ikut" /> *)</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style={{ paddingLeft: '15px' }}>c. Buku tabungan</td>
+              <td>: <S id={22} k="Ikut" t="ikut" /> / <S id={22} k="Tidak ikut" t="tidak ikut" /> *)</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style={{ paddingLeft: '15px' }}>d. {getAnswer(23) ? getAnswer(23).split('-')[0] || getAnswer(23) : '.........................................'}</td>
+              <td>: <S id={23} k="Ikut" t="ikut" /> / <S id={23} k="Tidak ikut" t="tidak ikut" /> *)</td>
             </tr>
 
             <tr><td colSpan={3} style={{ height: '4px' }}></td></tr>
@@ -148,9 +202,28 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
             </tr>
             <tr>
               <td></td>
-              <td colSpan={2}>
-                Pilihan Kegiatan: {getAnswer(7) || '_____________________________________'}
-              </td>
+              <td>1. Mengajar Al-Qur'an bil-tartil</td>
+              <td>: <S id={24} k="Ya" t="ya" /> / <S id={24} k="Tidak" t="tidak" /> *) ........... jam (<S id={25} k="Pagi" t="pagi" />/ <S id={25} k="Siang" t="siang" />/ <S id={25} k="Malam" t="malam" /> *)</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>2. Mengajar kitab</td>
+              <td>: <S id={26} k="Ya" t="ya" /> / <S id={26} k="Tidak" t="tidak" /> *) ........... jam (<S id={27} k="Pagi" t="pagi" />/ <S id={27} k="Siang" t="siang" />/ <S id={27} k="Malam" t="malam" /> *)</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>3. Ditunjuk sebagai imam rowatib</td>
+              <td>: <S id={28} k="Ya" t="ya" /> / <S id={28} k="Tidak" t="tidak" /> *) di <S id={29} k="Masjid" t="Masjid" /> / <S id={29} k="Musholla" t="Musholla" /> / <S id={29} k="Surau" t="Surau" /> *)</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>4. {getAnswer(30) || '...................................................'}</td>
+              <td>: </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>5. {getAnswer(31) || '...................................................'}</td>
+              <td>: </td>
             </tr>
 
             <tr><td colSpan={3} style={{ height: '4px' }}></td></tr>
@@ -162,22 +235,22 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
             <tr>
               <td></td>
               <td>1. Komunikasi dengan PJUT-D</td>
-              <td>: <S id={8} k="Sering" t="sering" /> / <S id={8} k="Jarang" t="jarang" /> / <S id={8} k="Tidak" t="tidak pernah" /> *)</td>
+              <td>: <S id={32} k="Sering" t="sering" /> / <S id={32} k="Jarang" t="jarang" /> / <S id={32} k="Tidak pernah" t="tidak pernah" /> *)</td>
             </tr>
             <tr>
               <td></td>
-              <td>2. Komunikasi dengan K. Madrasah</td>
-              <td>: <S id={9} k="Sering" t="sering" /> / <S id={9} k="Jarang" t="jarang" /> / <S id={9} k="Tidak" t="tidak pernah" /> *)</td>
+              <td>2. Komunikasi dengan Kepala Madrasah</td>
+              <td>: <S id={33} k="Sering" t="sering" /> / <S id={33} k="Jarang" t="jarang" /> / <S id={33} k="Tidak pernah" t="tidak pernah" /> *)</td>
             </tr>
             <tr>
               <td></td>
-              <td>3. Komunikasi dengan guru lain</td>
-              <td>: <S id={10} k="Sering" t="sering" /> / <S id={10} k="Jarang" t="jarang" /> / <S id={10} k="Tidak" t="tidak pernah" /> *)</td>
+              <td>3. Komunikasi dengan guru yang lain</td>
+              <td>: <S id={34} k="Sering" t="sering" /> / <S id={34} k="Jarang" t="jarang" /> / <S id={34} k="Tidak pernah" t="tidak pernah" /> *)</td>
             </tr>
             <tr>
               <td></td>
-              <td>4. Komunikasi dengan masyarakat</td>
-              <td>: <S id={11} k="Sering" t="sering" /> / <S id={11} k="Jarang" t="jarang" /> / <S id={11} k="Tidak" t="tidak pernah" /> *)</td>
+              <td>4. Komunikasi dengan masyrakat umum</td>
+              <td>: <S id={35} k="Sering" t="sering" /> / <S id={35} k="Jarang" t="jarang" /> / <S id={35} k="Tidak pernah" t="tidak pernah" /> *)</td>
             </tr>
 
             <tr><td colSpan={3} style={{ height: '4px' }}></td></tr>
@@ -189,12 +262,17 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
             <tr>
               <td></td>
               <td>1. Bisyaroh dari PJUT-D bulan ini</td>
-              <td>: Rp. {getAnswer(12) || '.....................................'}</td>
+              <td>: Rp. {getAnswer(36) || '.....................................'}</td>
             </tr>
             <tr>
               <td></td>
               <td>2. Tunjangan lain</td>
-              <td>: Rp. {getAnswer(13) || '.....................................'}</td>
+              <td>: Rp. {getAnswer(37) || '.....................................'}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>3. {getAnswer(38) ? getAnswer(38).split('-')[0] : '.....................................'}</td>
+              <td>: Rp. {getAnswer(38) ? getAnswer(38).split('-')[1] || '' : '.....................................'}</td>
             </tr>
 
             <tr><td colSpan={3} style={{ height: '4px' }}></td></tr>
@@ -206,8 +284,9 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
             <tr>
               <td></td>
               <td colSpan={2}>
-                <div style={{ borderBottom: '1px dotted black', minHeight: '20px' }}>{getAnswer(14)}</div>
-                <div style={{ borderBottom: '1px dotted black', minHeight: '20px' }}></div>
+                1. {getAnswer(39) ? getAnswer(39).split('\n')[0] : '......................................................................................................'}<br/>
+                2. {getAnswer(39) ? getAnswer(39).split('\n')[1] || '......................................................................................................' : '......................................................................................................'}<br/>
+                3. {getAnswer(39) ? getAnswer(39).split('\n')[2] || '......................................................................................................' : '......................................................................................................'}
               </td>
             </tr>
 
@@ -215,13 +294,14 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
 
             <tr>
               <td style={{ verticalAlign: 'top', fontWeight: 'bold' }}>H.</td>
-              <td colSpan={2} style={{ fontWeight: 'bold' }}>LAIN-LAIN (Kritik & Saran) :</td>
+              <td colSpan={2} style={{ fontWeight: 'bold' }}>LAIN-LAIN :</td>
             </tr>
             <tr>
               <td></td>
               <td colSpan={2}>
-                <div style={{ borderBottom: '1px dotted black', minHeight: '20px' }}>{getAnswer(15)}</div>
-                <div style={{ borderBottom: '1px dotted black', minHeight: '20px' }}></div>
+                1. {getAnswer(40) ? getAnswer(40).split('\n')[0] : '......................................................................................................'}<br/>
+                2. {getAnswer(40) ? getAnswer(40).split('\n')[1] || '......................................................................................................' : '......................................................................................................'}<br/>
+                3. {getAnswer(40) ? getAnswer(40).split('\n')[2] || '......................................................................................................' : '......................................................................................................'}
               </td>
             </tr>
           </tbody>
@@ -235,11 +315,11 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
                 <td>: .......................................</td>
               </tr>
               <tr>
-                <td>Pada tanggal</td>
+                <td>Hari & Tanggal</td>
                 <td>: {laporan.created_at ? new Date(laporan.created_at).toLocaleDateString('id-ID') : '.......................................'}</td>
               </tr>
               <tr>
-                <td colSpan={2} style={{ textAlign: 'center', paddingTop: '10px', paddingBottom: '30px' }}>Pelapor,</td>
+                <td colSpan={2} style={{ textAlign: 'center', paddingTop: '10px', paddingBottom: '30px' }}>Pelapor</td>
               </tr>
               <tr>
                 <td colSpan={2} style={{ textAlign: 'center' }}>( {user?.fullname || '.......................................'} )</td>
@@ -253,7 +333,7 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl }) 
           <ol style={{ paddingLeft: '15px', margin: '3px 0' }}>
             <li>Laporan dibuat-buat adalah dusta dan khianat</li>
             <li>Tanda *) adalah coret yang tidak perlu</li>
-            <li>Bila laporan tidak cukup bisa ditambah dengan kertas lain</li>
+            <li>Bila laporan tidak cukup bias ditambah dengan kertas lain</li>
             <li>Laporan kertas putih dikirim ke Badkom Wilayah</li>
             <li>Laporan kertas hijau sebagai arsip pribadi</li>
           </ol>
