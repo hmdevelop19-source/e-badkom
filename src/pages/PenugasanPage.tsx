@@ -408,56 +408,58 @@ const PenugasanPage: React.FC = () => {
             </div>
           )}
 
-          {formData.santri_ids.map((s_id, index) => (
-            <div className="form-group" key={index}>
-              <label className="form-label">Santri {formData.santri_ids.length > 1 ? index + 1 : ''}</label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ flex: 1 }}>
-                  <SearchableSelect 
-                    options={santris
-                      .filter((s: any) => !utds.some(u => u.santri_id === s.id) || s.id === s_id)
-                      .map((s: any) => ({ value: s.id, label: `${s.nis} - ${s.nama}` }))}
-                    value={s_id}
-                    onChange={(val) => {
+          <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {formData.santri_ids.map((s_id, index) => (
+              <div className="form-group" key={index} style={{ marginBottom: 0 }}>
+                <label className="form-label">Santri {formData.santri_ids.length > 1 ? index + 1 : ''}</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ flex: 1 }}>
+                    <SearchableSelect 
+                      options={santris
+                        .filter((s: any) => !utds.some(u => u.santri_id === s.id) || s.id === s_id)
+                        .map((s: any) => ({ value: s.id, label: `${s.nis} - ${s.nama}` }))}
+                      value={s_id}
+                      onChange={(val) => {
+                        const newIds = [...formData.santri_ids];
+                        newIds[index] = Number(val);
+                        setFormData({...formData, santri_ids: newIds});
+                      }}
+                      placeholder="-- Cari dan Pilih Santri --"
+                      required
+                    />
+                  </div>
+                  {!formData.id && formData.santri_ids.length > 1 && (
+                    <button type="button" className="btn" style={{ background: '#fef2f2', color: '#ef4444', padding: '0 12px' }} onClick={() => {
                       const newIds = [...formData.santri_ids];
-                      newIds[index] = Number(val);
+                      newIds.splice(index, 1);
                       setFormData({...formData, santri_ids: newIds});
-                    }}
-                    placeholder="-- Cari dan Pilih Santri --"
-                    required
-                  />
+                    }}>
+                      <Trash2 size={18} />
+                    </button>
+                  )}
                 </div>
-                {!formData.id && formData.santri_ids.length > 1 && (
-                  <button type="button" className="btn" style={{ background: '#fef2f2', color: '#ef4444', padding: '0 12px' }} onClick={() => {
-                    const newIds = [...formData.santri_ids];
-                    newIds.splice(index, 1);
-                    setFormData({...formData, santri_ids: newIds});
-                  }}>
-                    <Trash2 size={18} />
-                  </button>
-                )}
               </div>
+            ))}
+
+            {!formData.id && (
+              <button type="button" className="btn" style={{ background: '#ffffff', border: '1px dashed #cbd5e1', color: '#475569', alignSelf: 'flex-start', fontSize: '0.875rem' }} onClick={() => {
+                setFormData({...formData, santri_ids: [...formData.santri_ids, undefined]});
+              }}>
+                + Tambah Santri Lain
+              </button>
+            )}
+
+            <div className="form-group" style={{ marginBottom: 0, marginTop: '8px' }}>
+              <label className="form-label">PJ UTD (Lokasi Tugas)</label>
+              <SearchableSelect 
+                options={pjutds
+                  .map((p: any) => ({ value: p.id, label: `${p.kode_lembaga} - ${p.nama_madrasah || p.yayasan || p.nama_pjutd}` }))}
+                value={formData.pjutd_id}
+                onChange={(val) => setFormData({...formData, pjutd_id: Number(val)})}
+                placeholder="-- Cari dan Pilih PJ UTD --"
+                required
+              />
             </div>
-          ))}
-
-          {!formData.id && (
-            <button type="button" className="btn" style={{ background: '#f1f5f9', color: '#475569', alignSelf: 'flex-start' }} onClick={() => {
-              setFormData({...formData, santri_ids: [...formData.santri_ids, undefined]});
-            }}>
-              + Tambah Santri Lain
-            </button>
-          )}
-
-          <div className="form-group">
-            <label className="form-label">PJ UTD (Lokasi Tugas)</label>
-            <SearchableSelect 
-              options={pjutds
-                .map((p: any) => ({ value: p.id, label: `${p.kode_lembaga} - ${p.nama_madrasah || p.yayasan || p.nama_pjutd}` }))}
-              value={formData.pjutd_id}
-              onChange={(val) => setFormData({...formData, pjutd_id: Number(val)})}
-              placeholder="-- Cari dan Pilih PJ UTD --"
-              required
-            />
           </div>
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }}>

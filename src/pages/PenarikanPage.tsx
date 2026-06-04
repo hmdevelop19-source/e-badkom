@@ -5,6 +5,7 @@ import { RefreshCcw, Plus, AlertCircle } from 'lucide-react';
 import Modal from '../components/Modal';
 import { TablePagination } from '../components/TablePagination';
 import toast from 'react-hot-toast';
+import { SearchableSelect } from '../components/SearchableSelect';
 
 interface TahunAjaran {
   id: number;
@@ -325,22 +326,19 @@ const PenarikanPage: React.FC = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="form-group">
+          <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">Pilih Ustadz Tugas (Yang Sedang Bertugas)</label>
-              <select 
-                className="form-control" 
-                required 
-                value={formData.utd_id}
-                onChange={e => setFormData({...formData, utd_id: e.target.value})}
-              >
-                <option value="">-- Pilih Ustadz --</option>
-                {availableUtd.map(u => (
-                  <option key={u.id} value={u.id}>{u.santri?.nama} - (Lembaga Saat Ini: {u.pjutd?.nama_madrasah || u.pjutd?.yayasan || u.pjutd?.nama_pjutd})</option>
-                ))}
-              </select>
+              <SearchableSelect
+                options={availableUtd.map(u => ({ value: u.id, label: `${u.santri?.nama} - (Saat ini: ${u.pjutd?.nama_madrasah || u.pjutd?.yayasan || u.pjutd?.nama_pjutd})` }))}
+                value={formData.utd_id ? Number(formData.utd_id) : undefined}
+                onChange={(val) => setFormData({...formData, utd_id: val.toString()})}
+                placeholder="-- Cari dan Pilih Ustadz --"
+                required
+              />
             </div>
 
-            <div className="form-group">
+            <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">Tanggal Penarikan</label>
               <input 
                 type="date" 
@@ -351,19 +349,18 @@ const PenarikanPage: React.FC = () => {
               />
             </div>
 
-
-
-            <div className="form-group">
+            <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">Alasan Penarikan</label>
               <textarea 
                 className="form-control" 
-                rows={4} 
+                rows={3} 
                 required 
                 placeholder="Jelaskan alasan pemindahan tugas secara detail..."
                 value={formData.alasan}
                 onChange={e => setFormData({...formData, alasan: e.target.value})}
               />
             </div>
+          </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
               <button type="button" className="btn" onClick={() => setIsModalOpen(false)}>Batal</button>

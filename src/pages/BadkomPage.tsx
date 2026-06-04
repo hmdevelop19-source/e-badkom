@@ -470,7 +470,7 @@ const BadkomPage: React.FC = () => {
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Identitas Badkom</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KODE BADKOM *</label>
+                <label className="form-label">KODE BADKOM *</label>
                 <input 
                   type="text" 
                   placeholder="Misal: BDK-01" 
@@ -480,7 +480,7 @@ const BadkomPage: React.FC = () => {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>CAKUPAN WILAYAH KOORDINASI *</label>
+                <label className="form-label">CAKUPAN WILAYAH KOORDINASI *</label>
                 <input 
                   type="text" 
                   placeholder="Misal: Kecamatan A dan B" 
@@ -497,7 +497,7 @@ const BadkomPage: React.FC = () => {
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Data Penanggung Jawab (PJ)</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NAMA LENGKAP PJ *</label>
+                <label className="form-label">NAMA LENGKAP PJ *</label>
                 <input 
                   type="text" 
                   placeholder="Nama Lengkap Penanggung Jawab" 
@@ -508,7 +508,7 @@ const BadkomPage: React.FC = () => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>ALAMAT EMAIL</label>
+                  <label className="form-label">ALAMAT EMAIL</label>
                   <input 
                     type="email" 
                     placeholder="email@contoh.com" 
@@ -517,7 +517,7 @@ const BadkomPage: React.FC = () => {
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NOMOR HP / WHATSAPP</label>
+                  <label className="form-label">NOMOR HP / WHATSAPP</label>
                   <input 
                     type="text" 
                     placeholder="Mulai dengan 62xxx" 
@@ -534,7 +534,7 @@ const BadkomPage: React.FC = () => {
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Alamat</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>ALAMAT KANTOR / BADKOM</label>
+                <label className="form-label">ALAMAT KANTOR / BADKOM</label>
                 <textarea 
                   placeholder="Detail Alamat (Jalan, RT/RW, Desa)" 
                   value={formData.alamat || ''}

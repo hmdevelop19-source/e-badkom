@@ -578,7 +578,7 @@ const PjutdPage: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KODE LEMBAGA *</label>
+                  <label className="form-label">KODE LEMBAGA *</label>
                   <input 
                     type="text" 
                     placeholder="Misal: UTD-01" 
@@ -588,7 +588,7 @@ const PjutdPage: React.FC = () => {
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NAMA PJ UTD *</label>
+                  <label className="form-label">NAMA PJ UTD *</label>
                   <input 
                     type="text" 
                     placeholder="Nama lengkap penanggung jawab" 
@@ -600,7 +600,7 @@ const PjutdPage: React.FC = () => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NAMA MADRASAH</label>
+                  <label className="form-label">NAMA MADRASAH</label>
                   <input 
                     type="text" 
                     placeholder="Nama Madrasah" 
@@ -609,7 +609,7 @@ const PjutdPage: React.FC = () => {
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NAMA YAYASAN</label>
+                  <label className="form-label">NAMA YAYASAN</label>
                   <input 
                     type="text" 
                     placeholder="Nama Yayasan" 
@@ -626,7 +626,7 @@ const PjutdPage: React.FC = () => {
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Induk & Kontak</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>BADAN KOORDINASI (BADKOM) *</label>
+                <label className="form-label">BADAN KOORDINASI (BADKOM) *</label>
                 <select 
                   value={formData.badkom_id || ''} 
                   onChange={(e) => setFormData({ ...formData, badkom_id: Number(e.target.value) })}
@@ -639,7 +639,7 @@ const PjutdPage: React.FC = () => {
                 </select>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NOMOR HP</label>
+                <label className="form-label">NOMOR HP</label>
                 <input 
                   type="text" 
                   placeholder="Mulai dengan 62xxx" 
@@ -656,7 +656,7 @@ const PjutdPage: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>PROVINSI</label>
+                  <label className="form-label">PROVINSI</label>
                   <select 
                     value={formData.id_prov || ''} 
                     onChange={(e) => setFormData({ ...formData, id_prov: Number(e.target.value), id_kab: undefined, id_kec: undefined, id_kel: undefined })}
@@ -668,7 +668,7 @@ const PjutdPage: React.FC = () => {
                   </select>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KABUPATEN / KOTA</label>
+                  <label className="form-label">KABUPATEN / KOTA</label>
                   <select 
                     value={formData.id_kab || ''} 
                     onChange={(e) => setFormData({ ...formData, id_kab: Number(e.target.value), id_kec: undefined, id_kel: undefined })}
@@ -681,7 +681,7 @@ const PjutdPage: React.FC = () => {
                   </select>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KECAMATAN</label>
+                  <label className="form-label">KECAMATAN</label>
                   <select 
                     value={formData.id_kec || ''} 
                     onChange={(e) => setFormData({ ...formData, id_kec: Number(e.target.value), id_kel: undefined })}
@@ -694,7 +694,7 @@ const PjutdPage: React.FC = () => {
                   </select>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KELURAHAN / DESA</label>
+                  <label className="form-label">KELURAHAN / DESA</label>
                   <select 
                     value={formData.id_kel || ''} 
                     onChange={(e) => setFormData({ ...formData, id_kel: Number(e.target.value) })}
@@ -708,7 +708,7 @@ const PjutdPage: React.FC = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>ALAMAT DETAIL</label>
+                <label className="form-label">ALAMAT DETAIL</label>
                 <textarea 
                   placeholder="Nama jalan, gedung, RT/RW" 
                   value={formData.alamat || ''}

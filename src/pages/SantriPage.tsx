@@ -586,7 +586,7 @@ const SantriPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NIK WALI (Untuk Auto-fill)</label>
+                <label className="form-label">NIK WALI (Untuk Auto-fill)</label>
                 <input
                   type="text"
                   placeholder="16 Digit NIK Wali"
@@ -612,7 +612,7 @@ const SantriPage: React.FC = () => {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NAMA ORANG TUA / WALI *</label>
+                <label className="form-label">NAMA ORANG TUA / WALI *</label>
                 <input
                   type="text"
                   placeholder="Nama Lengkap Wali"
@@ -625,7 +625,7 @@ const SantriPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NOMOR HP / WHATSAPP WALI</label>
+                <label className="form-label">NOMOR HP / WHATSAPP WALI</label>
                 <input
                   type="text"
                   placeholder="Mulai dengan 62xxx"
@@ -634,7 +634,7 @@ const SantriPage: React.FC = () => {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>ALAMAT EMAIL WALI</label>
+                <label className="form-label">ALAMAT EMAIL WALI</label>
                 <input
                   type="email"
                   placeholder="email@contoh.com"
@@ -651,7 +651,7 @@ const SantriPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NOMOR INDUK SANTRI (NIS) *</label>
+                <label className="form-label">NOMOR INDUK SANTRI (NIS) *</label>
                 <input
                   type="text"
                   placeholder="Masukkan NIS"
@@ -661,7 +661,7 @@ const SantriPage: React.FC = () => {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NOMOR INDUK KEPENDUDUKAN (NIK)</label>
+                <label className="form-label">NOMOR INDUK KEPENDUDUKAN (NIK)</label>
                 <input
                   type="text"
                   placeholder="16 Digit NIK (Auto-fill)"
@@ -683,7 +683,7 @@ const SantriPage: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NAMA LENGKAP SANTRI *</label>
+              <label className="form-label">NAMA LENGKAP SANTRI *</label>
               <input
                 type="text"
                 placeholder="Nama Lengkap Sesuai Dokumen"
@@ -695,7 +695,7 @@ const SantriPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>JENIS KELAMIN</label>
+                <label className="form-label">JENIS KELAMIN</label>
                 <select
                   value={formData.jenis_kelamin || ''}
                   onChange={(e) => setFormData({ ...formData, jenis_kelamin: e.target.value })}
@@ -706,7 +706,7 @@ const SantriPage: React.FC = () => {
                 </select>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>TEMPAT LAHIR</label>
+                <label className="form-label">TEMPAT LAHIR</label>
                 <input
                   type="text"
                   placeholder="Kota/Kabupaten"
@@ -715,7 +715,7 @@ const SantriPage: React.FC = () => {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>TANGGAL LAHIR</label>
+                <label className="form-label">TANGGAL LAHIR</label>
                 <input
                   type="date"
                   value={formData.tanggal_lahir || ''}
@@ -725,7 +725,7 @@ const SantriPage: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '16px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KEAHLIAN KHUSUS (OPSIONAL)</label>
+              <label className="form-label">KEAHLIAN KHUSUS (OPSIONAL)</label>
               <input
                 type="text"
                 placeholder="Contoh: Qori, Kaligrafi, Bahasa Arab, dll"
@@ -741,14 +741,14 @@ const SantriPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>PROVINSI</label>
+                <label className="form-label">PROVINSI</label>
                 <select value={formData.id_prov || ''} onChange={(e) => setFormData({ ...formData, id_prov: Number(e.target.value), id_kab: undefined, id_kec: undefined, id_kel: undefined })}>
                   <option value="">-- Pilih Provinsi --</option>
                   {provinces.map(p => <option key={p.id} value={p.id}>{p.nama}</option>)}
                 </select>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KABUPATEN / KOTA</label>
+                <label className="form-label">KABUPATEN / KOTA</label>
                 <select value={formData.id_kab || ''} onChange={(e) => setFormData({ ...formData, id_kab: Number(e.target.value), id_kec: undefined, id_kel: undefined })}>
                   <option value="">-- Pilih Kabupaten --</option>
                   {regencies.map(r => <option key={r.id} value={r.id}>{r.nama}</option>)}
@@ -758,14 +758,14 @@ const SantriPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KECAMATAN</label>
+                <label className="form-label">KECAMATAN</label>
                 <select value={formData.id_kec || ''} onChange={(e) => setFormData({ ...formData, id_kec: Number(e.target.value), id_kel: undefined })}>
                   <option value="">-- Pilih Kecamatan --</option>
                   {districts.map(d => <option key={d.id} value={d.id}>{d.nama}</option>)}
                 </select>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>KELURAHAN / DESA</label>
+                <label className="form-label">KELURAHAN / DESA</label>
                 <select value={formData.id_kel || ''} onChange={(e) => setFormData({ ...formData, id_kel: Number(e.target.value) })}>
                   <option value="">-- Pilih Kelurahan --</option>
                   {villages.map(v => <option key={v.id} value={v.id}>{v.nama}</option>)}
@@ -774,7 +774,7 @@ const SantriPage: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>DETAIL ALAMAT (JALAN/RT/RW)</label>
+              <label className="form-label">DETAIL ALAMAT (JALAN/RT/RW)</label>
               <textarea
                 placeholder="Contoh: Jl. Merdeka No. 12, RT 01 / RW 02"
                 value={formData.alamat || ''}

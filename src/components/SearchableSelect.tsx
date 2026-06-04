@@ -12,9 +12,10 @@ interface SearchableSelectProps {
   onChange: (value: string | number) => void;
   placeholder?: string;
   required?: boolean;
+  disabled?: boolean;
 }
 
-export const SearchableSelect: React.FC<SearchableSelectProps> = ({ options, value, onChange, placeholder = "Pilih...", required = false }) => {
+export const SearchableSelect: React.FC<SearchableSelectProps> = ({ options, value, onChange, placeholder = "Pilih...", required = false, disabled = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -54,10 +55,11 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({ options, val
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          cursor: 'pointer',
-          background: 'white'
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          background: disabled ? '#f1f5f9' : 'white',
+          opacity: disabled ? 0.7 : 1
         }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => { if (!disabled) setIsOpen(!isOpen); }}
       >
         <span style={{ color: selectedOption ? 'inherit' : '#94a3b8' }}>
           {selectedOption ? selectedOption.label : placeholder}

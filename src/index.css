@@ -104,18 +104,40 @@ h1, h2, h3, h4, h5, h6 {
 input, select, textarea, .form-control {
   width: 100%;
   padding: 12px 16px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: white;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
   color: var(--text-primary);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+}
+
+input:hover, select:hover, textarea:hover, .form-control:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
 }
 
 input:focus, select:focus, textarea:focus, .form-control:focus, .form-control:focus-within {
   outline: none;
+  background: #ffffff;
   border-color: var(--secondary);
-  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+  box-shadow: 0 0 0 4px rgba(0, 143, 215, 0.12);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
 }
 
 .layout-container {
