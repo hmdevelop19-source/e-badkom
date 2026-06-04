@@ -158,59 +158,159 @@ const MutasiPage: React.FC = () => {
 
   return (
     <>
-      <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease' }}>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+          background: #ffffff;
+          padding: 20px 24px;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid #f1f5f9;
+        }
+
+        .search-container {
+          position: relative;
+          width: 320px;
+        }
+        
+        .search-input {
+          width: 100%;
+          padding: 12px 16px 12px 44px;
+          border-radius: 30px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          transition: all 0.3s ease;
+          font-size: 0.95rem;
+        }
+        
+        .search-input:focus {
+          background: #ffffff;
+          border-color: var(--secondary);
+          box-shadow: 0 0 0 4px rgba(0, 143, 215, 0.1);
+          outline: none;
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          flex-wrap: nowrap;
+          align-items: center;
+        }
+
+        .data-table-container {
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid #f1f5f9;
+          overflow: hidden;
+        }
+
+        .data-table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+        }
+
+        .data-table th {
+          padding: 18px 24px;
+          font-weight: 600;
+          color: #64748b;
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+          padding: 16px 24px;
+          border-bottom: 1px solid #f1f5f9;
+          transition: background 0.2s ease;
+          vertical-align: middle;
+        }
+
+        .data-table tbody tr {
+          transition: all 0.2s ease;
+        }
+
+        .data-table tbody tr:hover {
+          background: #f8fafc;
+          transform: scale(1.001);
+        }
+      `}</style>
+
+      <div className="page-header">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <RefreshCcw size={24} style={{ color: 'var(--primary)' }} />
+          <div style={{ padding: '8px', background: '#e0f2fe', color: '#0284c7', borderRadius: '12px' }}>
+            <RefreshCcw size={24} />
+          </div>
           <div>
-            <h2 style={{ margin: 0 }}>Riwayat Mutasi Tugas</h2>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a', fontWeight: 700 }}>Riwayat Mutasi Tugas</h2>
             <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.875rem' }}>Daftar kepindahan tugas ustadz/ustadzah daerah</p>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <input 
-            type="text" 
-            placeholder="Cari nama atau alasan..." 
-            className="form-control"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ minWidth: '250px' }}
-          />
-          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+        <div className="action-buttons">
+          <div className="search-container">
+            <input 
+              type="text" 
+              placeholder="Cari nama atau alasan..." 
+              className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)} style={{ borderRadius: '30px', padding: '10px 24px', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
             <Plus size={18} /> Ajukan Mutasi
           </button>
         </div>
       </div>
+      </div>
 
-      {isLoading ? <p>Memuat data...</p> : (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+      {isLoading ? <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Memuat data...</div> : (
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Tanggal</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Ustadz Tugas</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Lembaga Asal</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Lembaga Tujuan</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Alasan</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Diproses Oleh</th>
+                <th>Tanggal</th>
+                <th>Ustadz Tugas</th>
+                <th>Lembaga Asal</th>
+                <th>Lembaga Tujuan</th>
+                <th>Alasan</th>
+                <th>Diproses Oleh</th>
               </tr>
             </thead>
             <tbody>
               {paginatedMutasi.map((mutasi) => (
-                <tr key={mutasi.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <td style={{ padding: '12px 16px' }}>{new Date(mutasi.tanggal_mutasi).toLocaleDateString('id-ID')}</td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <div style={{ fontWeight: 500 }}>{mutasi.utd?.santri?.nama}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>NIS: {mutasi.utd?.santri?.nis}</div>
+                <tr key={mutasi.id}>
+                  <td style={{ fontWeight: 600, color: '#334155' }}>{new Date(mutasi.tanggal_mutasi).toLocaleDateString('id-ID')}</td>
+                  <td>
+                    <div style={{ fontWeight: 600, color: '#0f172a' }}>{mutasi.utd?.santri?.nama}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b' }}>NIS: {mutasi.utd?.santri?.nis}</div>
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#ef4444' }}>{mutasi.asal_pjutd?.nama_madrasah || mutasi.asal_pjutd?.yayasan || mutasi.asal_pjutd?.nama_pjutd}</td>
-                  <td style={{ padding: '12px 16px', color: '#10b981' }}>{mutasi.tujuan_pjutd?.nama_madrasah || mutasi.tujuan_pjutd?.yayasan || mutasi.tujuan_pjutd?.nama_pjutd}</td>
-                  <td style={{ padding: '12px 16px', maxWidth: '200px' }}>
-                    <div style={{ fontSize: '0.875rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={mutasi.alasan}>
+                  <td>
+                    <span style={{ fontWeight: 600, color: '#b91c1c', background: '#fef2f2', padding: '4px 12px', borderRadius: '12px', fontSize: '0.85rem' }}>
+                      {mutasi.asal_pjutd?.nama_madrasah || mutasi.asal_pjutd?.yayasan || mutasi.asal_pjutd?.nama_pjutd}
+                    </span>
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 600, color: '#047857', background: '#d1fae5', padding: '4px 12px', borderRadius: '12px', fontSize: '0.85rem' }}>
+                      {mutasi.tujuan_pjutd?.nama_madrasah || mutasi.tujuan_pjutd?.yayasan || mutasi.tujuan_pjutd?.nama_pjutd}
+                    </span>
+                  </td>
+                  <td style={{ maxWidth: '200px' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#475569', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={mutasi.alasan}>
                       {mutasi.alasan}
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: '0.875rem' }}>{mutasi.user?.fullname || mutasi.user?.username}</td>
+                  <td style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>{mutasi.user?.fullname || mutasi.user?.username}</td>
                 </tr>
               ))}
               {paginatedMutasi.length === 0 && (
@@ -224,7 +324,7 @@ const MutasiPage: React.FC = () => {
           </table>
 
           {filteredMutasi.length > 0 && (
-            <div style={{ marginTop: '24px' }}>
+            <div style={{ padding: '0 24px 24px 24px' }}>
               <TablePagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -241,7 +341,7 @@ const MutasiPage: React.FC = () => {
         </div>
       )}
 
-      </div>
+    </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Formulir Mutasi Ustadz Tugas">
         {!activeTahunAjaran ? (

@@ -142,24 +142,140 @@ const PenugasanPage: React.FC = () => {
   }, [searchQuery, selectedTahunAjaranId]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div style={{ position: 'relative', width: '300px' }}>
-          <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease' }}>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+          background: #ffffff;
+          padding: 20px 24px;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid #f1f5f9;
+        }
+
+        .search-container {
+          position: relative;
+          width: 320px;
+        }
+        
+        .search-input {
+          width: 100%;
+          padding: 12px 16px 12px 44px;
+          border-radius: 30px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          transition: all 0.3s ease;
+          font-size: 0.95rem;
+        }
+        
+        .search-input:focus {
+          background: #ffffff;
+          border-color: var(--secondary);
+          box-shadow: 0 0 0 4px rgba(0, 143, 215, 0.1);
+          outline: none;
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          flex-wrap: nowrap;
+          align-items: center;
+        }
+
+        .data-table-container {
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid #f1f5f9;
+          overflow: hidden;
+        }
+
+        .data-table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+        }
+
+        .data-table th {
+          padding: 18px 24px;
+          font-weight: 600;
+          color: #64748b;
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+          padding: 16px 24px;
+          border-bottom: 1px solid #f1f5f9;
+          transition: background 0.2s ease;
+          vertical-align: middle;
+        }
+
+        .data-table tbody tr {
+          transition: all 0.2s ease;
+        }
+
+        .data-table tbody tr:hover {
+          background: #f8fafc;
+          transform: scale(1.001);
+        }
+
+        .action-btn {
+          border: none;
+          background: none;
+          cursor: pointer;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+
+        .action-btn.edit { color: #64748b; }
+        .action-btn.edit:hover { background: #f1f5f9; color: #0f172a; }
+
+        .action-btn.delete { color: #ef4444; }
+        .action-btn.delete:hover { background: #fee2e2; }
+      `}</style>
+
+      <div className="page-header">
+        <div className="search-container">
+          <Search size={20} style={{ position: 'absolute', left: '16px', top: '10px', color: '#94a3b8' }} />
           <input 
             type="text" 
+            className="search-input"
             placeholder="Cari penugasan..." 
-            style={{ paddingLeft: '40px' }} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="action-buttons">
           <select 
-            className="form-control"
             value={selectedTahunAjaranId}
             onChange={(e) => setSelectedTahunAjaranId(e.target.value)}
-            style={{ minWidth: '150px' }}
+            style={{ 
+              width: 'auto',
+              minWidth: '200px', 
+              borderRadius: '30px', 
+              padding: '10px 16px', 
+              border: '1px solid #e2e8f0', 
+              background: '#f8fafc',
+              fontSize: '0.95rem',
+              color: '#334155',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
           >
             <option value="">Tahun Ajaran Aktif</option>
             {tahunAjarans.map((ta: any) => (
@@ -168,7 +284,7 @@ const PenugasanPage: React.FC = () => {
           </select>
           <button 
             className="btn" 
-            style={{ background: '#f1f5f9', color: '#334155' }}
+            style={{ background: '#f1f5f9', color: '#334155', borderRadius: '30px', padding: '10px 24px', fontWeight: 600 }}
             onClick={async () => {
               try {
                 const url = `/cetak/penugasan${selectedTahunAjaranId ? '?tahun_ajaran_id=' + selectedTahunAjaranId : ''}`;
@@ -186,7 +302,7 @@ const PenugasanPage: React.FC = () => {
             Cetak Penempatan
           </button>
           {!isWilayah && (
-            <button className="btn btn-primary" onClick={() => { setFormData({ santri_ids: [undefined], pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
+            <button className="btn btn-primary" onClick={() => { setFormData({ santri_ids: [undefined], pjutd_id: undefined }); setIsModalOpen(true); setError(''); }} style={{ borderRadius: '30px', padding: '10px 24px', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
               <MapPin size={18} />
               Tambah Penugasan
             </button>
@@ -194,14 +310,14 @@ const PenugasanPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+      <div className="data-table-container">
+        <table className="data-table">
+          <thead>
             <tr>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Santri</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Lokasi PJ UTD</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Tahun Ajaran</th>
-              {!isWilayah && <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>}
+              <th>Santri</th>
+              <th>Lokasi PJ UTD</th>
+              <th>Tahun Ajaran</th>
+              {!isWilayah && <th style={{ textAlign: 'right' }}>Aksi</th>}
             </tr>
           </thead>
           <tbody>
@@ -215,45 +331,45 @@ const PenugasanPage: React.FC = () => {
               </tr>
             ) : (
               paginatedUtds.map((utd) => (
-                <tr key={utd.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '16px 24px' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.santri?.nama}</div>
-                    <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>NIS: {utd.santri?.nis}</div>
+                <tr key={utd.id}>
+                  <td>
+                    <div style={{ fontWeight: 600, color: '#0f172a' }}>{utd.santri?.nama}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b' }}>NIS: {utd.santri?.nis}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.pjutd?.nama_madrasah || utd.pjutd?.yayasan || utd.pjutd?.nama_pjutd}</div>
-                    <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {utd.pjutd?.kode_lembaga}</div>
+                  <td>
+                    <div style={{ fontWeight: 600, color: '#0f172a' }}>{utd.pjutd?.nama_madrasah || utd.pjutd?.yayasan || utd.pjutd?.nama_pjutd}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Kode: {utd.pjutd?.kode_lembaga}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.tahun_ajaran?.nama_tahun_ajaran}</div>
+                  <td>
+                    <div style={{ fontWeight: 600, color: '#334155' }}>{utd.tahun_ajaran?.nama_tahun_ajaran}</div>
                     {utd.tahun_ajaran && !utd.tahun_ajaran.is_active && (
-                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 6px', borderRadius: '4px' }}>Arsip</span>
+                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '12px', border: '1px solid #e2e8f0', marginTop: '4px', display: 'inline-block' }}>Arsip</span>
                     )}
                   </td>
                   {!isWilayah && (
-                    <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
                         <button 
-                          className="btn" 
-                          style={{ padding: '8px', background: '#f1f5f9', color: '#475569' }}
+                          className="action-btn edit"
                           onClick={() => {
                             setFormData({ id: utd.id, santri_ids: [utd.santri_id], pjutd_id: utd.pjutd_id });
                             setIsModalOpen(true);
                             setError('');
                           }}
+                          title="Edit Penugasan"
                         >
-                          <Edit2 size={16} />
+                          <Edit2 size={18} />
                         </button>
                         <button 
-                          className="btn" 
-                          style={{ padding: '8px', background: '#fef2f2', color: '#ef4444' }}
+                          className="action-btn delete"
                           onClick={() => {
                             showConfirm('Apakah Anda yakin ingin menghapus penugasan ini?', () => {
                               deleteMutation.mutate(utd.id);
                             });
                           }}
+                          title="Hapus Penugasan"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={18} />
                         </button>
                       </div>
                     </td>

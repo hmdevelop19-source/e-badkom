@@ -297,19 +297,127 @@ const PjutdPage: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div style={{ position: 'relative', width: '300px' }}>
-          <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease' }}>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+          background: #ffffff;
+          padding: 20px 24px;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid #f1f5f9;
+        }
+
+        .search-container {
+          position: relative;
+          width: 320px;
+        }
+        
+        .search-input {
+          width: 100%;
+          padding: 12px 16px 12px 44px;
+          border-radius: 30px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          transition: all 0.3s ease;
+          font-size: 0.95rem;
+        }
+        
+        .search-input:focus {
+          background: #ffffff;
+          border-color: var(--secondary);
+          box-shadow: 0 0 0 4px rgba(0, 143, 215, 0.1);
+          outline: none;
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .data-table-container {
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid #f1f5f9;
+          overflow: hidden;
+        }
+
+        .data-table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+        }
+
+        .data-table th {
+          padding: 18px 24px;
+          font-weight: 600;
+          color: #64748b;
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+          padding: 16px 24px;
+          border-bottom: 1px solid #f1f5f9;
+          transition: background 0.2s ease;
+          vertical-align: middle;
+        }
+
+        .data-table tbody tr {
+          transition: all 0.2s ease;
+        }
+
+        .data-table tbody tr:hover {
+          background: #f8fafc;
+          transform: scale(1.001);
+        }
+
+        .action-btn {
+          border: none;
+          background: none;
+          cursor: pointer;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+
+        .action-btn.view { color: #0284c7; }
+        .action-btn.view:hover { background: #e0f2fe; }
+
+        .action-btn.edit { color: #64748b; }
+        .action-btn.edit:hover { background: #f1f5f9; color: #0f172a; }
+
+        .action-btn.delete { color: #ef4444; }
+        .action-btn.delete:hover { background: #fee2e2; }
+      `}</style>
+
+      <div className="page-header">
+        <div className="search-container">
+          <Search size={20} style={{ position: 'absolute', left: '16px', top: '10px', color: '#94a3b8' }} />
           <input 
             type="text" 
+            className="search-input"
             placeholder="Cari PJ UTD..." 
-            style={{ paddingLeft: '40px' }} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="action-buttons">
           <ActionDropdown
             label="Template"
             icon={<FileText size={16} />}
@@ -359,22 +467,22 @@ const PjutdPage: React.FC = () => {
             accept=".xlsx,.xls"
             onChange={handleImportExcel}
           />
-          <button className="btn btn-primary" onClick={() => { setFormData(initialFormState); setIsModalOpen(true); }}>
+          <button className="btn btn-primary" onClick={() => { setFormData(initialFormState); setIsModalOpen(true); }} style={{ borderRadius: '30px', padding: '10px 24px', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
             <Network size={18} />
             Tambah PJ UTD
           </button>
         </div>
       </div>
 
-      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+      <div className="data-table-container">
+        <table className="data-table">
+          <thead>
             <tr>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Kode Lembaga</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Nama PJ UTD</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Yayasan / Madrasah</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Badkom</th>
-              <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)', textAlign: 'right' }}>Aksi</th>
+              <th>Kode Lembaga</th>
+              <th>Nama PJ UTD</th>
+              <th>Yayasan / Madrasah</th>
+              <th>Badkom</th>
+              <th style={{ textAlign: 'right' }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -387,45 +495,47 @@ const PjutdPage: React.FC = () => {
                 <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data PJ UTD.</td>
               </tr>
             ) : paginatedPjutds?.map((p) => (
-              <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '16px 24px', fontWeight: 500 }}>{p.kode_lembaga}</td>
-                <td style={{ padding: '16px 24px' }}>{p.nama_pjutd}</td>
-                <td style={{ padding: '16px 24px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '0.875rem' }}>{p.yayasan || '-'}</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{p.nama_madrasah || '-'}</span>
+              <tr key={p.id}>
+                <td style={{ fontWeight: 600, color: '#334155' }}>
+                  <span style={{ padding: '4px 12px', background: '#f1f5f9', color: '#475569', borderRadius: '20px', fontSize: '0.75rem', border: '1px solid #e2e8f0' }}>{p.kode_lembaga}</span>
+                </td>
+                <td style={{ fontWeight: 600, color: '#0f172a' }}>{p.nama_pjutd}</td>
+                <td>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#334155' }}>{p.yayasan || '-'}</span>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{p.nama_madrasah || '-'}</span>
                   </div>
                 </td>
-                <td style={{ padding: '16px 24px' }}>
-                  <span style={{ display: 'inline-block', padding: '4px 12px', background: '#f1f5f9', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 500, color: '#475569' }}>
+                <td>
+                  <span style={{ display: 'inline-block', padding: '4px 12px', background: '#e0f2fe', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, color: '#0369a1', border: '1px solid #bae6fd' }}>
                     {p.badkom?.kode_badkom || '-'}
                   </span>
                 </td>
-                <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <td style={{ textAlign: 'right' }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
                     <button 
+                      className="action-btn view"
                       onClick={() => {
                         setSelectedPjutd(p);
                         setIsDetailModalOpen(true);
                       }}
-                      style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
                       title="Lihat Detail & Riwayat UTD"
                     >
-                      <Eye size={16} />
+                      <Eye size={18} />
                     </button>
                     <button 
+                      className="action-btn edit"
                       onClick={() => handleEdit(p)}
-                      style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
                       title="Edit PJ UTD"
                     >
-                      <Edit2 size={16} />
+                      <Edit2 size={18} />
                     </button>
                     <button 
+                      className="action-btn delete"
                       onClick={() => handleDelete(p.id)}
-                      style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}
                       title="Hapus PJ UTD"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </td>

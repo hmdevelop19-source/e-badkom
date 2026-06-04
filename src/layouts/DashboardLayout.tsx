@@ -406,15 +406,53 @@ const DashboardLayout: React.FC = () => {
       </aside>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <header className="top-header" style={{ 
-          background: 'rgba(255, 255, 255, 0.9)', 
-          backdropFilter: 'blur(12px)', 
-          WebkitBackdropFilter: 'blur(12px)',
-          position: 'sticky', 
-          top: 0, 
-          padding: '12px 32px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
-        }}>
+        <style>{`
+          .top-header-enhanced {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 24px -6px rgba(15, 23, 42, 0.05);
+            z-index: 40;
+            transition: all 0.3s ease;
+          }
+          .profile-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 6px 6px 6px 16px;
+            border-radius: 40px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+          }
+          .profile-dropdown-btn:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          }
+          .footer-enhanced {
+            background: linear-gradient(to right, #f8fafc, #ffffff, #f8fafc);
+            padding: 24px 40px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+          }
+        `}</style>
+        <header className="top-header-enhanced">
           <div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, marginBottom: '2px', fontWeight: 500 }}>
               Selamat datang kembali,
@@ -439,23 +477,21 @@ const DashboardLayout: React.FC = () => {
 
             <div style={{ position: 'relative' }}>
               <div 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '4px 8px', borderRadius: '30px', transition: 'all 0.2s', border: '1px solid transparent' }}
+                className="profile-dropdown-btn"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = 'var(--border)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
               >
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontWeight: 600, margin: 0, lineHeight: 1.2, color: 'var(--text-primary)', fontSize: '0.875rem' }}>{currentUser?.fullname || 'Administrator'}</p>
-                  <p style={{ fontSize: '0.7rem', color: 'var(--secondary)', margin: 0, marginTop: '2px', fontWeight: 600 }}>{level.toUpperCase()}</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
+                  <span style={{ fontWeight: 600, color: '#1e293b', fontSize: '0.85rem', lineHeight: '1.2' }}>{currentUser?.fullname || 'Administrator'}</span>
+                  <span style={{ fontSize: '0.65rem', color: '#0ea5e9', fontWeight: 700, letterSpacing: '0.5px', marginTop: '2px' }}>{level.toUpperCase()}</span>
                 </div>
                 {currentUser?.foto_profil ? (
-                  <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '')}${currentUser.foto_profil}`} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }} />
+                  <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '')}${currentUser.foto_profil}`} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
                 ) : (
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '1rem', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary) 0%, #4c1d95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                     {currentUser?.fullname?.charAt(0).toUpperCase() || 'A'}
                   </div>
                 )}
-                <ChevronDown size={14} color="var(--text-secondary)" style={{ marginLeft: '-4px', transition: 'transform 0.2s', transform: isProfileOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
+                <ChevronDown size={14} color="#64748b" style={{ marginLeft: '-4px', marginRight: '6px', transition: 'transform 0.2s', transform: isProfileOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
               </div>
             
             {isProfileOpen && (
@@ -468,54 +504,67 @@ const DashboardLayout: React.FC = () => {
                   position: 'absolute', 
                   top: '100%', 
                   right: 0, 
-                  marginTop: '8px', 
-                  background: 'var(--surface)', 
-                  borderRadius: '8px', 
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)', 
-                  border: '1px solid var(--border)',
+                  marginTop: '12px', 
+                  background: '#ffffff', 
+                  borderRadius: '16px', 
+                  boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15)', 
+                  border: '1px solid rgba(226, 232, 240, 0.8)',
                   zIndex: 100,
-                  minWidth: '200px',
+                  minWidth: '220px',
                   overflow: 'hidden',
                   display: 'flex',
-                  flexDirection: 'column'
+                  flexDirection: 'column',
+                  padding: '8px',
+                  animation: 'slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}>
+                  <div style={{ padding: '8px 12px', borderBottom: '1px solid #f1f5f9', marginBottom: '8px' }}>
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Login sebagai</p>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#0f172a', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{currentUser?.email || currentUser?.username || 'admin'}</p>
+                  </div>
                   <Link 
                     to="/admin/profil"
                     onClick={() => setIsProfileOpen(false)}
                     style={{ 
-                      padding: '12px 16px', 
+                      padding: '10px 12px', 
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: '12px', 
-                      color: 'var(--text-primary)',
+                      color: '#334155',
                       textDecoration: 'none',
-                      borderBottom: '1px solid var(--border)'
+                      borderRadius: '8px',
+                      transition: 'all 0.2s',
+                      fontSize: '0.875rem',
+                      fontWeight: 500
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0f172a'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155'; }}
                   >
-                    <User size={18} />
+                    <User size={16} />
                     Profil Saya
                   </Link>
                   <button 
                     onClick={handleLogout}
                     style={{ 
                       width: '100%', 
-                      padding: '12px 16px', 
+                      padding: '10px 12px', 
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: '12px', 
                       background: 'none', 
                       border: 'none', 
                       cursor: 'pointer',
-                      color: 'var(--error)',
+                      color: '#ef4444',
                       fontWeight: 500,
-                      textAlign: 'left'
+                      textAlign: 'left',
+                      borderRadius: '8px',
+                      transition: 'all 0.2s',
+                      fontSize: '0.875rem',
+                      marginTop: '4px'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
-                    <LogOut size={18} />
+                    <LogOut size={16} />
                     Logout
                   </button>
                 </div>
@@ -531,8 +580,14 @@ const DashboardLayout: React.FC = () => {
           </div>
         </main>
         
-        <footer className="footer">
-          &copy; {new Date().getFullYear()} E-Badkom - Sistem Informasi Manajemen Tugas & Evaluasi. Hak Cipta Dilindungi.
+        <footer className="footer-enhanced">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, color: '#475569' }}>
+            <img src={logoBadkom} alt="Logo" style={{ width: '16px', height: '16px', opacity: 0.6 }} />
+            E-Badkom &copy; {new Date().getFullYear()}
+          </div>
+          <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+            Sistem Informasi Manajemen Tugas & Evaluasi. Hak Cipta Dilindungi.
+          </div>
         </footer>
       </div>
 
