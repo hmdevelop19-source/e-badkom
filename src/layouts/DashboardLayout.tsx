@@ -12,7 +12,7 @@ const DashboardLayout: React.FC = () => {
   const navigate = useNavigate();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     'Data Master': location.pathname.includes('/admin/santri') || location.pathname.includes('/admin/badkom') || location.pathname.includes('/admin/pjutd') || location.pathname.includes('/admin/alumni'),
-    'Manajemen Tugas': location.pathname.includes('/admin/penugasan') || location.pathname.includes('/admin/mutasi') || location.pathname.includes('/admin/penarikan'),
+    'Manajemen Tugas': location.pathname.includes('/admin/penugasan') || location.pathname.includes('/admin/mutasi') || location.pathname.includes('/admin/penarikan') || location.pathname.includes('/admin/riwayat-utd'),
     'Evaluasi': location.pathname.includes('/admin/penilaian') && !location.pathname.includes('/validasi'),
     'Validasi Kelulusan': location.pathname.includes('/admin/validasi') || location.pathname.includes('/admin/pengajuan-boyong'),
     'Manajemen Laporan': location.pathname.includes('/admin/surat') || location.pathname.includes('/admin/laporan-masuk') || location.pathname.includes('/admin/laporan-saya'),
@@ -47,8 +47,8 @@ const DashboardLayout: React.FC = () => {
     };
   }, []);
 
-  const allNavItems = [
-    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
+  const adminNavItems = [
+    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'utd'] },
     { 
       label: 'Data Master', 
       icon: Database, 
@@ -63,9 +63,9 @@ const DashboardLayout: React.FC = () => {
     { 
       label: 'Manajemen Tugas', 
       icon: Briefcase, 
-      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
-        { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
         { label: 'Mutasi', path: '/admin/mutasi', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
         { label: 'Penarikan', path: '/admin/penarikan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
@@ -73,9 +73,9 @@ const DashboardLayout: React.FC = () => {
     {
       label: 'Evaluasi',
       icon: Award,
-      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'],
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
-        { label: 'Penilaian UT-D', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Penilaian UT-D', path: '/admin/penilaian', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
         { label: 'Penilaian PJU-TD', path: '/admin/penilaian-pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
@@ -91,10 +91,10 @@ const DashboardLayout: React.FC = () => {
     { 
       label: 'Manajemen Laporan', 
       icon: Archive, 
-      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'],
+      roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'utd'],
       subItems: [
-        { label: 'Laporan Saya (Isi Laporan)', path: '/admin/laporan-saya', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd'] },
-        { label: 'Surat', path: '/admin/surat', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd'] },
+        { label: 'Laporan Saya (Isi Laporan)', path: '/admin/laporan-saya', roles: ['admin', 'badkom_pusat', 'badkom_wilayah', 'utd'] },
+        { label: 'Surat', path: '/admin/surat', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
         { label: 'Laporan Wajib (Laporan Masuk)', path: '/admin/laporan-masuk/wajib', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
         { label: 'Laporan Insidental (Laporan Masuk)', path: '/admin/laporan-masuk/insidental', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
@@ -112,6 +112,16 @@ const DashboardLayout: React.FC = () => {
       ]
     }
   ];
+
+  const pjutdNavItems = [
+    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['pjutd'] },
+    { label: 'Profil Lembaga', path: '/admin/profil-lembaga', icon: Database, roles: ['pjutd'] },
+    { label: 'Laporan', path: '/admin/laporan-saya', icon: Archive, roles: ['pjutd'] },
+    { label: 'Surat', path: '/admin/surat', icon: ClipboardCheck, roles: ['pjutd'] },
+    { label: 'Riwayat UT-D', path: '/admin/riwayat-utd', icon: Briefcase, roles: ['pjutd'] },
+  ];
+
+  const allNavItems = level === 'pjutd' ? pjutdNavItems : adminNavItems;
 
   const toggleMenu = (label: string) => {
     setOpenMenus(prev => ({ [label]: !prev[label] }));

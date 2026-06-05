@@ -15,6 +15,12 @@ interface Soal {
   is_active: boolean;
 }
 
+interface KategoriSoal {
+  id: number;
+  nama_kategori: string;
+  soal_laporan?: Soal[];
+}
+
 interface TahunAjaran {
   id: number;
   nama_tahun_ajaran: string;
@@ -113,7 +119,7 @@ const LaporanSayaPage: React.FC = () => {
     }
   }, [tahunAjaranList, selectedTahunAjaran]);
 
-  const { data: mySoal = [], isLoading: loadingMySoal } = useQuery<Soal[]>({
+  const { data: myKategoriSoal = [], isLoading: loadingMySoal } = useQuery<KategoriSoal[]>({
     queryKey: ['my_soal_laporan'],
     queryFn: async () => {
       const res = await api.get('/laporan-wajib/soal');
@@ -171,10 +177,22 @@ const LaporanSayaPage: React.FC = () => {
   // Handlers
   const handleWajibSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Transform jawabanForm for multi groups
+    const finalJawaban: Record<string, string> = {};
+    Object.keys(jawabanForm).forEach(soalId => {
+      const j = (jawabanForm as any)[soalId];
+      if (typeof j === 'object' && j !== null) {
+        finalJawaban[soalId] = Object.entries(j).map(([k, v]) => `${k}: ${v}`).join(' | ');
+      } else {
+        finalJawaban[soalId] = j;
+      }
+    });
+
     submitWajibMutation.mutate({
       bulan_tahun: currentMonthYear,
       kategori_bulan: selectedKategoriBulan,
-      jawaban: jawabanForm
+      jawaban: finalJawaban
     });
   };
 
@@ -294,7 +312,23 @@ const LaporanSayaPage: React.FC = () => {
                 )}
 
                 {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                    {!hasSubmittedWajib && currentJadwal && (
+                      <div style={{ 
+                        display: 'flex', alignItems: 'center', gap: '6px', 
+                        padding: '8px 12px', 
+                        borderRadius: '8px', 
+                        fontSize: '0.75rem', 
+                        fontWeight: 600,
+                        background: isLate ? '#fef2f2' : '#f8fafc',
+                        color: isLate ? '#ef4444' : '#64748b',
+                        border: `1px solid ${isLate ? '#fecaca' : '#e2e8f0'}`,
+                        whiteSpace: 'nowrap'
+                      }}>
+                        <Clock size={14} />
+                        Batas: {new Date(currentJadwal.batas_tanggal).toLocaleDateString('id-ID')} {isLate && '(Terlambat)'}
+                      </div>
+                    )}
                     <button 
                       className="btn btn-primary" 
                       onClick={() => { setJawabanForm({}); setIsSubmitWajibModalOpen(true); }}
@@ -304,11 +338,6 @@ const LaporanSayaPage: React.FC = () => {
                       <Plus size={18} />
                       {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan'}
                     </button>
-                    {!hasSubmittedWajib && currentJadwal && (
-                      <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, fontSize: '0.75rem', color: isLate ? '#ef4444' : '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                        Batas: {new Date(currentJadwal.batas_tanggal).toLocaleDateString('id-ID')} {isLate && '(Terlambat)'}
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -473,50 +502,93 @@ const LaporanSayaPage: React.FC = () => {
       {/* Modal Isi Laporan Wajib */}
       <Modal isOpen={isSubmitWajibModalOpen} onClose={() => setIsSubmitWajibModalOpen(false)} title={`Isi Laporan Wajib - ${selectedKategoriBulan}`}>
         <form onSubmit={handleWajibSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {loadingMySoal ? <p>Memuat pertanyaan...</p> : mySoal.length === 0 ? <p>Belum ada soal aktif untuk level Anda.</p> : (
-            mySoal.map((soal, index) => (
-              <div key={soal.id} style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', fontSize: '0.95rem' }}>
-                  {index + 1}. {soal.pertanyaan}
-                </label>
-                {soal.tipe_soal === 'uraian' ? (
-                  <textarea 
-                    className="styled-input" 
-                    rows={4} 
-                    required 
-                    onChange={e => setJawabanForm({...jawabanForm, [soal.id]: e.target.value})}
-                    placeholder="Tulis jawaban Anda di sini..."
-                    style={{ width: '100%', resize: 'vertical' }}
-                  />
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {soal.opsi_jawaban?.map((opsi, idx) => (
-                      <label key={idx} style={{ 
-                        display: 'flex', alignItems: 'center', gap: '12px', 
-                        padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', 
-                        background: 'white', cursor: 'pointer', transition: 'all 0.2s',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                      }}>
-                        <input 
-                          type="radio" 
-                          name={`soal_${soal.id}`} 
-                          value={opsi} 
+          {loadingMySoal ? <p>Memuat pertanyaan...</p> : myKategoriSoal.length === 0 ? <p>Belum ada soal aktif untuk level Anda.</p> : (
+            myKategoriSoal.map((kategori) => (
+              <div key={kategori.id} style={{ marginBottom: '16px' }}>
+                <h4 style={{ margin: '0 0 16px 0', paddingBottom: '8px', borderBottom: '2px solid var(--primary-color)', color: 'var(--primary-color)' }}>
+                  {kategori.nama_kategori}
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {kategori.soal_laporan?.map((soal, index) => (
+                    <div key={soal.id} style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                      <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', fontSize: '0.95rem' }}>
+                        {index + 1}. {soal.pertanyaan}
+                      </label>
+                      {soal.tipe_soal === 'pilihan_ganda_multi' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          {soal.opsi_jawaban?.map((group: any, idx) => (
+                            <div key={idx}>
+                              <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>{group.label}</div>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                                {group.options.map((opt: string, optIdx: number) => (
+                                  <label key={optIdx} style={{ 
+                                    display: 'flex', alignItems: 'center', gap: '8px', 
+                                    padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', 
+                                    background: 'white', cursor: 'pointer', transition: 'all 0.2s',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                  }}>
+                                    <input 
+                                      type="radio" 
+                                      name={`soal_${soal.id}_group_${idx}`} 
+                                      value={opt} 
+                                      required 
+                                      onChange={e => setJawabanForm({
+                                        ...jawabanForm, 
+                                        [soal.id]: { ...((jawabanForm as any)[soal.id] || {}), [group.label]: e.target.value }
+                                      })}
+                                      style={{ width: '16px', height: '16px', cursor: 'pointer', margin: 0 }}
+                                    />
+                                    <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{opt}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : soal.tipe_soal === 'uraian' ? (
+                        <textarea 
+                          className="styled-input" 
+                          rows={4} 
                           required 
                           onChange={e => setJawabanForm({...jawabanForm, [soal.id]: e.target.value})}
-                          style={{ width: '18px', height: '18px', cursor: 'pointer', margin: 0 }}
+                          placeholder="Tulis jawaban Anda di sini..."
+                          style={{ width: '100%', resize: 'vertical' }}
                         />
-                        <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>{opsi}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          {soal.opsi_jawaban?.map((opsi, idx) => (
+                            <label key={idx} style={{ 
+                              display: 'flex', alignItems: 'center', gap: '12px', 
+                              padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', 
+                              background: 'white', cursor: 'pointer', transition: 'all 0.2s',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            }}>
+                              <input 
+                                type="radio" 
+                                name={`soal_${soal.id}`} 
+                                value={opsi} 
+                                required 
+                                onChange={e => setJawabanForm({...jawabanForm, [soal.id]: e.target.value})}
+                                style={{ width: '18px', height: '18px', cursor: 'pointer', margin: 0 }}
+                              />
+                              <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>{opsi}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {(!kategori.soal_laporan || kategori.soal_laporan.length === 0) && (
+                    <p style={{ color: '#64748b', fontSize: '0.875rem', fontStyle: 'italic' }}>Belum ada soal di kategori ini.</p>
+                  )}
+                </div>
               </div>
             ))
           )}
           
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
             <button type="button" className="btn btn-outline" onClick={() => setIsSubmitWajibModalOpen(false)} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600 }}>Batal</button>
-            <button type="submit" className="btn btn-primary" disabled={mySoal.length === 0 || submitWajibMutation.isPending} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button type="submit" className="btn btn-primary" disabled={myKategoriSoal.length === 0 || submitWajibMutation.isPending} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
               <CheckCircle size={18} /> Kirim Laporan
             </button>
           </div>
@@ -576,18 +648,22 @@ const LaporanSayaPage: React.FC = () => {
             <CetakLaporanWajibUtd 
               laporan={{
                 user: { fullname: currentUser?.fullname, santri: currentUser?.santri },
-                jawabans: []
+                jawabans: [],
+                kategori_bulan: selectedKategoriBulan
               }} 
               kopSuratUrl={getKopUrl('utd')} 
+              blankoKategoriList={myKategoriSoal}
             />
           )}
           {printBlankoType === 'pjutd' && !printLaporan && (
             <CetakLaporanWajibPjutd 
               laporan={{
                 user: { fullname: currentUser?.fullname, pjutd: currentUser?.pjutd },
-                jawabans: []
+                jawabans: [],
+                kategori_bulan: selectedKategoriBulan
               }} 
               kopSuratUrl={getKopUrl('pjutd')} 
+              blankoKategoriList={myKategoriSoal}
             />
           )}
         </div>
