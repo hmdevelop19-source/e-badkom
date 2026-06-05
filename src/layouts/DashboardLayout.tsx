@@ -121,7 +121,14 @@ const DashboardLayout: React.FC = () => {
     { label: 'Riwayat UT-D', path: '/admin/riwayat-utd', icon: Briefcase, roles: ['pjutd'] },
   ];
 
-  const allNavItems = level === 'pjutd' ? pjutdNavItems : adminNavItems;
+  const utdNavItems = [
+    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['utd'] },
+    { label: 'Profil Dirinya', path: '/admin/profil-utd', icon: User, roles: ['utd'] },
+    { label: 'Riwayat Tempat Tugas', path: '/admin/riwayat-tempat-tugas', icon: Briefcase, roles: ['utd'] },
+    { label: 'Laporan', path: '/admin/laporan-saya', icon: Archive, roles: ['utd'] },
+  ];
+
+  const allNavItems = level === 'pjutd' ? pjutdNavItems : level === 'utd' ? utdNavItems : adminNavItems;
 
   const toggleMenu = (label: string) => {
     setOpenMenus(prev => ({ [label]: !prev[label] }));

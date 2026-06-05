@@ -25,7 +25,10 @@ import ValidasiBoyongPage from './pages/ValidasiBoyongPage';
 import PengajuanBoyongPage from './pages/PengajuanBoyongPage';
 import AlumniPage from './pages/AlumniPage';
 import RiwayatUtdPage from './pages/RiwayatUtdPage';
+import RiwayatTempatTugasPage from './pages/RiwayatTempatTugasPage';
 import ProfilLembagaPage from './pages/ProfilLembagaPage';
+import ProfilUtdPage from './pages/ProfilUtdPage';
+
 
 import LaporanMasukWajibPage from './pages/LaporanMasukWajibPage';
 import JadwalLaporanPage from './pages/JadwalLaporanPage';
@@ -54,6 +57,8 @@ function App() {
               <Route path="mutasi" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><MutasiPage /></ProtectedRoute>} />
               <Route path="penarikan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><PenarikanPage /></ProtectedRoute>} />
               <Route path="riwayat-utd" element={<ProtectedRoute allowedRoles={['pjutd']}><RiwayatUtdPage /></ProtectedRoute>} />
+              <Route path="riwayat-tempat-tugas" element={<ProtectedRoute allowedRoles={['utd']}><RiwayatTempatTugasPage /></ProtectedRoute>} />
+              <Route path="profil-utd" element={<ProtectedRoute allowedRoles={['utd']}><ProfilUtdPage /></ProtectedRoute>} />
               <Route path="penilaian" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><PenilaianPage /></ProtectedRoute>} />
               <Route path="penilaian-pjutd" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><PenilaianPjutdPage /></ProtectedRoute>} />
               <Route path="pengajuan-boyong" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><PengajuanBoyongPage /></ProtectedRoute>} />
