@@ -4,6 +4,7 @@ import api from '../api/client';
 import { FileText, Plus, Search, Filter, AlertCircle, RefreshCcw, CheckCircle, Clock, Trash2, Edit3, Printer, FilePlus } from 'lucide-react';
 import { CetakLaporanWajibUtd } from '../components/CetakLaporanWajibUtd';
 import { CetakLaporanWajibPjutd } from '../components/CetakLaporanWajibPjutd';
+import { CetakLaporanMendesak } from '../components/CetakLaporanMendesak';
 import Modal from '../components/Modal';
 
 interface Soal {
@@ -222,35 +223,144 @@ const LaporanSayaPage: React.FC = () => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '1000px', margin: '0 auto' }}>
+      
+      <style>{`
+        .laporan-tab-btn {
+          padding: 12px 24px;
+          border-radius: 14px;
+          border: none;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-weight: 600;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          background: transparent;
+          color: #64748b;
+        }
+        .laporan-tab-btn:hover:not(.active) {
+          background: rgba(226, 232, 240, 0.5);
+          color: #334155;
+        }
+        .laporan-tab-btn.active.wajib {
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          color: white;
+          box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        .laporan-tab-btn.active.mendesak {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          color: white;
+          box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        .laporan-card-header {
+          background: white;
+          border-radius: 24px;
+          padding: 28px;
+          box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.08);
+          border: 1px solid rgba(226, 232, 240, 0.8);
+          position: relative;
+          overflow: hidden;
+        }
+        .laporan-card-header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 6px;
+          background: linear-gradient(90deg, #4f46e5, #ec4899);
+          opacity: 0.8;
+        }
+        .laporan-mendesak-header::before {
+          background: linear-gradient(90deg, #ef4444, #f59e0b);
+        }
+        .laporan-item-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 20px;
+          padding: 24px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+          position: relative;
+          overflow: hidden;
+        }
+        .laporan-item-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
+          border-color: #cbd5e1;
+        }
+        .status-badge {
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          letter-spacing: 0.3px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .action-btn {
+          padding: 10px 20px;
+          border-radius: 12px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.3s ease;
+          border: 1px solid transparent;
+          cursor: pointer;
+        }
+        .action-btn.primary {
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          color: white;
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+        .action-btn.primary:hover:not(:disabled) {
+          box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+          transform: translateY(-1px);
+        }
+        .action-btn.primary:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          box-shadow: none;
+          cursor: not-allowed;
+        }
+        .action-btn.danger {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          color: white;
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+        .action-btn.danger:hover {
+          box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+          transform: translateY(-1px);
+        }
+        .action-btn.outline {
+          background: white;
+          border-color: #e2e8f0;
+          color: #475569;
+        }
+        .action-btn.outline:hover {
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          color: #1e293b;
+        }
+      `}</style>
       
       {/* Segmented Control Tabs */}
-      <div style={{ display: 'flex', background: '#f8fafc', padding: '6px', borderRadius: '16px', gap: '8px', marginBottom: '8px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
+      <div style={{ display: 'flex', background: '#f8fafc', padding: '8px', borderRadius: '18px', gap: '8px', marginBottom: '8px', border: '1px solid #e2e8f0', width: 'fit-content', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
         <button 
+          className={`laporan-tab-btn ${activeTab === 'wajib' ? 'active wajib' : ''}`}
           onClick={() => setActiveTab('wajib')}
-          style={{ 
-            padding: '10px 20px', 
-            borderRadius: '12px', 
-            background: activeTab === 'wajib' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'wajib' ? 'white' : '#64748b',
-            border: 'none',
-            display: 'flex', alignItems: 'center', gap: '8px',
-            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', transition: 'all 0.3s'
-          }}
         >
           <FileText size={18} /> Laporan Wajib (Rutin)
         </button>
         <button 
+          className={`laporan-tab-btn ${activeTab === 'mendesak' ? 'active mendesak' : ''}`}
           onClick={() => setActiveTab('mendesak')}
-          style={{ 
-            padding: '10px 20px', 
-            borderRadius: '12px', 
-            background: activeTab === 'mendesak' ? 'var(--primary)' : 'transparent',
-            color: activeTab === 'mendesak' ? 'white' : '#64748b',
-            border: 'none',
-            display: 'flex', alignItems: 'center', gap: '8px',
-            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', transition: 'all 0.3s'
-          }}
         >
           <AlertCircle size={18} /> Laporan Mendesak
         </button>
@@ -260,26 +370,26 @@ const LaporanSayaPage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Pengumpulan / Riwayat Saya */}
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(79, 70, 229, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <FileText size={24} />
+          <div className="laporan-card-header">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap', gap: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5)' }}>
+                  <FileText size={28} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Laporan Wajib Saya</h2>
-                  <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Kirim dan pantau riwayat laporan rutin Anda</div>
+                  <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Laporan Wajib Saya</h2>
+                  <div style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '6px' }}>Kirim dan pantau riwayat laporan rutin Anda</div>
                 </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>T.A:</span>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', background: '#f8fafc', padding: '12px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>T.A:</span>
                   <select 
                     className="styled-input" 
                     value={selectedTahunAjaran} 
                     onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
-                    style={{ minWidth: '160px' }}
+                    style={{ minWidth: '160px', background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
                   >
                     {tahunAjaranList.map(ta => (
                       <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
@@ -287,13 +397,15 @@ const LaporanSayaPage: React.FC = () => {
                   </select>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Bulan:</span>
+                <div style={{ width: '1px', height: '32px', background: '#e2e8f0', margin: '0 4px' }}></div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bulan:</span>
                   <select 
                     className="styled-input" 
                     value={selectedKategoriBulan} 
                     onChange={e => setSelectedKategoriBulan(e.target.value)}
-                    style={{ minWidth: '120px' }}
+                    style={{ minWidth: '140px', background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
                   >
                     {KATEGORI_BULAN_OPTIONS.map(opt => (
                       <option key={opt} value={opt}>{opt}</option>
@@ -303,37 +415,30 @@ const LaporanSayaPage: React.FC = () => {
 
                 {isSender && (
                   <button 
-                    className="btn btn-outline" 
+                    className="action-btn outline" 
                     onClick={() => setPrintBlankoType(currentUser?.level === 'utd' ? 'utd' : 'pjutd')}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600 }}
                   >
                     <FilePlus size={18} /> Cetak Blanko
                   </button>
                 )}
 
                 {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end', marginLeft: 'auto' }}>
                     {!hasSubmittedWajib && currentJadwal && (
-                      <div style={{ 
-                        display: 'flex', alignItems: 'center', gap: '6px', 
-                        padding: '8px 12px', 
-                        borderRadius: '8px', 
-                        fontSize: '0.75rem', 
-                        fontWeight: 600,
+                      <div className="status-badge" style={{ 
+                        padding: '8px 14px', 
                         background: isLate ? '#fef2f2' : '#f8fafc',
                         color: isLate ? '#ef4444' : '#64748b',
                         border: `1px solid ${isLate ? '#fecaca' : '#e2e8f0'}`,
-                        whiteSpace: 'nowrap'
                       }}>
                         <Clock size={14} />
                         Batas: {new Date(currentJadwal.batas_tanggal).toLocaleDateString('id-ID')} {isLate && '(Terlambat)'}
                       </div>
                     )}
                     <button 
-                      className="btn btn-primary" 
+                      className="action-btn primary" 
                       onClick={() => { setJawabanForm({}); setIsSubmitWajibModalOpen(true); }}
                       disabled={hasSubmittedWajib}
-                      style={{ padding: '10px 20px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center', boxShadow: hasSubmittedWajib ? 'none' : '0 4px 12px rgba(79, 70, 229, 0.3)' }}
                     >
                       <Plus size={18} />
                       {hasSubmittedWajib ? 'Sudah Dilaporkan' : 'Isi Laporan'}
@@ -344,56 +449,52 @@ const LaporanSayaPage: React.FC = () => {
             </div>
 
             {loadingWajib ? <p>Memuat riwayat...</p> : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).map(laporan => (
-                  <div key={laporan.id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', background: 'white', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', transition: 'all 0.3s' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{ background: 'rgba(79, 70, 229, 0.1)', color: 'var(--primary)', padding: '10px', borderRadius: '10px' }}>
-                          <FileText size={24} />
+                  <div key={laporan.id} className="laporan-item-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <div style={{ background: 'rgba(79, 70, 229, 0.08)', color: 'var(--primary)', padding: '14px', borderRadius: '16px' }}>
+                          <FileText size={28} strokeWidth={1.5} />
                         </div>
                         <div>
-                          <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1.1rem' }}>{laporan.kategori_bulan}</div> 
-                          <div style={{ color: '#94a3b8', fontSize: '0.875rem', marginTop: '2px' }}>Dikirim: {laporan.bulan_tahun}</div>
+                          <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '1.25rem' }}>{laporan.kategori_bulan}</div> 
+                          <div style={{ color: '#94a3b8', fontSize: '0.875rem', marginTop: '4px', fontWeight: 500 }}>Dikirim: {laporan.bulan_tahun}</div>
                         </div>
                         {laporan.status_waktu && (
-                          <span style={{ 
-                            marginLeft: '8px', 
-                            padding: '4px 12px', 
-                            borderRadius: '20px', 
-                            fontSize: '0.75rem', 
-                            fontWeight: 600,
+                          <span className="status-badge" style={{ 
+                            marginLeft: '12px', 
                             background: laporan.status_waktu === 'Tepat Waktu' ? '#ecfdf5' : '#fef2f2',
                             color: laporan.status_waktu === 'Tepat Waktu' ? '#10b981' : '#ef4444',
                             border: `1px solid ${laporan.status_waktu === 'Tepat Waktu' ? '#a7f3d0' : '#fecaca'}`,
-                            display: 'flex', alignItems: 'center', gap: '4px'
                           }}>
-                            {laporan.status_waktu === 'Tepat Waktu' ? <CheckCircle size={12} /> : <AlertCircle size={12} />}
+                            {laporan.status_waktu === 'Tepat Waktu' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
                             {laporan.status_waktu}
                           </span>
                         )}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600, background: '#ecfdf5', padding: '8px 12px', borderRadius: '8px' }}>
-                          <CheckCircle size={16} /> Terkirim
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <span className="status-badge" style={{ color: '#10b981', background: '#ecfdf5', padding: '10px 16px', borderRadius: '12px', border: '1px solid #a7f3d0' }}>
+                          <CheckCircle size={18} /> Terkirim
                         </span>
                         <button 
-                          className="btn btn-outline" 
+                          className="action-btn outline" 
                           onClick={() => setPrintLaporan(laporan)}
-                          style={{ padding: '8px 16px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, borderRadius: '8px' }}
                         >
-                          <Printer size={16} /> Cetak
+                          <Printer size={18} /> Cetak
                         </button>
                       </div>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                      {laporan.jawabans.map((j: any) => (
-                        <div key={j.id} style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                          <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>{j.soal_laporan?.pertanyaan}</div>
-                          <div style={{ color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: '1.4' }}>{j.jawaban || '-'}</div>
-                        </div>
-                      ))}
-                    </div>
+                    {currentUser?.level !== 'pjutd' && (
+                      <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #f1f5f9', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                        {laporan.jawabans.map((j: any) => (
+                          <div key={j.id} style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>{j.soal_laporan?.pertanyaan}</div>
+                            <div style={{ color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: '1.4' }}>{j.jawaban || '-'}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
                 {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).length === 0 && (
@@ -410,26 +511,26 @@ const LaporanSayaPage: React.FC = () => {
       )}
 
       {activeTab === 'mendesak' && (
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <AlertCircle size={24} />
+        <div className="laporan-card-header laporan-mendesak-header">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap', gap: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5)' }}>
+                <AlertCircle size={28} strokeWidth={1.5} />
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Laporan Mendesak</h2>
-                <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Laporan khusus untuk kejadian luar biasa / insidental</div>
+                <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Laporan Mendesak</h2>
+                <div style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '6px' }}>Laporan khusus untuk kejadian luar biasa / insidental</div>
               </div>
             </div>
             
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>T.A:</span>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', background: '#f8fafc', padding: '12px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>T.A:</span>
                 <select 
                   className="styled-input" 
                   value={selectedTahunAjaran} 
                   onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
-                  style={{ minWidth: '160px' }}
+                  style={{ minWidth: '160px', background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
                 >
                   {tahunAjaranList.map(ta => (
                     <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
@@ -438,13 +539,15 @@ const LaporanSayaPage: React.FC = () => {
               </div>
               
               {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                <button 
-                  className="btn btn-primary" 
-                  onClick={() => setIsMendesakModalOpen(true)}
-                  style={{ padding: '10px 20px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center', background: '#ef4444', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)' }}
-                >
-                  <AlertCircle size={18} /> Buat Laporan Mendesak
-                </button>
+                <>
+                  <div style={{ width: '1px', height: '32px', background: '#e2e8f0', margin: '0 4px' }}></div>
+                  <button 
+                    className="action-btn danger" 
+                    onClick={() => setIsMendesakModalOpen(true)}
+                  >
+                    <AlertCircle size={18} /> Buat Laporan Mendesak
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -452,13 +555,8 @@ const LaporanSayaPage: React.FC = () => {
           {loadingMendesak ? <p>Memuat laporan...</p> : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {myLaporanMendesakList.map(laporan => (
-                <div key={laporan.id} style={{ 
-                  border: '1px solid #e2e8f0', 
-                  borderRadius: '12px', 
-                  padding: '24px', 
+                <div key={laporan.id} className="laporan-item-card" style={{ 
                   background: laporan.status_penyelesaian === 'Selesai' ? '#f8fafc' : 'white',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-                  transition: 'all 0.3s'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '16px' }}>
                     <div>
@@ -467,24 +565,29 @@ const LaporanSayaPage: React.FC = () => {
                         <Clock size={14} /> {new Date(laporan.created_at).toLocaleString('id-ID')}
                       </div>
                     </div>
-                    <span style={{ 
-                      padding: '6px 12px', 
-                      borderRadius: '20px', 
-                      fontSize: '0.75rem', 
-                      fontWeight: 700,
-                      background: laporan.status_penyelesaian === 'Menunggu' ? '#fee2e2' : laporan.status_penyelesaian === 'Diproses' ? '#fef3c7' : '#dcfce7',
-                      color: laporan.status_penyelesaian === 'Menunggu' ? '#b91c1c' : laporan.status_penyelesaian === 'Diproses' ? '#b45309' : '#15803d',
-                      border: `1px solid ${laporan.status_penyelesaian === 'Menunggu' ? '#fecaca' : laporan.status_penyelesaian === 'Diproses' ? '#fde68a' : '#bbf7d0'}`,
-                      whiteSpace: 'nowrap'
-                    }}>
-                      {laporan.status_penyelesaian}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span className="status-badge" style={{ 
+                        padding: '6px 12px', 
+                        borderRadius: '20px', 
+                        fontSize: '0.75rem', 
+                        fontWeight: 700,
+                        background: laporan.status_penyelesaian === 'Menunggu' ? '#fee2e2' : laporan.status_penyelesaian === 'Diproses' ? '#fef3c7' : '#dcfce7',
+                        color: laporan.status_penyelesaian === 'Menunggu' ? '#b91c1c' : laporan.status_penyelesaian === 'Diproses' ? '#b45309' : '#15803d',
+                        border: `1px solid ${laporan.status_penyelesaian === 'Menunggu' ? '#fecaca' : laporan.status_penyelesaian === 'Diproses' ? '#fde68a' : '#bbf7d0'}`,
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {laporan.status_penyelesaian}
+                      </span>
+                      <button 
+                        className="action-btn outline" 
+                        onClick={() => setPrintLaporan(laporan)}
+                        style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                      >
+                        <Printer size={14} /> Cetak
+                      </button>
+                    </div>
                   </div>
-                  <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <p style={{ fontSize: '0.95rem', margin: 0, whiteSpace: 'pre-wrap', color: 'var(--text-primary)', lineHeight: '1.5' }}>
-                      {laporan.isi_laporan}
-                    </p>
-                  </div>
+                  {/* Isi laporan disembunyikan sesuai permintaan */}
                 </div>
               ))}
               {myLaporanMendesakList.length === 0 && (
@@ -637,11 +740,15 @@ const LaporanSayaPage: React.FC = () => {
       {/* Print Areas */}
       {(printLaporan || printBlankoType) && (
         <div className="print-area">
-          {printLaporan && currentUser?.level === 'utd' && (
+          {printLaporan && 'kategori_bulan' in printLaporan && currentUser?.level === 'utd' && (
             <CetakLaporanWajibUtd laporan={printLaporan} kopSuratUrl={getKopUrl('utd')} />
           )}
-          {printLaporan && currentUser?.level === 'pjutd' && (
+          {printLaporan && 'kategori_bulan' in printLaporan && currentUser?.level === 'pjutd' && (
             <CetakLaporanWajibPjutd laporan={printLaporan} kopSuratUrl={getKopUrl('pjutd')} />
+          )}
+          
+          {printLaporan && 'judul' in printLaporan && (
+            <CetakLaporanMendesak laporan={printLaporan} kopSuratUrl={getKopUrl(currentUser?.level === 'utd' ? 'utd' : 'pjutd')} />
           )}
           
           {printBlankoType === 'utd' && !printLaporan && (

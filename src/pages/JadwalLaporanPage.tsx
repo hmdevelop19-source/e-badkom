@@ -3,11 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import toast from 'react-hot-toast';
 
-interface JadwalLaporan {
-  kategori_bulan: string;
-  batas_tanggal: string;
-}
-
 const JadwalLaporanPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<string>('');
