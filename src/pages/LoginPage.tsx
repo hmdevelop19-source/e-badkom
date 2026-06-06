@@ -23,7 +23,15 @@ const LoginPage: React.FC = () => {
       const response = await api.post('/login', { username, password }, { skipToast: true } as any);
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      navigate('/admin');
+      
+      const userLevel = response.data.user.level;
+      if (userLevel === 'utd') {
+        navigate('/utd');
+      } else if (userLevel === 'pjutd') {
+        navigate('/pjutd');
+      } else {
+        navigate('/admin');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Username atau password salah');
     } finally {

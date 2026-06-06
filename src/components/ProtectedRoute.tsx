@@ -12,8 +12,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   const level = currentUser?.level || 'user';
 
   if (!allowedRoles.includes(level)) {
-    // If not allowed, redirect to admin dashboard or any other appropriate page
-    return <Navigate to="/admin" replace />;
+    let redirectPath = '/admin';
+    if (level === 'utd') redirectPath = '/utd';
+    else if (level === 'pjutd') redirectPath = '/pjutd';
+    
+    // If not allowed, redirect to their respective dashboard
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;

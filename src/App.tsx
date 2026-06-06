@@ -4,7 +4,13 @@ import { Toaster } from 'react-hot-toast';
 import { DialogProvider } from './contexts/DialogContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
-import DashboardLayout from './layouts/DashboardLayout';
+
+// Layouts
+import AdminLayout from './layouts/admin/AdminLayout';
+import PjutdLayout from './layouts/pjutd/PjutdLayout';
+import UtdLayout from './layouts/utd/UtdLayout';
+
+// Pages
 import AdminDashboard from './pages/AdminDashboard';
 import SantriPage from './pages/SantriPage';
 import BadkomPage from './pages/BadkomPage';
@@ -28,8 +34,6 @@ import RiwayatUtdPage from './pages/RiwayatUtdPage';
 import RiwayatTempatTugasPage from './pages/RiwayatTempatTugasPage';
 import ProfilLembagaPage from './pages/ProfilLembagaPage';
 import ProfilUtdPage from './pages/ProfilUtdPage';
-
-
 import LaporanMasukWajibPage from './pages/LaporanMasukWajibPage';
 import JadwalLaporanPage from './pages/JadwalLaporanPage';
 import LaporanMasukInsidentalPage from './pages/LaporanMasukInsidentalPage';
@@ -44,34 +48,52 @@ function App() {
         <Router>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/admin" element={<DashboardLayout />}>
+            
+            {/* ADMIN ROUTES */}
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><AdminLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
-              <Route path="users" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><UserPage /></ProtectedRoute>} />
+              <Route path="users" element={<UserPage />} />
               <Route path="profil" element={<ProfilePage />} />
-              <Route path="profil-lembaga" element={<ProtectedRoute allowedRoles={['pjutd']}><ProfilLembagaPage /></ProtectedRoute>} />
               <Route path="santri" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><SantriPage /></ProtectedRoute>} />
               <Route path="badkom" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><BadkomPage /></ProtectedRoute>} />
-              <Route path="pjutd" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><PjutdPage /></ProtectedRoute>} />
+              <Route path="pjutd" element={<PjutdPage />} />
               <Route path="tahun-ajaran" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><TahunAjaranPage /></ProtectedRoute>} />
-              <Route path="penugasan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd']}><PenugasanPage /></ProtectedRoute>} />
-              <Route path="mutasi" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><MutasiPage /></ProtectedRoute>} />
-              <Route path="penarikan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><PenarikanPage /></ProtectedRoute>} />
-              <Route path="riwayat-utd" element={<ProtectedRoute allowedRoles={['pjutd']}><RiwayatUtdPage /></ProtectedRoute>} />
-              <Route path="riwayat-tempat-tugas" element={<ProtectedRoute allowedRoles={['utd']}><RiwayatTempatTugasPage /></ProtectedRoute>} />
-              <Route path="profil-utd" element={<ProtectedRoute allowedRoles={['utd']}><ProfilUtdPage /></ProtectedRoute>} />
-              <Route path="penilaian" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><PenilaianPage /></ProtectedRoute>} />
-              <Route path="penilaian-pjutd" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><PenilaianPjutdPage /></ProtectedRoute>} />
+              <Route path="penugasan" element={<PenugasanPage />} />
+              <Route path="mutasi" element={<MutasiPage />} />
+              <Route path="penarikan" element={<PenarikanPage />} />
+              <Route path="penilaian" element={<PenilaianPage />} />
+              <Route path="penilaian-pjutd" element={<PenilaianPjutdPage />} />
               <Route path="pengajuan-boyong" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><PengajuanBoyongPage /></ProtectedRoute>} />
               <Route path="validasi-boyong" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><ValidasiBoyongPage /></ProtectedRoute>} />
               <Route path="alumni" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><AlumniPage /></ProtectedRoute>} />
-              <Route path="laporan-saya" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd', 'utd']}><LaporanSayaPage /></ProtectedRoute>} />
+              <Route path="laporan-saya" element={<LaporanSayaPage />} />
               <Route path="soal-laporan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><SoalLaporanPage /></ProtectedRoute>} />
               <Route path="jadwal-laporan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><JadwalLaporanPage /></ProtectedRoute>} />
-              <Route path="laporan-masuk/wajib" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><LaporanMasukWajibPage /></ProtectedRoute>} />
-              <Route path="laporan-masuk/insidental" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah']}><LaporanMasukInsidentalPage /></ProtectedRoute>} />
-              <Route path="surat" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat', 'badkom_wilayah', 'pjutd']}><SuratPage /></ProtectedRoute>} />
+              <Route path="laporan-masuk/wajib" element={<LaporanMasukWajibPage />} />
+              <Route path="laporan-masuk/insidental" element={<LaporanMasukInsidentalPage />} />
+              <Route path="surat" element={<SuratPage />} />
               <Route path="pengaturan" element={<ProtectedRoute allowedRoles={['admin', 'badkom_pusat']}><SettingsPage /></ProtectedRoute>} />
             </Route>
+
+            {/* PJUTD ROUTES */}
+            <Route path="/pjutd" element={<ProtectedRoute allowedRoles={['pjutd']}><PjutdLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="profil-lembaga" element={<ProfilLembagaPage />} />
+              <Route path="laporan-saya" element={<LaporanSayaPage />} />
+              <Route path="surat" element={<SuratPage />} />
+              <Route path="riwayat-utd" element={<RiwayatUtdPage />} />
+              <Route path="profil" element={<ProfilePage />} />
+            </Route>
+
+            {/* UTD ROUTES */}
+            <Route path="/utd" element={<ProtectedRoute allowedRoles={['utd']}><UtdLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="profil-utd" element={<ProfilUtdPage />} />
+              <Route path="riwayat-tempat-tugas" element={<RiwayatTempatTugasPage />} />
+              <Route path="laporan-saya" element={<LaporanSayaPage />} />
+              <Route path="profil" element={<ProfilePage />} />
+            </Route>
+
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
         </Router>

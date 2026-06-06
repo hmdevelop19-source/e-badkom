@@ -162,7 +162,7 @@ const ProfilUtdPage: React.FC = () => {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success('Biodata berhasil diperbarui');
       queryClient.invalidateQueries({ queryKey: ['profil'] });
       setError(null);
