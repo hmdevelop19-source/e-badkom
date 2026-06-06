@@ -53,7 +53,7 @@ const AutoLogout: React.FC<AutoLogoutProps> = ({ onLogout }) => {
       clearTimeout(idleTimeoutId);
       idleTimeoutId = setTimeout(() => {
         startCountdown("Tidak ada aktivitas yang terdeteksi.", 60);
-      }, 540000); // 9 minutes
+      }, 840000); // 14 minutes
     };
 
     resetIdleTimer();

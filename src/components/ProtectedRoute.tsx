@@ -1,5 +1,6 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import AutoLogout from './layout/AutoLogout';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -7,9 +8,16 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+  const navigate = useNavigate();
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const level = currentUser?.level || 'user';
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   if (!allowedRoles.includes(level)) {
     let redirectPath = '/admin';
@@ -20,7 +28,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     return <Navigate to={redirectPath} replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <AutoLogout onLogout={handleLogout} />
+      {children}
+    </>
+  );
 };
 
 export default ProtectedRoute;
