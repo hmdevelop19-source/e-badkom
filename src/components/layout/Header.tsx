@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
             padding: 6px !important;
           }
         }
-        .search-container {
+        .header-search-container {
           display: flex;
           align-items: center;
           background: #f1f5f9;
@@ -79,11 +79,11 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
           gap: 12px;
           transition: all 0.2s;
         }
-        .search-container:focus-within {
+        .header-search-container:focus-within {
           background: #fff;
           box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
         }
-        .search-input {
+        .header-search-input {
           border: none !important;
           background: transparent !important;
           outline: none !important;
@@ -94,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
           margin: 0 !important;
           box-shadow: none !important;
         }
-        .search-input::placeholder {
+        .header-search-input::placeholder {
           color: #94a3b8;
         }
         .profile-dropdown-btn {
@@ -119,11 +119,11 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
               <Menu size={24} />
             </button>
           )}
-          <div className="search-container hide-on-mobile">
+          <div className="header-search-container hide-on-mobile">
             <Search size={18} color="#64748b" />
             <input
               type="text"
-              className="search-input"
+              className="header-search-input"
               placeholder="Cari data, laporan, atau wilayah..."
             />
           </div>
