@@ -75,6 +75,39 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems, isOpen, onClose }) => {
             transform: translateX(0);
           }
         }
+
+        @media (min-width: 769px) {
+          .sidebar-enhanced {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+          }
+          .sidebar-enhanced:not(.open) {
+            width: 84px;
+            padding: 24px 12px;
+          }
+          
+          .sidebar-enhanced:not(.open) .sidebar-logo-container {
+            padding: 8px 0;
+            justify-content: center;
+          }
+
+          .sidebar-enhanced:not(.open) .logo-text,
+          .sidebar-enhanced:not(.open) .nav-label,
+          .sidebar-enhanced:not(.open) .nav-chevron,
+          .sidebar-enhanced:not(.open) .sub-menu-container {
+            display: none !important;
+          }
+
+          .sidebar-enhanced:not(.open) .nav-link-dynamic {
+            padding: 12px 0;
+            justify-content: center;
+          }
+
+          .sidebar-enhanced:not(.open) .nav-icon-wrapper {
+            justify-content: center;
+            width: 100%;
+          }
+        }
         
         .sidebar-backdrop {
           display: none;
@@ -233,7 +266,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems, isOpen, onClose }) => {
       <aside className={`sidebar-enhanced ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-logo-container">
           <img src={logoBadkom} alt="Logo E-Badkom" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
-          <div>
+          <div className="logo-text">
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '0.5px' }}>E-BADKOM</h2>
             <p style={{ fontSize: '0.65rem', color: '#94a3b8', margin: 0, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Sistem Informasi</p>
           </div>
@@ -242,29 +275,34 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems, isOpen, onClose }) => {
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {navItems.map((item) => {
             if (item.subItems && item.subItems.length > 0) {
-              const isOpen = openMenus[item.label];
+              const isMenuOpen = openMenus[item.label];
 
               return (
                 <div key={item.label}>
                   <button 
                     className="nav-link-dynamic" 
-                    style={{ background: isOpen ? 'rgba(255, 255, 255, 0.04)' : 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left', justifyContent: 'space-between' }}
-                    onClick={() => toggleMenu(item.label)}
+                    style={{ background: isMenuOpen ? 'rgba(255, 255, 255, 0.04)' : 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left', justifyContent: 'space-between' }}
+                    onClick={() => {
+                      if (!isOpen && window.innerWidth > 768) return; // Optional: prevent toggle when mini
+                      toggleMenu(item.label);
+                    }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                      <item.icon size={20} color={isOpen ? "#ffffff" : "currentColor"} />
-                      <span style={{ color: isOpen ? "#ffffff" : "inherit" }}>{item.label}</span>
+                    <div className="nav-icon-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <item.icon size={20} color={isMenuOpen ? "#ffffff" : "currentColor"} />
+                      <span className="nav-label" style={{ color: isMenuOpen ? "#ffffff" : "inherit" }}>{item.label}</span>
                     </div>
-                    {isOpen ? <ChevronDown size={16} color="#ffffff" /> : <ChevronRight size={16} />}
+                    <div className="nav-chevron">
+                      {isMenuOpen ? <ChevronDown size={16} color="#ffffff" /> : <ChevronRight size={16} />}
+                    </div>
                   </button>
-                  {isOpen && (
+                  {isMenuOpen && (
                     <div className="sub-menu-container">
                       {item.subItems.map(subItem => (
                         <Link 
                           key={subItem.path}
                           to={subItem.path} 
                           className={`sub-nav-link ${location.pathname === subItem.path ? 'active' : ''}`}
-                          onClick={onClose}
+                          onClick={() => { if (window.innerWidth <= 768 && onClose) onClose(); }}
                         >
                           {subItem.label}
                         </Link>
@@ -280,10 +318,12 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems, isOpen, onClose }) => {
                 key={item.path}
                 to={item.path as string} 
                 className={`nav-link-dynamic ${location.pathname === item.path ? 'active' : ''}`}
-                onClick={onClose}
+                onClick={() => { if (window.innerWidth <= 768 && onClose) onClose(); }}
               >
-                <item.icon size={20} />
-                {item.label}
+                <div className="nav-icon-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <item.icon size={20} />
+                  <span className="nav-label">{item.label}</span>
+                </div>
               </Link>
             );
           })}

@@ -14,6 +14,13 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, profileLink, onToggleSidebar }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+  const currentDate = new Date().toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+
   return (
     <>
       <style>{`
@@ -23,10 +30,11 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
           -webkit-backdrop-filter: blur(16px);
           position: sticky;
           top: 0;
-          padding: 16px 32px;
+          height: 70px;
           display: flex;
-          justify-content: space-between;
           align-items: center;
+          justify-content: space-between;
+          padding: 0 32px;
           border-bottom: 1px solid rgba(226, 232, 240, 0.6);
           box-shadow: 0 4px 24px -6px rgba(15, 23, 42, 0.05);
           z-index: 40;
@@ -37,8 +45,7 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
             padding: 12px 20px;
           }
         }
-        .mobile-menu-btn {
-          display: none;
+        .sidebar-toggle-btn {
           background: none;
           border: none;
           color: var(--text-secondary);
@@ -47,19 +54,21 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
           margin-left: -8px;
           margin-right: 12px;
           border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
         }
-        .mobile-menu-btn:hover {
+        .sidebar-toggle-btn:hover {
           background: rgba(0,0,0,0.05);
           color: var(--primary);
         }
         @media (max-width: 768px) {
-          .mobile-menu-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
           .hide-on-mobile {
             display: none !important;
+          }
+          .header-page-title {
+            font-size: 1.1rem;
           }
           .header-right-actions {
             gap: 12px !important;
@@ -68,43 +77,24 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
             padding: 6px !important;
           }
         }
-        .header-search-container {
+        .header-page-title {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin: 0;
+          letter-spacing: -0.3px;
           display: flex;
           align-items: center;
-          background: #f1f5f9;
-          border-radius: 9999px;
-          padding: 10px 24px;
-          flex: 1;
-          max-width: 480px;
           gap: 12px;
-          transition: all 0.2s;
-        }
-        .header-search-container:focus-within {
-          background: #fff;
-          box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
-        }
-        .header-search-input {
-          border: none !important;
-          background: transparent !important;
-          outline: none !important;
-          width: 100% !important;
-          font-size: 0.95rem !important;
-          color: #334155 !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          box-shadow: none !important;
-        }
-        .header-search-input::placeholder {
-          color: #94a3b8;
         }
         .profile-dropdown-btn {
           display: flex;
           align-items: center;
           gap: 12px;
+          padding: 6px 12px;
+          border-radius: 12px;
           cursor: pointer;
-          padding: 4px 8px;
-          border-radius: 40px;
-          background: transparent;
+          background: none;
           border: none;
           transition: opacity 0.2s;
         }
@@ -115,21 +105,18 @@ const Header: React.FC<HeaderProps> = ({ title, currentUser, level, onLogout, pr
       <header className="top-header-enhanced">
         <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: '24px' }}>
           {onToggleSidebar && (
-            <button className="mobile-menu-btn" onClick={onToggleSidebar}>
+            <button className="sidebar-toggle-btn" onClick={onToggleSidebar}>
               <Menu size={24} />
             </button>
           )}
-          <div className="header-search-container hide-on-mobile">
-            <Search size={18} color="#64748b" />
-            <input
-              type="text"
-              className="header-search-input"
-              placeholder="Cari data, laporan, atau wilayah..."
-            />
-          </div>
+          <h1 className="header-page-title">{title}</h1>
         </div>
 
         <div className="header-right-actions" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <div className="hide-on-mobile" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>
+            {currentDate}
+          </div>
+          
           <button
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', position: 'relative', padding: 0 }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--primary)'; }}

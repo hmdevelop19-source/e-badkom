@@ -13,7 +13,7 @@ const UtdLayout: React.FC = () => {
   const currentUserStr = useState(localStorage.getItem('user'))[0];
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
   const level = currentUser?.level || 'user';
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
