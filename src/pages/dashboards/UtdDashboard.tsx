@@ -31,21 +31,33 @@ const UtdDashboard: React.FC<UtdDashboardProps> = ({ data }) => {
             <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.95rem' }}>NIS: <span style={{ color: 'var(--primary)' }}>{data?.profile?.santri?.nis || '-'}</span></p>
             
             <div style={{ marginTop: '16px', maxWidth: '280px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '6px' }}>
-                <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Progres Tugas Wajib</span>
-                <span style={{ color: 'var(--primary)', fontWeight: 700 }}>
-                  {data?.stats?.laporan_wajib_count || 0} / {data?.stats?.max_laporan_wajib || 12} Laporan
-                </span>
-              </div>
-              <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ 
-                  width: `${Math.min(((data?.stats?.laporan_wajib_count || 0) / (data?.stats?.max_laporan_wajib || 12)) * 100, 100)}%`, 
-                  height: '100%', 
-                  background: 'var(--primary)', 
-                  borderRadius: '4px',
-                  transition: 'width 0.5s ease-in-out'
-                }} />
-              </div>
+              {(() => {
+                const target = data?.stats?.target_tugas_wajib || 3;
+                const validLulus = data?.stats?.valid_lulus_count || 0;
+                const progress = Math.min((validLulus / target) * 100, 100);
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', fontWeight: 600 }}>
+                      <span style={{ color: validLulus >= target ? '#15803d' : '#64748b' }}>
+                        {validLulus} / {target} Lulus
+                      </span>
+                      <span style={{ color: validLulus >= target ? '#15803d' : '#ca8a04' }}>
+                        {validLulus >= target ? 'Selesai' : 'Belum Selesai'}
+                      </span>
+                    </div>
+                    <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ 
+                        width: `${progress}%`, 
+                        height: '100%', 
+                        background: validLulus >= target ? '#22c55e' : '#0ea5e9', 
+                        borderRadius: '4px', 
+                        transition: 'width 0.5s ease-in-out' 
+                      }} />
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
