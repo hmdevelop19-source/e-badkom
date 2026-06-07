@@ -348,6 +348,33 @@ const LaporanSayaPage: React.FC = () => {
           border-color: #cbd5e1;
           color: #1e293b;
         }
+        @media (max-width: 768px) {
+          .laporan-filter-container {
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+          .laporan-filter-item {
+            width: 100%;
+            justify-content: space-between;
+          }
+          .laporan-filter-divider {
+            display: none !important;
+          }
+          .laporan-action-group {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+          }
+          .laporan-action-group button, .laporan-action-group .status-badge {
+            width: 100% !important;
+            justify-content: center;
+          }
+          .action-btn.outline {
+            width: 100% !important;
+            justify-content: center;
+          }
+        }
       `}</style>
       
       {/* Segmented Control Tabs */}
@@ -382,14 +409,14 @@ const LaporanSayaPage: React.FC = () => {
                 </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', background: '#f8fafc', padding: '12px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div className="laporan-filter-container" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', background: '#f8fafc', padding: '12px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+                <div className="laporan-filter-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>T.A:</span>
                   <select 
                     className="styled-input" 
                     value={selectedTahunAjaran} 
                     onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
-                    style={{ minWidth: '160px', background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
+                    style={{ minWidth: '160px', flex: 1, background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
                   >
                     {tahunAjaranList.map(ta => (
                       <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
@@ -397,15 +424,15 @@ const LaporanSayaPage: React.FC = () => {
                   </select>
                 </div>
 
-                <div style={{ width: '1px', height: '32px', background: '#e2e8f0', margin: '0 4px' }}></div>
+                <div className="laporan-filter-divider" style={{ width: '1px', height: '32px', background: '#e2e8f0', margin: '0 4px' }}></div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="laporan-filter-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bulan:</span>
                   <select 
                     className="styled-input" 
                     value={selectedKategoriBulan} 
                     onChange={e => setSelectedKategoriBulan(e.target.value)}
-                    style={{ minWidth: '140px', background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
+                    style={{ minWidth: '140px', flex: 1, background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
                   >
                     {KATEGORI_BULAN_OPTIONS.map(opt => (
                       <option key={opt} value={opt}>{opt}</option>
@@ -423,7 +450,7 @@ const LaporanSayaPage: React.FC = () => {
                 )}
 
                 {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end', marginLeft: 'auto' }}>
+                  <div className="laporan-action-group" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end', marginLeft: 'auto' }}>
                     {!hasSubmittedWajib && currentJadwal && (
                       <div className="status-badge" style={{ 
                         padding: '8px 14px', 
@@ -485,16 +512,6 @@ const LaporanSayaPage: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    {currentUser?.level !== 'pjutd' && (
-                      <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #f1f5f9', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                        {laporan.jawabans.map((j: any) => (
-                          <div key={j.id} style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                            <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>{j.soal_laporan?.pertanyaan}</div>
-                            <div style={{ color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: '1.4' }}>{j.jawaban || '-'}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))}
                 {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).length === 0 && (
@@ -523,14 +540,14 @@ const LaporanSayaPage: React.FC = () => {
               </div>
             </div>
             
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', background: '#f8fafc', padding: '12px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="laporan-filter-container" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', background: '#f8fafc', padding: '12px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+              <div className="laporan-filter-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>T.A:</span>
                 <select 
                   className="styled-input" 
                   value={selectedTahunAjaran} 
                   onChange={e => setSelectedTahunAjaran(Number(e.target.value))}
-                  style={{ minWidth: '160px', background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
+                  style={{ minWidth: '160px', flex: 1, background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px' }}
                 >
                   {tahunAjaranList.map(ta => (
                     <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
@@ -539,15 +556,15 @@ const LaporanSayaPage: React.FC = () => {
               </div>
               
               {isSender && selectedTahunAjaran === activeTahunAjaran?.id && (
-                <>
-                  <div style={{ width: '1px', height: '32px', background: '#e2e8f0', margin: '0 4px' }}></div>
+                <div className="laporan-action-group" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end', marginLeft: 'auto' }}>
+                  <div className="laporan-filter-divider" style={{ width: '1px', height: '32px', background: '#e2e8f0', margin: '0 4px' }}></div>
                   <button 
                     className="action-btn danger" 
                     onClick={() => setIsMendesakModalOpen(true)}
                   >
                     <AlertCircle size={18} /> Buat Laporan Mendesak
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>

@@ -13,7 +13,49 @@ const RiwayatTempatTugasPage: React.FC = () => {
   });
 
   return (
-    <div className="fade-in">
+    <>
+      <style>{`
+        .history-card {
+          display: flex;
+          align-items: flex-start;
+          gap: 20px;
+        }
+        .history-title-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 8px;
+          gap: 16px;
+        }
+        .history-details-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 24px;
+          color: var(--text-secondary);
+          font-size: 0.9rem;
+          margin-bottom: 16px;
+        }
+        @media (max-width: 768px) {
+          .history-card {
+            flex-direction: column;
+            gap: 16px;
+          }
+          .history-icon {
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 12px !important;
+          }
+          .history-icon svg {
+            width: 24px;
+            height: 24px;
+          }
+          .history-details-row {
+            flex-direction: column;
+            gap: 16px;
+          }
+        }
+      `}</style>
+      <div className="fade-in">
       <div className="header-actions" style={{ marginBottom: '24px' }}>
         <div>
           <h2>Riwayat Tempat Tugas</h2>
@@ -30,12 +72,12 @@ const RiwayatTempatTugasPage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {riwayat.length > 0 ? (
             riwayat.map((tugas: any) => (
-              <div key={tugas.id} className="card" style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', padding: '24px' }}>
-                <div style={{ 
+              <div key={tugas.id} className="card history-card" style={{ padding: '24px' }}>
+                <div className="history-icon" style={{ 
                   width: '60px', 
                   height: '60px', 
                   borderRadius: '16px', 
-                  background: 'var(--bg-secondary)', 
+                  background: '#f1f5f9', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
@@ -44,9 +86,9 @@ const RiwayatTempatTugasPage: React.FC = () => {
                 }}>
                   <MapPin size={28} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                    <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.2rem' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="history-title-row">
+                    <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.2rem', lineHeight: '1.3' }}>
                       {tugas.pjutd?.nama_madrasah || tugas.pjutd?.yayasan || 'Nama Lembaga Tidak Tersedia'}
                     </h3>
                     <span style={{ 
@@ -55,26 +97,33 @@ const RiwayatTempatTugasPage: React.FC = () => {
                       fontSize: '0.8rem', 
                       fontWeight: 600,
                       background: tugas.status === 'Aktif' ? '#dcfce7' : '#f1f5f9',
-                      color: tugas.status === 'Aktif' ? '#166534' : '#475569'
+                      color: tugas.status === 'Aktif' ? '#166534' : '#475569',
+                      whiteSpace: 'nowrap'
                     }}>
                       {tugas.status}
                     </span>
                   </div>
                   
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Calendar size={16} />
-                      Tahun Ajaran: <strong style={{ color: 'var(--text-primary)' }}>{tugas.tahun_ajaran?.nama_tahun_ajaran}</strong>
+                  <div className="history-details-row">
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                      <Calendar size={18} style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <div>
+                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '2px' }}>Tahun Ajaran</span>
+                        <strong style={{ color: 'var(--text-primary)' }}>{tugas.tahun_ajaran?.nama_tahun_ajaran}</strong>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <CheckCircle size={16} />
-                      Penanggung Jawab: <strong style={{ color: 'var(--text-primary)' }}>{tugas.pjutd?.nama_pjutd}</strong>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                      <CheckCircle size={18} style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <div>
+                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '2px' }}>Penanggung Jawab</span>
+                        <strong style={{ color: 'var(--text-primary)' }}>{tugas.pjutd?.nama_pjutd}</strong>
+                      </div>
                     </div>
                   </div>
 
                   <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                     <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Alamat Lembaga</p>
-                    <p style={{ margin: 0, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
+                    <p style={{ margin: 0, color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: '1.4' }}>
                       {tugas.pjutd?.alamat || 'Alamat tidak tersedia'}
                     </p>
                   </div>
@@ -90,7 +139,8 @@ const RiwayatTempatTugasPage: React.FC = () => {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

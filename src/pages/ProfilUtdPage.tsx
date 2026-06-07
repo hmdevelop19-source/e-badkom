@@ -227,58 +227,92 @@ const ProfilUtdPage: React.FC = () => {
   }
 
   return (
-    <div className="fade-in" style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div className="header-actions" style={{ marginBottom: '8px' }}>
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Profil Dirinya</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Kelola data biodata dan informasi wali Anda.</p>
-        </div>
-        {!isEditing && (
-          <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-            <Edit2 size={18} />
-            Edit Biodata
-          </button>
-        )}
-      </div>
-
-      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-        <div style={{ height: '120px', background: 'linear-gradient(135deg, var(--primary) 0%, #4c1d95 100%)', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 20px 20px, white 2px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-        </div>
-        
-        <div style={{ padding: '0 32px 32px 32px', position: 'relative' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '24px', marginBottom: '24px' }}>
-            <div className="pulse-avatar" style={{ 
-              width: '110px', 
-              height: '110px', 
-              borderRadius: '24px', 
-              background: 'white', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-              border: '4px solid white',
-              position: 'relative',
-              zIndex: 2,
-              marginTop: '-55px',
-              transform: 'rotate(-3deg)',
-              transition: 'transform 0.3s ease'
-            }} onMouseEnter={(e) => e.currentTarget.style.transform = 'rotate(0deg)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'rotate(-3deg)'}>
-              <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
-                <User size={50} strokeWidth={1.5} />
-              </div>
-            </div>
-            
-            <div style={{ paddingBottom: '8px' }}>
-              <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-                {profile?.santri?.nama || profile?.fullname || 'Ustadz Tugas'}
-              </h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginTop: '6px', fontSize: '0.95rem' }}>
-                <Hash size={16} />
-                <span>NIS: {profile?.santri?.nis || '-'}</span>
-              </div>
-            </div>
+    <>
+      <style>{`
+        @media (max-width: 768px) {
+          .profile-header-container {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center;
+            gap: 16px !important;
+          }
+          .profile-header-container .pulse-avatar {
+            margin-top: -60px !important;
+            transform: rotate(0deg) !important;
+          }
+          .profile-info-text {
+            padding-bottom: 0 !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .header-actions {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px;
+          }
+          .form-grid-2 {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        .form-grid-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+      `}</style>
+      <div className="fade-in" style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="header-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Profil Dirinya</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Kelola data biodata dan informasi wali Anda.</p>
           </div>
+          {!isEditing && (
+            <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
+              <Edit2 size={18} />
+              Edit Biodata
+            </button>
+          )}
+        </div>
+
+        <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+          <div style={{ height: '120px', background: 'linear-gradient(135deg, var(--primary) 0%, #4c1d95 100%)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 20px 20px, white 2px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+          </div>
+          
+          <div style={{ padding: '0 32px 32px 32px', position: 'relative' }}>
+            <div className="profile-header-container" style={{ display: 'flex', alignItems: 'flex-end', gap: '24px', marginBottom: '24px' }}>
+              <div className="pulse-avatar" style={{ 
+                width: '110px', 
+                height: '110px', 
+                borderRadius: '24px', 
+                background: 'white', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                border: '4px solid white',
+                position: 'relative',
+                zIndex: 2,
+                marginTop: '-55px',
+                transform: 'rotate(-3deg)',
+                transition: 'transform 0.3s ease'
+              }} onMouseEnter={(e) => e.currentTarget.style.transform = 'rotate(0deg)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'rotate(-3deg)'}>
+                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+                  <User size={50} strokeWidth={1.5} />
+                </div>
+              </div>
+              
+              <div className="profile-info-text" style={{ paddingBottom: '8px' }}>
+                <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+                  {profile?.santri?.nama || profile?.fullname || 'Ustadz Tugas'}
+                </h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginTop: '6px', fontSize: '0.95rem' }}>
+                  <Hash size={16} />
+                  <span>NIS: {profile?.santri?.nis || '-'}</span>
+                </div>
+              </div>
+            </div>
 
           <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: '0 0 32px 0' }} />
 
@@ -368,7 +402,7 @@ const ProfilUtdPage: React.FC = () => {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.3s ease-out' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#334155', margin: 0 }}>Biodata Pribadi</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-grid-2">
                   <div className="form-group">
                     <label className="form-label">Nama Lengkap</label>
                     <input type="text" className="form-control" value={formData.fullname} onChange={(e) => setFormData({...formData, fullname: e.target.value})} required />
@@ -387,12 +421,12 @@ const ProfilUtdPage: React.FC = () => {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Tanggal Lahir</label>
-                    <input type="text" className="form-control" value={formData.santri_tanggal_lahir} onChange={(e) => setFormData({...formData, santri_tanggal_lahir: e.target.value})} placeholder="Misal: 01 Januari 2000" />
+                    <input type="date" className="form-control" value={formData.santri_tanggal_lahir} onChange={(e) => setFormData({...formData, santri_tanggal_lahir: e.target.value})} />
                   </div>
                 </div>
 
                 {/* Wilayah Dropdowns */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <div className="form-grid-2" style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                   <div className="form-group">
                     <label className="form-label">Provinsi</label>
                     <select className="form-control" value={selectedProvId} onChange={handleProvinsiChange}>
@@ -443,7 +477,7 @@ const ProfilUtdPage: React.FC = () => {
                   <label className="form-label">Nama Wali</label>
                   <input type="text" className="form-control" value={formData.wali_nama} onChange={(e) => setFormData({...formData, wali_nama: e.target.value})} required />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-grid-2">
                   <div className="form-group">
                     <label className="form-label">NIK Wali</label>
                     <input type="text" className="form-control" value={formData.wali_nik} onChange={(e) => setFormData({...formData, wali_nik: e.target.value})} />
@@ -468,7 +502,8 @@ const ProfilUtdPage: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

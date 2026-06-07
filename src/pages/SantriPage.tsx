@@ -390,6 +390,62 @@ const SantriPage: React.FC = () => {
 
         .action-btn.delete { color: #ef4444; }
         .action-btn.delete:hover { background: #fee2e2; }
+
+        @media (max-width: 768px) {
+          .page-header {
+            flex-direction: column;
+            padding: 16px;
+          }
+          .search-container {
+            width: 100%;
+          }
+          .action-buttons {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+          }
+          .action-buttons > button, 
+          .action-buttons > div {
+            width: 100%;
+          }
+          .action-buttons .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 8px;
+            font-size: 0.85rem;
+          }
+          .action-buttons > div:nth-of-type(3) {
+            grid-column: span 2;
+          }
+          .action-buttons .btn-primary {
+            grid-column: span 2;
+          }
+          .data-table-container {
+            border-radius: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          .data-table th, .data-table td {
+            padding: 12px 16px;
+            white-space: nowrap;
+          }
+        }
+        .form-grid-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .form-grid-3 {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 16px;
+        }
+        @media (max-width: 768px) {
+          .form-grid-2, .form-grid-3 {
+            grid-template-columns: 1fr;
+          }
+        }
       `}</style>
 
       <div className="page-header">
@@ -584,7 +640,7 @@ const SantriPage: React.FC = () => {
           <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Data Wali & Kontak</h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="form-grid-2" style={{ marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label className="form-label">NIK WALI (Untuk Auto-fill)</label>
                 <input
@@ -623,7 +679,7 @@ const SantriPage: React.FC = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="form-grid-2">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label className="form-label">NOMOR HP / WHATSAPP WALI</label>
                 <input
@@ -649,7 +705,7 @@ const SantriPage: React.FC = () => {
           <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Data Pribadi Santri</h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="form-grid-2" style={{ marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label className="form-label">NOMOR INDUK SANTRI (NIS) *</label>
                 <input
@@ -693,7 +749,7 @@ const SantriPage: React.FC = () => {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+            <div className="form-grid-3">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label className="form-label">JENIS KELAMIN</label>
                 <select
@@ -739,7 +795,7 @@ const SantriPage: React.FC = () => {
           <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Alamat Lengkap</h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="form-grid-2" style={{ marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label className="form-label">PROVINSI</label>
                 <select value={formData.id_prov || ''} onChange={(e) => setFormData({ ...formData, id_prov: Number(e.target.value), id_kab: undefined, id_kec: undefined, id_kel: undefined })}>
@@ -756,7 +812,7 @@ const SantriPage: React.FC = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="form-grid-2" style={{ marginBottom: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label className="form-label">KECAMATAN</label>
                 <select value={formData.id_kec || ''} onChange={(e) => setFormData({ ...formData, id_kec: Number(e.target.value), id_kel: undefined })}>
@@ -842,8 +898,8 @@ const SantriPage: React.FC = () => {
                     <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Nama Lengkap</div>
                     <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '1.05rem', marginTop: '2px' }}>{selectedSantri.nama}</div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div>
+                  <div className="form-grid-2" style={{ marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lahir</div>
                       <div style={{ fontWeight: 500, color: '#334155', fontSize: '0.9rem', marginTop: '2px' }}>{selectedSantri.tempat_lahir || '-'}, {selectedSantri.tanggal_lahir ? new Date(selectedSantri.tanggal_lahir).toLocaleDateString('id-ID') : '-'}</div>
                     </div>

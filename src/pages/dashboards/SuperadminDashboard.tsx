@@ -17,18 +17,32 @@ const SuperadminDashboard: React.FC<SuperadminDashboardProps> = ({ data }) => {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
-        {stats.map((stat, index) => (
-          <StatCard key={stat.label} {...stat} index={index} />
-        ))}
-      </div>
+    <>
+      <style>{`
+        .superadmin-main-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: 24px;
+        }
+        @media (max-width: 1024px) {
+          .superadmin-main-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+          {stats.map((stat, index) => (
+            <StatCard key={stat.label} {...stat} index={index} />
+          ))}
+        </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
-        <LatestLaporanList latestLaporan={data?.latest_laporan || []} />
-        <LatestActivityList latestLaporan={data?.latest_laporan || []} />
+        <div className="superadmin-main-grid">
+          <LatestLaporanList latestLaporan={data?.latest_laporan || []} />
+          <LatestActivityList latestLaporan={data?.latest_laporan || []} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

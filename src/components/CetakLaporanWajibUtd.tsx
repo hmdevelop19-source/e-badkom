@@ -12,7 +12,7 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl, bl
   const user = laporan.user;
   const santri = user?.santri;
   // Get active UTD for this user to know the madrasah
-  const utd = santri?.utds?.[0]; // Assuming first or active
+  const utd = santri?.utds?.find((u: any) => u.status === 'Aktif') || santri?.utds?.[0];
   const pjutd = utd?.pjutd;
 
   // Group jawabans by KategoriSoal
@@ -99,22 +99,17 @@ export const CetakLaporanWajibUtd: React.FC<Props> = ({ laporan, kopSuratUrl, bl
             <tr>
               <td></td>
               <td>2. Alamat Asal</td>
-              <td>: {santri?.desa || '.............................'}, {santri?.kecamatan || '.............................'}</td>
+              <td>: {santri?.desa && santri?.kecamatan ? `${santri.desa}, ${santri.kecamatan}` : (santri?.alamat || '...................................................')}</td>
             </tr>
             <tr>
               <td></td>
-              <td>3. Status Tugas</td>
-              <td>: {user?.status_tugas || '...................................................'}</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>4. Bertempat di Madrasah</td>
+              <td>3. Bertempat di Madrasah</td>
               <td>: {pjutd?.nama_madrasah || pjutd?.yayasan || '...................................................'}</td>
             </tr>
             <tr>
               <td></td>
-              <td>5. Nama Kepala Madrasah</td>
-              <td>: {pjutd?.nama_kepala_madrasah || '...................................................'}</td>
+              <td>4. Nama Kepala Madrasah</td>
+              <td>: {pjutd?.nama_pjutd || '...................................................'}</td>
             </tr>
           </tbody>
         </table>
