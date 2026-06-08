@@ -24,7 +24,7 @@ const BadkomWilayahDashboard: React.FC<BadkomWilayahDashboardProps> = ({ data })
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+      <div className="dashboard-grid">
         <LatestLaporanList latestLaporan={data?.latest_laporan || []} />
         <LatestActivityList latestLaporan={data?.latest_laporan || []} />
       </div>

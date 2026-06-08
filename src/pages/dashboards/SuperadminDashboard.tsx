@@ -19,6 +19,16 @@ const SuperadminDashboard: React.FC<SuperadminDashboardProps> = ({ data }) => {
   return (
     <>
       <style>{`
+        .dashboard-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 24px;
+        }
         .superadmin-main-grid {
           display: grid;
           grid-template-columns: 2fr 1fr;
@@ -30,8 +40,8 @@ const SuperadminDashboard: React.FC<SuperadminDashboardProps> = ({ data }) => {
           }
         }
       `}</style>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+      <div className="dashboard-grid">
+        <div className="stats-grid">
           {stats.map((stat, index) => (
             <StatCard key={stat.label} {...stat} index={index} />
           ))}

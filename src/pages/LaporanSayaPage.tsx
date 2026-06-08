@@ -249,6 +249,38 @@ const LaporanSayaPage: React.FC = () => {
           color: white;
           box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
         }
+        @media (max-width: 768px) {
+          .laporan-filter-container {
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+          .laporan-filter-item {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+          }
+          .laporan-filter-item span {
+            min-width: 60px;
+          }
+          .laporan-filter-divider {
+            width: 100% !important;
+            height: 1px !important;
+            margin: 8px 0 !important;
+          }
+          .laporan-action-group {
+            width: 100%;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            margin-left: 0 !important;
+          }
+          .laporan-action-group .status-badge {
+            justify-content: center;
+          }
+          .laporan-action-group button, .laporan-filter-container .action-btn {
+            width: 100%;
+            justify-content: center;
+          }
+        }
         .laporan-tab-btn.active.mendesak {
           background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
           color: white;

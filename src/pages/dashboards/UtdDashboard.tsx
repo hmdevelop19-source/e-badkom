@@ -17,6 +17,11 @@ const UtdDashboard: React.FC<UtdDashboardProps> = ({ data }) => {
   return (
     <>
       <style>{`
+        .dashboard-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 24px;
+        }
         .utd-main-grid {
           display: grid;
           grid-template-columns: 2fr 1fr;
@@ -27,10 +32,15 @@ const UtdDashboard: React.FC<UtdDashboardProps> = ({ data }) => {
             grid-template-columns: 1fr;
           }
         }
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 24px;
+        }
       `}</style>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+        <div className="dashboard-grid">
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             {data?.profile?.foto_profil ? (
               <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '')}${data.profile.foto_profil}`} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />

@@ -20,6 +20,8 @@ const LatestLaporanList: React.FC<LatestLaporanListProps> = ({ latestLaporan }) 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '8px',
                 transition: 'all 0.2s ease',
                 cursor: 'pointer',
               }}
