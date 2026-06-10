@@ -27,9 +27,7 @@ interface SuratPermohonan {
   fasilitas_wc: boolean;
   fasilitas_bisyaroh: boolean;
   fasilitas_konsumsi: boolean;
-  bakat_kemampuan_1?: string;
-  bakat_kemampuan_2?: string;
-  bakat_kemampuan_3?: string;
+  bakat_kemampuan?: string[];
   pjutd?: any;
   tahun_ajaran?: any;
   created_at: string;
@@ -115,7 +113,8 @@ const SuratPage: React.FC = () => {
       fasilitas_kamar_mandi: false,
       fasilitas_wc: false,
       fasilitas_bisyaroh: false,
-      fasilitas_konsumsi: false
+      fasilitas_konsumsi: false,
+      bakat_kemampuan: ['']
     });
     setError('');
   };
@@ -130,7 +129,12 @@ const SuratPage: React.FC = () => {
       setError('Tahun Ajaran Masa Khidmat wajib diisi untuk perpanjangan.');
       return;
     }
-    mutation.mutate(formData);
+    const submitData = { ...formData };
+    if (submitData.bakat_kemampuan) {
+      submitData.bakat_kemampuan = submitData.bakat_kemampuan.filter(item => item && item.trim() !== '');
+    }
+
+    mutation.mutate(submitData);
   };
 
   const handleAdd = () => {
@@ -144,8 +148,9 @@ const SuratPage: React.FC = () => {
       setFormData(prev => ({
         ...prev,
         pjutd_id: id,
-        pjutd_nama_lembaga: selected.nama_pjutd,
-        pjutd_alamat: selected.alamat
+        pjutd_nama_lembaga: selected.nama_madrasah || selected.yayasan || '',
+        pjutd_alamat: selected.alamat || '',
+        pjutd_nama_kepala: selected.nama_pjutd || ''
       }));
     } else {
       setFormData(prev => ({ ...prev, pjutd_id: id }));
@@ -166,6 +171,27 @@ const SuratPage: React.FC = () => {
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  React.useEffect(() => {
+    if (isModalOpen && formData.jenis_permohonan === 'Perpanjangan' && userLevel === 'pjutd' && pjutds.length > 0) {
+      const myPjutd = pjutds[0];
+      setFormData(prev => {
+        if (!prev.pemohon_nama && !prev.pjutd_nama_lembaga) {
+          return {
+            ...prev,
+            pjutd_id: myPjutd.id,
+            pemohon_nama: myPjutd.nama_pjutd || currentUser?.fullname || '',
+            pemohon_jabatan: 'Kepala Lembaga',
+            pemohon_alamat: myPjutd.alamat || '',
+            pjutd_nama_lembaga: myPjutd.nama_madrasah || myPjutd.yayasan || '',
+            pjutd_alamat: myPjutd.alamat || '',
+            pjutd_nama_kepala: myPjutd.nama_pjutd || '',
+          };
+        }
+        return prev;
+      });
+    }
+  }, [isModalOpen, formData.jenis_permohonan, userLevel, pjutds, currentUser?.fullname]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -394,7 +420,7 @@ const SuratPage: React.FC = () => {
               <div style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
                 <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px' }}>Data Lembaga (PJUT-D)</h3>
                 
-                {formData.jenis_permohonan === 'Perpanjangan' && (
+                {formData.jenis_permohonan === 'Perpanjangan' && userLevel !== 'pjutd' && (
                   <div className="form-group" style={{ marginBottom: '20px' }}>
                     <label className="form-label">Pilih PJ UTD dari Database</label>
                     <select 
@@ -510,20 +536,49 @@ const SuratPage: React.FC = () => {
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '20px' }}>Tuliskan bakat atau kemampuan khusus yang diharapkan dari ustadz tugas (khusus perpanjangan).</p>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {[1, 2, 3].map(num => (
-                    <div key={num} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  {(formData.bakat_kemampuan || ['']).map((item, index) => (
+                    <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                       <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                        {num}
+                        {index + 1}
                       </div>
                       <input 
                         type="text" className="form-control" 
-                        placeholder={`Keahlian atau bakat ke-${num}`}
-                        value={formData[`bakat_kemampuan_${num}` as keyof SuratPermohonan] as string || ''} 
-                        onChange={e => setFormData({...formData, [`bakat_kemampuan_${num}`]: e.target.value})} 
+                        placeholder={`Keahlian atau bakat ke-${index + 1}`}
+                        value={item} 
+                        onChange={e => {
+                          const newBakat = [...(formData.bakat_kemampuan || [''])];
+                          newBakat[index] = e.target.value;
+                          setFormData({...formData, bakat_kemampuan: newBakat});
+                        }} 
                         style={{ flex: 1 }}
                       />
+                      <button 
+                        type="button"
+                        className="btn" 
+                        style={{ background: '#fee2e2', color: '#dc2626', padding: '8px 12px' }}
+                        onClick={() => {
+                          const newBakat = [...(formData.bakat_kemampuan || [''])];
+                          newBakat.splice(index, 1);
+                          setFormData({...formData, bakat_kemampuan: newBakat});
+                        }}
+                        disabled={(formData.bakat_kemampuan || []).length <= 1}
+                      >
+                        Hapus
+                      </button>
                     </div>
                   ))}
+                  <button 
+                    type="button"
+                    className="btn" 
+                    style={{ background: '#f1f5f9', color: '#475569', alignSelf: 'flex-start', marginTop: '8px' }}
+                    onClick={() => {
+                      const newBakat = [...(formData.bakat_kemampuan || [''])];
+                      newBakat.push('');
+                      setFormData({...formData, bakat_kemampuan: newBakat});
+                    }}
+                  >
+                    + Tambah Jawaban
+                  </button>
                 </div>
               </div>
             )}
@@ -578,7 +633,15 @@ const SuratPage: React.FC = () => {
                     Lanjut
                   </button>
                 ) : (
-                  <button type="submit" className="btn btn-primary" disabled={mutation.isPending}>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary" 
+                    disabled={mutation.isPending}
+                    onClick={(e) => {
+                      if (e.detail > 1) return; // Mencegah double-click dari tombol Lanjut
+                      handleSubmit(e);
+                    }}
+                  >
                     {mutation.isPending ? 'Menyimpan...' : 'Simpan Surat'}
                   </button>
                 )}
