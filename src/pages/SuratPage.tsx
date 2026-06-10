@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useDialog } from '../contexts/DialogContext';
 import Modal from '../components/Modal';
 import { TablePagination } from '../components/TablePagination';
+import { SearchableSelect } from '../components/SearchableSelect';
 
 interface SuratPermohonan {
   id: number;
@@ -58,11 +59,15 @@ const SuratPage: React.FC = () => {
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [selectedTahunAjaran, setSelectedTahunAjaran] = useState<string>('');
+  const [isTaInitialized, setIsTaInitialized] = useState(false);
 
   const { data: surat = [], isLoading } = useQuery<SuratPermohonan[]>({
-    queryKey: ['surat-permohonan'],
+    queryKey: ['surat-permohonan', selectedTahunAjaran],
     queryFn: async () => {
-      const response = await api.get('/surat-permohonan');
+      const response = await api.get('/surat-permohonan', {
+        params: { tahun_ajaran_id: selectedTahunAjaran || undefined }
+      });
       return response.data;
     }
   });
@@ -150,7 +155,10 @@ const SuratPage: React.FC = () => {
         pjutd_id: id,
         pjutd_nama_lembaga: selected.nama_madrasah || selected.yayasan || '',
         pjutd_alamat: selected.alamat || '',
-        pjutd_nama_kepala: selected.nama_pjutd || ''
+        pjutd_nama_kepala: selected.nama_pjutd || '',
+        pemohon_nama: selected.nama_pjutd || '',
+        pemohon_alamat: selected.alamat || '',
+        pemohon_jabatan: 'Kepala Lembaga'
       }));
     } else {
       setFormData(prev => ({ ...prev, pjutd_id: id }));
@@ -171,6 +179,16 @@ const SuratPage: React.FC = () => {
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  React.useEffect(() => {
+    if (tahunAjarans.length > 0 && !isTaInitialized) {
+      const activeTA = tahunAjarans.find((ta: any) => ta.is_active);
+      if (activeTA) {
+        setSelectedTahunAjaran(activeTA.id.toString());
+      }
+      setIsTaInitialized(true);
+    }
+  }, [tahunAjarans, isTaInitialized]);
 
   React.useEffect(() => {
     if (isModalOpen && formData.jenis_permohonan === 'Perpanjangan' && userLevel === 'pjutd' && pjutds.length > 0) {
@@ -196,15 +214,27 @@ const SuratPage: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div style={{ position: 'relative', width: '300px' }}>
-          <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
-          <input 
-            type="text" 
-            placeholder="Cari pemohon atau lembaga..." 
-            style={{ paddingLeft: '40px', width: '100%' }} 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div style={{ display: 'flex', gap: '16px', flex: 1, flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', width: '300px' }}>
+            <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
+            <input 
+              type="text" 
+              placeholder="Cari pemohon atau lembaga..." 
+              style={{ paddingLeft: '40px', width: '100%', height: '42px', borderRadius: '4px', border: '1px solid #cbd5e1' }} 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <select 
+            style={{ width: '200px', height: '42px', borderRadius: '4px', border: '1px solid #cbd5e1', padding: '0 12px' }}
+            value={selectedTahunAjaran}
+            onChange={(e) => setSelectedTahunAjaran(e.target.value)}
+          >
+            <option value="">Semua Tahun Ajaran</option>
+            {tahunAjarans.map((ta: any) => (
+              <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} H</option>
+            ))}
+          </select>
         </div>
         <button 
           className="btn btn-primary" 
@@ -241,8 +271,8 @@ const SuratPage: React.FC = () => {
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{item.pemohon_jabatan}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{item.pjutd?.nama_pjutd}</div>
-                    <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Tahun {item.tahun_ajaran?.nama_tahun_ajaran} H</div>
+                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{item.pjutd_nama_lembaga || item.pjutd?.nama_madrasah || item.pjutd?.yayasan || '-'}</div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Tahun {item.tahun_ajaran_tujuan || item.tahun_ajaran?.nama_tahun_ajaran}</div>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
                     <span style={{ 
@@ -383,6 +413,23 @@ const SuratPage: React.FC = () => {
             {currentStep === 2 && (
               <div style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
                 <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px' }}>Identitas Pemohon</h3>
+                
+                {formData.jenis_permohonan === 'Perpanjangan' && userLevel !== 'pjutd' && (
+                  <div className="form-group" style={{ marginBottom: '20px' }}>
+                    <label className="form-label">Pilih Pemohon (PJ UTD) dari Database</label>
+                    <SearchableSelect 
+                      options={pjutds.map((p: any) => ({
+                        value: p.id,
+                        label: `${p.nama_pjutd} (${p.kode_lembaga})`
+                      }))}
+                      value={formData.pjutd_id}
+                      onChange={(value) => handlePjutdChange(value as number)}
+                      placeholder="-- Cari dan Pilih PJ UTD / Lembaga --"
+                      required
+                    />
+                  </div>
+                )}
+
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                   <div className="form-group">
                     <label className="form-label">Nama Lengkap</label>
@@ -419,23 +466,6 @@ const SuratPage: React.FC = () => {
             {currentStep === 3 && (
               <div style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
                 <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px' }}>Data Lembaga (PJUT-D)</h3>
-                
-                {formData.jenis_permohonan === 'Perpanjangan' && userLevel !== 'pjutd' && (
-                  <div className="form-group" style={{ marginBottom: '20px' }}>
-                    <label className="form-label">Pilih PJ UTD dari Database</label>
-                    <select 
-                      className="form-control" 
-                      value={formData.pjutd_id || ''}
-                      onChange={e => handlePjutdChange(parseInt(e.target.value))}
-                      required
-                    >
-                      <option value="">-- Pilih Lembaga --</option>
-                      {pjutds.map((p: any) => (
-                        <option key={p.id} value={p.id}>{p.nama_pjutd} ({p.kode_lembaga})</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '16px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div className="form-group">

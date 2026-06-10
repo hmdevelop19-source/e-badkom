@@ -19,6 +19,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     navigate('/login');
   };
 
+  if (!currentUserStr) {
+    return <Navigate to="/login" replace />;
+  }
+
   if (!allowedRoles.includes(level)) {
     let redirectPath = '/admin';
     if (level === 'utd') redirectPath = '/utd';
