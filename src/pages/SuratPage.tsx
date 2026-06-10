@@ -10,7 +10,8 @@ import { TablePagination } from '../components/TablePagination';
 interface SuratPermohonan {
   id: number;
   pjutd_id: number;
-  tahun_ajaran_id: number;
+  tahun_ajaran_id?: number;
+  tahun_ajaran_tujuan?: string;
   jenis_permohonan: 'Baru' | 'Perpanjangan';
   pemohon_nama: string;
   pemohon_umur: string;
@@ -125,8 +126,8 @@ const SuratPage: React.FC = () => {
       setError('Lembaga wajib dipilih untuk perpanjangan.');
       return;
     }
-    if (!formData.tahun_ajaran_id) {
-      setError('Tahun Ajaran wajib dipilih.');
+    if (formData.jenis_permohonan === 'Perpanjangan' && !formData.tahun_ajaran_tujuan) {
+      setError('Tahun Ajaran Masa Khidmat wajib diisi untuk perpanjangan.');
       return;
     }
     mutation.mutate(formData);
@@ -336,20 +337,19 @@ const SuratPage: React.FC = () => {
                       <option value="Perpanjangan">Perpanjangan</option>
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Tahun Ajaran (Masa Khidmat)</label>
-                    <select 
-                      className="form-control" 
-                      value={formData.tahun_ajaran_id || ''}
-                      onChange={e => setFormData({...formData, tahun_ajaran_id: parseInt(e.target.value)})}
-                      required
-                    >
-                      <option value="">-- Pilih Tahun Ajaran --</option>
-                      {tahunAjarans.map((ta: any) => (
-                        <option key={ta.id} value={ta.id}>{ta.nama_tahun_ajaran} {ta.is_active ? '(Aktif)' : ''}</option>
-                      ))}
-                    </select>
-                  </div>
+                  {formData.jenis_permohonan === 'Perpanjangan' && (
+                    <div className="form-group">
+                      <label className="form-label">Tahun Ajaran (Masa Khidmat Berikutnya)</label>
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        placeholder="Contoh: 2026/2027 atau 1447 H"
+                        value={formData.tahun_ajaran_tujuan || ''}
+                        onChange={e => setFormData({...formData, tahun_ajaran_tujuan: e.target.value})}
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -547,9 +547,15 @@ const SuratPage: React.FC = () => {
                     className="btn btn-primary" 
                     onClick={() => {
                       // Basic validation before next step
-                      if (currentStep === 1 && (!formData.jenis_permohonan || !formData.tahun_ajaran_id)) {
-                        setError('Harap isi semua field di informasi dasar');
-                        return;
+                      if (currentStep === 1) {
+                        if (!formData.jenis_permohonan) {
+                          setError('Harap isi jenis permohonan');
+                          return;
+                        }
+                        if (formData.jenis_permohonan === 'Perpanjangan' && !formData.tahun_ajaran_tujuan) {
+                          setError('Tahun ajaran masa khidmat wajib diisi');
+                          return;
+                        }
                       }
                       if (currentStep === 2 && !formData.pemohon_nama) {
                         setError('Nama pemohon wajib diisi');
