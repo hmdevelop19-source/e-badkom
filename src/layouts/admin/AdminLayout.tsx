@@ -40,9 +40,9 @@ const AdminLayout: React.FC = () => {
 
   const rawNavItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
-    { 
-      label: 'Data Master', 
-      icon: Database, 
+    {
+      label: 'Data Master',
+      icon: Database,
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
         { label: 'Data Calon UT-D (Santri)', path: '/admin/santri', roles: ['admin', 'badkom_pusat'] },
@@ -51,9 +51,9 @@ const AdminLayout: React.FC = () => {
         { label: 'Data Alumni', path: '/admin/alumni', roles: ['admin', 'badkom_pusat'] },
       ]
     },
-    { 
-      label: 'Manajemen Tugas', 
-      icon: Briefcase, 
+    {
+      label: 'Manajemen Tugas',
+      icon: Briefcase,
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
         { label: 'Penugasan', path: '/admin/penugasan', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
@@ -70,18 +70,18 @@ const AdminLayout: React.FC = () => {
         { label: 'Penilaian PJU-TD', path: '/admin/penilaian-pjutd', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
-    { 
-      label: 'Validasi Kelulusan', 
-      icon: ClipboardCheck, 
+    {
+      label: 'Validasi Kelulusan',
+      icon: ClipboardCheck,
       roles: ['admin', 'badkom_pusat'],
       subItems: [
         { label: 'Pengajuan Boyong', path: '/admin/pengajuan-boyong', roles: ['admin', 'badkom_pusat'] },
         { label: 'Validasi Boyong', path: '/admin/validasi-boyong', roles: ['admin', 'badkom_pusat'] },
       ]
     },
-    { 
-      label: 'Manajemen Laporan', 
-      icon: Archive, 
+    {
+      label: 'Manajemen Laporan',
+      icon: Archive,
       roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
       subItems: [
         { label: 'Laporan Saya (Isi Laporan)', path: '/admin/laporan-saya', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
@@ -90,14 +90,14 @@ const AdminLayout: React.FC = () => {
         { label: 'Laporan Insidental (Laporan Masuk)', path: '/admin/laporan-masuk/insidental', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
       ]
     },
-    { 
-      label: 'Pengaturan', 
-      icon: Settings, 
-      roles: ['admin', 'badkom_pusat', 'badkom_wilayah'],
+    {
+      label: 'Pengaturan',
+      icon: Settings,
+      roles: ['admin', 'badkom_pusat'],
       subItems: [
         { label: 'Laporan (Pembuatan Soal)', path: '/admin/soal-laporan', roles: ['admin', 'badkom_pusat'] },
         { label: 'Jadwal Laporan Wajib', path: '/admin/jadwal-laporan', roles: ['admin', 'badkom_pusat'] },
-        { label: 'Manajemen Akun', path: '/admin/users', roles: ['admin', 'badkom_pusat', 'badkom_wilayah'] },
+        { label: 'Manajemen Akun', path: '/admin/users', roles: ['admin', 'badkom_pusat'] },
         { label: 'Pengaturan Sistem', path: '/admin/pengaturan', roles: ['admin', 'badkom_pusat'] },
         { label: 'Tahun Ajaran', path: '/admin/tahun-ajaran', roles: ['admin', 'badkom_pusat'] },
       ]
@@ -127,14 +127,14 @@ const AdminLayout: React.FC = () => {
 
   return (
     <div className="layout-container" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <Sidebar 
-        navItems={navItems} 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+      <Sidebar
+        navItems={navItems}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
-        <Header 
+        <Header
           title={getPageTitle()}
           currentUser={currentUser}
           level={level}
@@ -142,13 +142,13 @@ const AdminLayout: React.FC = () => {
           profileLink="/admin/profil"
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         />
-        
+
         <main className="main-content" style={{ flex: 1, overflowY: 'auto' }}>
           <div style={{ paddingBottom: '40px' }}>
             <Outlet />
           </div>
         </main>
-        
+
         <Footer />
       </div>
 
