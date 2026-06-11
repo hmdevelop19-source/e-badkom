@@ -31,60 +31,37 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({ label, icon, ite
   }, []);
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
+    <div ref={dropdownRef} className="relative inline-block text-left w-full md:w-auto">
       <button 
-        className="btn" 
-        style={{ display: 'flex', alignItems: 'center', gap: '8px', ...buttonStyle }}
+        className="flex items-center justify-center gap-2 w-full md:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-all hover:opacity-90 active:scale-95"
+        style={buttonStyle}
         onClick={() => setIsOpen(!isOpen)}
       >
         {icon}
         {label}
-        <ChevronDown size={14} style={{ marginLeft: '4px', transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+        <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          right: 0,
-          marginTop: '8px',
-          background: 'white',
-          border: '1px solid #e2e8f0',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-          minWidth: '160px',
-          zIndex: 50,
-          overflow: 'hidden'
-        }}>
-          {items.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                item.onClick();
-                setIsOpen(false);
-              }}
-              className={item.className || ''}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 16px',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: index < items.length - 1 ? '1px solid #f1f5f9' : 'none',
-                textAlign: 'left',
-                cursor: 'pointer',
-                fontSize: '14px',
-                ...item.style
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-            >
-              {item.icon}
-              {item.label}
-            </button>
-          ))}
+        <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-white border border-slate-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+          <div className="py-1">
+            {items.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  item.onClick();
+                  setIsOpen(false);
+                }}
+                className={`group flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#008FD7] transition-colors ${item.className || ''}`}
+                style={item.style}
+              >
+                <span className="text-slate-400 group-hover:text-[#008FD7] transition-colors">
+                  {item.icon}
+                </span>
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

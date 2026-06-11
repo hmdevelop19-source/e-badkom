@@ -308,7 +308,7 @@ const PjutdPage: React.FC = () => {
           flex-wrap: wrap;
           gap: 16px;
           background: #ffffff;
-          padding: 20px 24px;
+          padding: 16px 20px;
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
@@ -321,7 +321,7 @@ const PjutdPage: React.FC = () => {
         
         .search-input {
           width: 100%;
-          padding: 12px 16px 12px 44px;
+          padding: 8px 16px 8px 40px;
           border-radius: 30px;
           border: 1px solid #e2e8f0;
           background: #f8fafc;
@@ -347,11 +347,13 @@ const PjutdPage: React.FC = () => {
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
-          overflow: hidden;
+          overflow-y: hidden;
+          overflow-x: auto;
         }
 
         .data-table {
           width: 100%;
+          min-width: 800px;
           border-collapse: collapse;
           text-align: left;
         }
@@ -406,69 +408,64 @@ const PjutdPage: React.FC = () => {
         .action-btn.delete:hover { background: #fee2e2; }
       `}</style>
 
-      <div className="page-header">
-        <div className="search-container">
-          <Search size={20} style={{ position: 'absolute', left: '16px', top: '10px', color: '#94a3b8' }} />
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-5 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
+        <div className="relative w-full md:w-80">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search size={20} className="text-slate-400" />
+          </div>
           <input 
             type="text" 
-            className="search-input"
+            className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#008FD7]/10 focus:border-[#008FD7] transition-all text-sm"
             placeholder="Cari PJ UTD..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="action-buttons">
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <ActionDropdown
             label="Template"
             icon={<FileText size={16} />}
-            buttonStyle={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' }}
+            buttonStyle={{ background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}
             items={[
-              { label: 'Template CSV', icon: <FileText size={16} />, onClick: handleDownloadTemplate },
-              { label: 'Template Excel', icon: <FileSpreadsheet size={16} />, onClick: handleDownloadTemplateExcel }
+              { label: 'Template CSV', icon: <FileText size={14} />, onClick: handleDownloadTemplate },
+              { label: 'Template Excel', icon: <FileSpreadsheet size={14} />, onClick: handleDownloadTemplateExcel }
             ]}
           />
           <ActionDropdown
             label="Export"
             icon={<Download size={16} />}
-            buttonStyle={{ background: '#f8fafc', color: '#0284c7', border: '1px solid #bae6fd' }}
+            buttonStyle={{ background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}
             items={[
-              { label: 'Export CSV', icon: <FileText size={16} />, onClick: handleExport },
-              { label: 'Export Excel', icon: <FileSpreadsheet size={16} />, onClick: handleExportExcel }
+              { label: 'Export CSV', icon: <FileText size={14} />, onClick: handleExport },
+              { label: 'Export Excel', icon: <FileSpreadsheet size={14} />, onClick: handleExportExcel }
             ]}
           />
           <ActionDropdown
             label="Import"
             icon={<Upload size={16} />}
-            buttonStyle={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}
+            buttonStyle={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}
             items={[
-              { label: 'Import CSV', icon: <FileText size={16} />, onClick: () => fileInputRef.current?.click() },
-              { label: 'Import Excel', icon: <FileSpreadsheet size={16} />, onClick: () => excelInputRef.current?.click() }
+              { label: 'Import CSV', icon: <FileText size={14} />, onClick: () => fileInputRef.current?.click() },
+              { label: 'Import Excel', icon: <FileSpreadsheet size={14} />, onClick: () => excelInputRef.current?.click() }
             ]}
           />
 
           <input
             type="file"
             ref={fileInputRef}
-            style={{ display: 'none' }}
+            className="hidden"
             accept=".csv"
             onChange={handleImport}
           />
           <input
             type="file"
             ref={excelInputRef}
-            style={{ display: 'none' }}
+            className="hidden"
             accept=".xlsx,.xls"
             onChange={handleImportExcel}
           />
-          <input
-            type="file"
-            ref={excelInputRef}
-            style={{ display: 'none' }}
-            accept=".xlsx,.xls"
-            onChange={handleImportExcel}
-          />
-          <button className="btn btn-primary" onClick={() => { setFormData(initialFormState); setIsModalOpen(true); }} style={{ borderRadius: '30px', padding: '10px 24px', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
-            <Network size={18} />
+          <button className="flex items-center gap-2 bg-[#422F6F] hover:bg-[#1e293b] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow w-full md:w-auto justify-center" onClick={() => { setFormData(initialFormState); setIsModalOpen(true); }}>
+            <Network size={16} />
             Tambah PJ UTD
           </button>
         </div>

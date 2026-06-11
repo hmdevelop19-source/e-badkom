@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import { RefreshCcw, Plus, AlertCircle } from 'lucide-react';
+import { RefreshCcw, Plus, AlertCircle, Search } from 'lucide-react';
 import Modal from '../components/Modal';
 import { TablePagination } from '../components/TablePagination';
 import toast from 'react-hot-toast';
@@ -150,7 +150,7 @@ const PenarikanPage: React.FC = () => {
           flex-wrap: wrap;
           gap: 16px;
           background: #ffffff;
-          padding: 20px 24px;
+          padding: 16px 20px;
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
@@ -163,7 +163,7 @@ const PenarikanPage: React.FC = () => {
         
         .search-input {
           width: 100%;
-          padding: 12px 16px 12px 44px;
+          padding: 8px 16px 8px 40px;
           border-radius: 30px;
           border: 1px solid #e2e8f0;
           background: #f8fafc;
@@ -190,11 +190,13 @@ const PenarikanPage: React.FC = () => {
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
-          overflow: hidden;
+          overflow-y: hidden;
+          overflow-x: auto;
         }
 
         .data-table {
           width: 100%;
+          min-width: 800px;
           border-collapse: collapse;
           text-align: left;
         }
@@ -227,32 +229,33 @@ const PenarikanPage: React.FC = () => {
         }
       `}</style>
 
-      <div className="page-header">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', background: '#fee2e2', color: '#dc2626', borderRadius: '12px' }}>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-5 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
+        <div className="flex items-center gap-4 w-full lg:w-auto">
+          <div className="p-2 bg-red-50 text-red-600 rounded-xl">
             <RefreshCcw size={24} />
           </div>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a', fontWeight: 700 }}>Riwayat Penarikan Tugas</h2>
-            <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.875rem' }}>Daftar penarikan tugas ustadz/ustadzah daerah</p>
+            <h2 className="m-0 text-xl text-slate-900 font-bold">Riwayat Penarikan Tugas</h2>
+            <p className="m-0 mt-1 text-sm text-slate-500">Daftar penarikan tugas ustadz/ustadzah daerah</p>
           </div>
         </div>
-        <div className="action-buttons">
-          <div className="search-container">
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          <div className="relative w-full md:w-64">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search size={16} className="text-slate-400" />
+            </div>
             <input 
               type="text" 
               placeholder="Cari nama atau alasan..." 
-              className="search-input"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#008FD7]/10 focus:border-[#008FD7] transition-all text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)} style={{ borderRadius: '30px', padding: '10px 24px', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
-            <Plus size={18} /> Ajukan Penarikan
+          <button className="flex items-center gap-2 bg-[#422F6F] hover:bg-[#1e293b] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow w-full md:w-auto justify-center" onClick={() => setIsModalOpen(true)}>
+            <Plus size={16} /> Ajukan Penarikan
           </button>
         </div>
-      </div>
       </div>
 
       {isLoading ? <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Memuat data...</div> : (

@@ -739,8 +739,8 @@ const LaporanSayaPage: React.FC = () => {
           )}
           
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
-            <button type="button" className="btn btn-outline" onClick={() => setIsSubmitWajibModalOpen(false)} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600 }}>Batal</button>
-            <button type="submit" className="btn btn-primary" disabled={myKategoriSoal.length === 0 || submitWajibMutation.isPending} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button type="button" className="btn btn-outline" onClick={() => setIsSubmitWajibModalOpen(false)} style={{ padding: '8px 16px', fontSize: '0.875rem', borderRadius: '8px', fontWeight: 600 }}>Batal</button>
+            <button type="submit" className="btn btn-primary" disabled={myKategoriSoal.length === 0 || submitWajibMutation.isPending} style={{ padding: '8px 16px', fontSize: '0.875rem', borderRadius: '8px', fontWeight: 600, display: 'flex', gap: '8px', alignItems: 'center' }}>
               <CheckCircle size={18} /> Kirim Laporan
             </button>
           </div>
@@ -775,8 +775,8 @@ const LaporanSayaPage: React.FC = () => {
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
-            <button type="button" className="btn btn-outline" onClick={() => setIsMendesakModalOpen(false)} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600 }}>Batal</button>
-            <button type="submit" className="btn btn-primary" disabled={submitMendesakMutation.isPending} style={{ padding: '10px 24px', borderRadius: '8px', fontWeight: 600, background: '#ef4444', border: 'none', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button type="button" className="btn btn-outline" onClick={() => setIsMendesakModalOpen(false)} style={{ padding: '8px 16px', fontSize: '0.875rem', borderRadius: '8px', fontWeight: 600 }}>Batal</button>
+            <button type="submit" className="btn btn-primary" disabled={submitMendesakMutation.isPending} style={{ padding: '8px 16px', fontSize: '0.875rem', borderRadius: '8px', fontWeight: 600, background: '#ef4444', border: 'none', display: 'flex', gap: '8px', alignItems: 'center' }}>
               <AlertCircle size={18} /> Kirim Laporan
             </button>
           </div>

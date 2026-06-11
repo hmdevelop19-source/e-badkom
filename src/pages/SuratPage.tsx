@@ -244,8 +244,8 @@ const SuratPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <div className="card overflow-x-auto w-full" style={{ padding: '0' }}>
+        <table className="data-table min-w-full" style={{ borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
             <tr>
               <th style={{ padding: '16px 24px', fontWeight: 600, color: 'var(--text-secondary)' }}>Pemohon</th>

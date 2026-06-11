@@ -41,7 +41,14 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems, isOpen, onClose }) => {
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>(getInitialOpenMenus());
 
   const toggleMenu = (label: string) => {
-    setOpenMenus(prev => ({ ...prev, [label]: !prev[label] }));
+    setOpenMenus(prev => {
+      // Jika menu yang diklik sudah terbuka, maka tutup.
+      if (prev[label]) {
+        return { [label]: false };
+      }
+      // Jika menu yang diklik tertutup, buka menu tersebut dan tutup otomatis menu lain.
+      return { [label]: true };
+    });
   };
 
   return (

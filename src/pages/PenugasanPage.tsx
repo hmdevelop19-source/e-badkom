@@ -153,7 +153,7 @@ const PenugasanPage: React.FC = () => {
           flex-wrap: wrap;
           gap: 16px;
           background: #ffffff;
-          padding: 20px 24px;
+          padding: 16px 20px;
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
@@ -166,7 +166,7 @@ const PenugasanPage: React.FC = () => {
         
         .search-input {
           width: 100%;
-          padding: 12px 16px 12px 44px;
+          padding: 8px 16px 8px 40px;
           border-radius: 30px;
           border: 1px solid #e2e8f0;
           background: #f8fafc;
@@ -193,11 +193,13 @@ const PenugasanPage: React.FC = () => {
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
-          overflow: hidden;
+          overflow-y: hidden;
+          overflow-x: auto;
         }
 
         .data-table {
           width: 100%;
+          min-width: 800px;
           border-collapse: collapse;
           text-align: left;
         }
@@ -249,33 +251,24 @@ const PenugasanPage: React.FC = () => {
         .action-btn.delete:hover { background: #fee2e2; }
       `}</style>
 
-      <div className="page-header">
-        <div className="search-container">
-          <Search size={20} style={{ position: 'absolute', left: '16px', top: '10px', color: '#94a3b8' }} />
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-5 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
+        <div className="relative w-full lg:w-80">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search size={20} className="text-slate-400" />
+          </div>
           <input 
             type="text" 
-            className="search-input"
+            className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#008FD7]/10 focus:border-[#008FD7] transition-all text-sm"
             placeholder="Cari penugasan..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="action-buttons">
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
           <select 
             value={selectedTahunAjaranId}
             onChange={(e) => setSelectedTahunAjaranId(e.target.value)}
-            style={{ 
-              width: 'auto',
-              minWidth: '200px', 
-              borderRadius: '30px', 
-              padding: '10px 16px', 
-              border: '1px solid #e2e8f0', 
-              background: '#f8fafc',
-              fontSize: '0.95rem',
-              color: '#334155',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
+            className="w-full md:w-auto min-w-[200px] rounded-full px-4 py-2 border border-slate-200 bg-slate-50 text-sm text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#008FD7]/10 focus:border-[#008FD7] transition-all cursor-pointer"
           >
             <option value="">Tahun Ajaran Aktif</option>
             {tahunAjarans.map((ta: any) => (
@@ -283,8 +276,7 @@ const PenugasanPage: React.FC = () => {
             ))}
           </select>
           <button 
-            className="btn" 
-            style={{ background: '#f1f5f9', color: '#334155', borderRadius: '30px', padding: '10px 24px', fontWeight: 600 }}
+            className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold transition-all w-full md:w-auto border border-slate-200" 
             onClick={async () => {
               try {
                 const url = `/cetak/penugasan${selectedTahunAjaranId ? '?tahun_ajaran_id=' + selectedTahunAjaranId : ''}`;
@@ -298,12 +290,12 @@ const PenugasanPage: React.FC = () => {
               }
             }}
           >
-            <Printer size={18} />
+            <Printer size={16} />
             Cetak Penempatan
           </button>
           {!isWilayah && (
-            <button className="btn btn-primary" onClick={() => { setFormData({ santri_ids: [undefined], pjutd_id: undefined }); setIsModalOpen(true); setError(''); }} style={{ borderRadius: '30px', padding: '10px 24px', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}>
-              <MapPin size={18} />
+            <button className="flex items-center gap-2 bg-[#422F6F] hover:bg-[#1e293b] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow w-full md:w-auto justify-center" onClick={() => { setFormData({ santri_ids: [undefined], pjutd_id: undefined }); setIsModalOpen(true); setError(''); }}>
+              <MapPin size={16} />
               Tambah Penugasan
             </button>
           )}

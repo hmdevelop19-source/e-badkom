@@ -33,82 +33,83 @@ export const SantriTable: React.FC<SantriTableProps> = ({
   onDelete
 }) => {
   return (
-    <div className="data-table-container">
-      <table className="data-table">
+    <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden overflow-x-auto w-full">
+      <table className="w-full min-w-max text-left border-collapse">
         <thead>
           <tr>
-            <th>NIS</th>
-            <th>Nama Lengkap</th>
-            <th>Status</th>
-            <th>Progress Tugas Wajib</th>
-            <th style={{ textAlign: 'right' }}>Aksi</th>
+            <th className="px-6 py-4 font-semibold text-slate-500 bg-slate-50 border-b border-slate-200 uppercase text-xs tracking-wider">NIS</th>
+            <th className="px-6 py-4 font-semibold text-slate-500 bg-slate-50 border-b border-slate-200 uppercase text-xs tracking-wider">Nama Lengkap</th>
+            <th className="px-6 py-4 font-semibold text-slate-500 bg-slate-50 border-b border-slate-200 uppercase text-xs tracking-wider">Status</th>
+            <th className="px-6 py-4 font-semibold text-slate-500 bg-slate-50 border-b border-slate-200 uppercase text-xs tracking-wider">Progress Tugas Wajib</th>
+            <th className="px-6 py-4 font-semibold text-slate-500 bg-slate-50 border-b border-slate-200 uppercase text-xs tracking-wider text-right">Aksi</th>
           </tr>
         </thead>
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Memuat data...</td>
+              <td colSpan={5} className="px-6 py-10 text-center text-slate-500">Memuat data...</td>
             </tr>
           ) : santris.length === 0 ? (
             <tr>
-              <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data yang ditemukan.</td>
+              <td colSpan={5} className="px-6 py-10 text-center text-slate-500">Tidak ada data yang ditemukan.</td>
             </tr>
           ) : santris.map((s) => (
-            <tr key={s.id}>
-              <td style={{ fontWeight: 600, color: '#334155' }}>{s.nis}</td>
-              <td style={{ fontWeight: 500, color: '#0f172a' }}>{s.nama}</td>
-              <td>
-                <span style={{ 
-                  padding: '6px 12px', 
-                  borderRadius: '20px', 
-                  background: s.status_santri === 'Menunggu Boyong' ? '#fef3c7' : '#f0fdfa', 
-                  color: s.status_santri === 'Menunggu Boyong' ? '#b45309' : '#0f766e', 
-                  fontSize: '0.75rem', 
-                  fontWeight: 700,
-                  border: `1px solid ${s.status_santri === 'Menunggu Boyong' ? '#fde68a' : '#ccfbf1'}`
-                }}>
+            <tr key={s.id} className="hover:bg-slate-50 transition-colors group">
+              <td className="px-6 py-4 border-b border-slate-100 font-semibold text-slate-700">{s.nis}</td>
+              <td className="px-6 py-4 border-b border-slate-100 font-medium text-slate-900">{s.nama}</td>
+              <td className="px-6 py-4 border-b border-slate-100">
+                <span className={`px-3 py-1.5 rounded-full text-xs font-bold border ${s.status_santri === 'Menunggu Boyong' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-teal-50 text-teal-700 border-teal-100'}`}>
                   {s.status_santri || 'Aktif'}
                 </span>
               </td>
-              <td>
+              <td className="px-6 py-4 border-b border-slate-100">
                 {(() => {
                   const validLulus = s.utds?.filter(u => u.penilaian?.keterangan === 'Lulus').length || 0;
                   const progress = Math.min((validLulus / targetTugasWajib) * 100, 100);
 
                   return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '160px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: 600 }}>
-                        <span style={{ color: validLulus >= targetTugasWajib ? '#15803d' : '#64748b' }}>
+                    <div className="flex flex-col gap-1.5 w-40">
+                      <div className="flex justify-between items-center text-xs font-semibold">
+                        <span className={validLulus >= targetTugasWajib ? 'text-green-700' : 'text-slate-500'}>
                           {validLulus} / {targetTugasWajib} Lulus
                         </span>
-                        <span style={{ color: validLulus >= targetTugasWajib ? '#15803d' : '#ca8a04' }}>
+                        <span className={validLulus >= targetTugasWajib ? 'text-green-700' : 'text-amber-600'}>
                           {validLulus >= targetTugasWajib ? 'Selesai' : 'Belum Selesai'}
                         </span>
                       </div>
-                      <div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ width: `${progress}%`, height: '100%', background: validLulus >= targetTugasWajib ? '#22c55e' : 'var(--secondary)', borderRadius: '3px', transition: 'width 0.5s ease' }}></div>
+                      <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-500 ${validLulus >= targetTugasWajib ? 'bg-green-500' : 'bg-[#008FD7]'}`}
+                          style={{ width: `${progress}%` }}
+                        ></div>
                       </div>
                     </div>
                   );
                 })()}
               </td>
-              <td style={{ textAlign: 'right' }}>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
+              <td className="px-6 py-4 border-b border-slate-100 text-right">
+                <div className="flex justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button 
-                    className="action-btn view"
+                    className="w-9 h-9 rounded-full inline-flex items-center justify-center text-sky-600 hover:bg-sky-100 transition-colors"
                     onClick={() => onView(s.id)}
                     title="Lihat Detail"
                   >
                     <Eye size={18} />
                   </button>
                   <button 
-                    className="action-btn edit"
+                    className="w-9 h-9 rounded-full inline-flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                     onClick={() => onEdit(s)}
                     title="Edit"
                   >
                     <Edit2 size={18} />
                   </button>
-                  <button className="action-btn delete" title="Hapus" onClick={() => onDelete(s.id)}><Trash2 size={18} /></button>
+                  <button 
+                    className="w-9 h-9 rounded-full inline-flex items-center justify-center text-red-500 hover:bg-red-100 transition-colors" 
+                    title="Hapus" 
+                    onClick={() => onDelete(s.id)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </td>
             </tr>
@@ -117,14 +118,16 @@ export const SantriTable: React.FC<SantriTableProps> = ({
       </table>
       
       {!isLoading && (
-        <TablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          itemsPerPage={itemsPerPage}
-          onPageChange={onPageChange}
-          onItemsPerPageChange={onItemsPerPageChange}
-        />
+        <div className="border-t border-slate-100 p-2">
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={onPageChange}
+            onItemsPerPageChange={onItemsPerPageChange}
+          />
+        </div>
       )}
     </div>
   );

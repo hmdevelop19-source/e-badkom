@@ -3,6 +3,7 @@ import { Users, Building2, FileText, Mail } from 'lucide-react';
 import StatCard from '../../components/dashboard/StatCard';
 import LatestLaporanList from '../../components/dashboard/LatestLaporanList';
 import LatestActivityList from '../../components/dashboard/LatestActivityList';
+import PenugasanChart from '../../components/dashboard/PenugasanChart';
 
 interface SuperadminDashboardProps {
   data: any;
@@ -22,7 +23,7 @@ const SuperadminDashboard: React.FC<SuperadminDashboardProps> = ({ data }) => {
         .dashboard-grid {
           display: flex;
           flex-direction: column;
-          gap: 32px;
+          gap: 24px;
         }
         .stats-grid {
           display: grid;
@@ -47,9 +48,17 @@ const SuperadminDashboard: React.FC<SuperadminDashboardProps> = ({ data }) => {
           ))}
         </div>
 
-        <div className="superadmin-main-grid">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <PenugasanChart data={data?.penugasan_per_tahun || []} />
+          </div>
+          <div className="lg:col-span-1">
+            <LatestActivityList latestLaporan={data?.latest_laporan || []} />
+          </div>
+        </div>
+
+        <div className="w-full">
           <LatestLaporanList latestLaporan={data?.latest_laporan || []} />
-          <LatestActivityList latestLaporan={data?.latest_laporan || []} />
         </div>
       </div>
     </>

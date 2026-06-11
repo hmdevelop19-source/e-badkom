@@ -48,7 +48,7 @@ const AlumniPage: React.FC = () => {
           flex-wrap: wrap;
           gap: 16px;
           background: #ffffff;
-          padding: 20px 24px;
+          padding: 16px 20px;
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
@@ -61,7 +61,7 @@ const AlumniPage: React.FC = () => {
         
         .search-input {
           width: 100%;
-          padding: 12px 16px 12px 44px;
+          padding: 8px 16px 8px 40px;
           border-radius: 30px;
           border: 1px solid #e2e8f0;
           background: #f8fafc;
@@ -81,11 +81,13 @@ const AlumniPage: React.FC = () => {
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.03);
           border: 1px solid #f1f5f9;
-          overflow: hidden;
+          overflow-y: hidden;
+          overflow-x: auto;
         }
 
         .data-table {
           width: 100%;
+          min-width: 800px;
           border-collapse: collapse;
           text-align: left;
         }
@@ -118,18 +120,20 @@ const AlumniPage: React.FC = () => {
         }
       `}</style>
 
-      <div className="page-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', background: '#f0fdf4', color: '#16a34a', borderRadius: '12px' }}>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-5 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="p-2 bg-green-50 text-green-600 rounded-xl">
             <GraduationCap size={24} />
           </div>
-          <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a', fontWeight: 700 }}>Daftar Alumni <span style={{ color: '#94a3b8', fontSize: '1rem', fontWeight: 500 }}>(Purna Tugas)</span></h2>
+          <h2 className="m-0 text-xl text-slate-900 font-bold">Daftar Alumni <span className="text-slate-400 text-base font-medium">(Purna Tugas)</span></h2>
         </div>
-        <div className="search-container">
-          <Search size={20} style={{ position: 'absolute', left: '16px', top: '10px', color: '#94a3b8' }} />
+        <div className="relative w-full md:w-80">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search size={20} className="text-slate-400" />
+          </div>
           <input 
             type="text" 
-            className="search-input"
+            className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#008FD7]/10 focus:border-[#008FD7] transition-all text-sm"
             placeholder="Cari alumni..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
