@@ -58,12 +58,12 @@ const PenugasanChart: React.FC<PenugasanChartProps> = ({ data = [] }) => {
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+      <div className="flex flex-col sm:flex-row sm:items-start md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl flex-shrink-0">
             <BarChart3 size={24} />
           </div>
-          <div>
+          <div className="whitespace-nowrap">
             <h3 className="m-0 text-lg font-bold text-slate-800">Statistik Penugasan</h3>
             <p className="m-0 text-sm text-slate-500">Berdasarkan Kategori Status</p>
           </div>
@@ -73,7 +73,7 @@ const PenugasanChart: React.FC<PenugasanChartProps> = ({ data = [] }) => {
           <select 
             value={selectedTaId}
             onChange={(e) => setSelectedTaId(e.target.value)}
-            className="rounded-full px-4 py-2 border border-slate-200 bg-slate-50 text-sm text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#008FD7]/10 focus:border-[#008FD7] transition-all cursor-pointer min-w-[160px]"
+            className="rounded-full px-4 py-2 border border-slate-200 bg-slate-50 text-sm text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#008FD7]/10 focus:border-[#008FD7] transition-all cursor-pointer min-w-[160px] w-full sm:w-auto"
           >
             {data.map(ta => (
               <option key={ta.tahun_ajaran_id} value={ta.tahun_ajaran_id}>
@@ -84,7 +84,7 @@ const PenugasanChart: React.FC<PenugasanChartProps> = ({ data = [] }) => {
         )}
       </div>
 
-      <div className="flex-1 flex items-end justify-around gap-2 md:gap-4 mt-auto pt-6 min-h-[240px] relative">
+      <div className="flex-1 flex items-end justify-center gap-8 sm:gap-12 md:gap-16 mt-auto pt-6 min-h-[240px] relative">
         {!selectedData ? (
           <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm">
             Belum ada data statistik
@@ -93,16 +93,16 @@ const PenugasanChart: React.FC<PenugasanChartProps> = ({ data = [] }) => {
           chartItems.map((item, index) => {
             const heightPercent = maxTotal > 0 ? (item.value / maxTotal) * 100 : 0;
             return (
-              <div key={index} className="flex-1 flex flex-col items-center group w-full max-w-[80px]">
+              <div key={index} className="flex flex-col items-center group w-12 sm:w-16">
                 {/* Tooltip on hover */}
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity mb-2 bg-slate-800 text-white text-xs py-1 px-2 rounded font-medium whitespace-nowrap pointer-events-none z-10">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity mb-2 bg-slate-800 text-white text-xs py-1 px-2 rounded font-medium whitespace-nowrap pointer-events-none z-10 relative top-2">
                   {item.value} Santri
                 </div>
                 
                 {/* Bar */}
                 <div 
-                  className={`w-full bg-gradient-to-t ${item.color} rounded-t-md transition-all duration-500 relative overflow-hidden`}
-                  style={{ height: `${Math.max(heightPercent, 5)}%`, minHeight: '24px' }}
+                  className={`w-full bg-gradient-to-t ${item.color} rounded-t-md transition-all duration-500 relative overflow-hidden group-hover:brightness-110 shadow-sm`}
+                  style={{ height: `${Math.max(heightPercent, 2)}%`, minHeight: '12px' }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>

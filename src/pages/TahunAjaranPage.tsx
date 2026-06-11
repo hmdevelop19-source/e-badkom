@@ -89,7 +89,7 @@ const TahunAjaranPage: React.FC = () => {
   }, [searchQuery]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ position: 'relative', width: '300px' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
@@ -130,10 +130,10 @@ const TahunAjaranPage: React.FC = () => {
             ) : (
               paginatedData.map((item) => (
                 <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{item.nama_tahun_ajaran}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     {item.is_active ? (
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: '#ecfdf5', color: '#10b981', borderRadius: '16px', fontSize: '0.75rem', fontWeight: 600 }}>
                         <CheckCircle size={14} /> Aktif

@@ -148,7 +148,7 @@ const AlumniPage: React.FC = () => {
               <th>Santri</th>
               <th>Nomor Surat Kelulusan</th>
               <th>Tanggal Lulus</th>
-              <th style={{ textAlign: 'right' }}>Aksi</th>
+              <th className="text-right">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -175,7 +175,7 @@ const AlumniPage: React.FC = () => {
                   <td style={{ color: '#475569', fontWeight: 500 }}>
                     {a.boyong?.tanggal_lulus ? new Date(a.boyong.tanggal_lulus).toLocaleDateString('id-ID') : '-'}
                   </td>
-                  <td style={{ textAlign: 'right' }}>
+                  <td className="text-right">
                     <button 
                       className="btn btn-primary" 
                       style={{ padding: '8px 16px', borderRadius: '30px', display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(66, 47, 111, 0.2)' }}

@@ -40,7 +40,7 @@ export const SantriFormModal: React.FC<SantriFormModalProps> = ({
       title={isEditMode ? "Edit Data Santri" : "Tambah Santri Baru"}
       maxWidth="750px"
     >
-      <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <form onSubmit={onSubmit} className="flex flex-col gap-6">
         {error && (
           <div style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: '8px', fontSize: '0.875rem' }}>
             {error}

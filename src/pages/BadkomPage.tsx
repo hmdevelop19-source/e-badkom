@@ -399,7 +399,7 @@ const BadkomPage: React.FC = () => {
               <th>Kode</th>
               <th>Wilayah Koordinasi</th>
               <th>Nama PJ</th>
-              <th style={{ textAlign: 'right' }}>Aksi</th>
+              <th className="text-right">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -418,7 +418,7 @@ const BadkomPage: React.FC = () => {
                 </td>
                 <td style={{ fontWeight: 500, color: '#0f172a' }}>{b.wilayah_koordinasi}</td>
                 <td style={{ color: '#475569' }}>{b.nama_pj}</td>
-                <td style={{ textAlign: 'right' }}>
+                <td className="text-right">
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
                     <button 
                       className="action-btn edit"
@@ -462,7 +462,7 @@ const BadkomPage: React.FC = () => {
         title={formData.id ? "Edit Data Badkom" : "Tambah Data Badkom"}
         maxWidth="600px"
       >
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {error && (
             <div style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: '8px', fontSize: '0.875rem' }}>
               {error}

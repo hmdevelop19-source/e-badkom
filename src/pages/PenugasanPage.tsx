@@ -309,7 +309,7 @@ const PenugasanPage: React.FC = () => {
               <th>Santri</th>
               <th>Lokasi PJ UTD</th>
               <th>Tahun Ajaran</th>
-              {!isWilayah && <th style={{ textAlign: 'right' }}>Aksi</th>}
+              {!isWilayah && <th className="text-right">Aksi</th>}
             </tr>
           </thead>
           <tbody>
@@ -339,7 +339,7 @@ const PenugasanPage: React.FC = () => {
                     )}
                   </td>
                   {!isWilayah && (
-                    <td style={{ textAlign: 'right' }}>
+                    <td className="text-right">
                       <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
                         <button 
                           className="action-btn edit"

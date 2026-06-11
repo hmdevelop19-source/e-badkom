@@ -153,7 +153,7 @@ const PenilaianPage: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
@@ -223,15 +223,15 @@ const PenilaianPage: React.FC = () => {
             ) : (
               paginatedUtds.map((utd) => (
                 <tr key={utd.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.santri?.nama}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>NIS: {utd.santri?.nis}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{utd.pjutd?.nama_madrasah || utd.pjutd?.yayasan || utd.pjutd?.nama_pjutd}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {utd.pjutd?.kode_lembaga}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     {utd.penilaian ? (
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>

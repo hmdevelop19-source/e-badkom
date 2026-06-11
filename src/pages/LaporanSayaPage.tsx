@@ -426,7 +426,7 @@ const LaporanSayaPage: React.FC = () => {
       </div>
 
       {activeTab === 'wajib' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="flex flex-col gap-6">
           
           {/* Pengumpulan / Riwayat Saya */}
           <div className="laporan-card-header">
@@ -508,7 +508,7 @@ const LaporanSayaPage: React.FC = () => {
             </div>
 
             {loadingWajib ? <p>Memuat riwayat...</p> : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="flex flex-col gap-5">
                 {myLaporanWajibList.filter(l => l.kategori_bulan === selectedKategoriBulan).map(laporan => (
                   <div key={laporan.id} className="laporan-item-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -653,14 +653,14 @@ const LaporanSayaPage: React.FC = () => {
 
       {/* Modal Isi Laporan Wajib */}
       <Modal isOpen={isSubmitWajibModalOpen} onClose={() => setIsSubmitWajibModalOpen(false)} title={`Isi Laporan Wajib - ${selectedKategoriBulan}`}>
-        <form onSubmit={handleWajibSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleWajibSubmit} className="flex flex-col gap-5">
           {loadingMySoal ? <p>Memuat pertanyaan...</p> : myKategoriSoal.length === 0 ? <p>Belum ada soal aktif untuk level Anda.</p> : (
             myKategoriSoal.map((kategori) => (
               <div key={kategori.id} style={{ marginBottom: '16px' }}>
                 <h4 style={{ margin: '0 0 16px 0', paddingBottom: '8px', borderBottom: '2px solid var(--primary-color)', color: 'var(--primary-color)' }}>
                   {kategori.nama_kategori}
                 </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="flex flex-col gap-5">
                   {kategori.soal_laporan?.map((soal, index) => (
                     <div key={soal.id} style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                       <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', fontSize: '0.95rem' }}>
@@ -749,7 +749,7 @@ const LaporanSayaPage: React.FC = () => {
 
       {/* Modal Isi Laporan Mendesak */}
       <Modal isOpen={isMendesakModalOpen} onClose={() => setIsMendesakModalOpen(false)} title="Buat Laporan Mendesak">
-        <form onSubmit={handleMendesakSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleMendesakSubmit} className="flex flex-col gap-5">
           <div>
             <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>Judul Masalah / Laporan</label>
             <input 

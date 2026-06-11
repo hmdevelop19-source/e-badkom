@@ -41,11 +41,11 @@ const ValidasiBoyongPage: React.FC = () => {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+        <div className="flex items-center gap-3 mb-6">
           <Clock size={24} style={{ color: 'var(--primary)' }} />
-          <h2 style={{ margin: 0 }}>Validasi Pengajuan Boyong (Kelulusan Tugas)</h2>
+          <h2 className="m-0">Validasi Pengajuan Boyong (Kelulusan Tugas)</h2>
         </div>
         
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -72,14 +72,14 @@ const ValidasiBoyongPage: React.FC = () => {
                 
                 return (
                   <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td className="px-6 py-4">
                       <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{b.santri?.nama}</div>
                       <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>NIS: {b.santri?.nis}</div>
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td className="px-6 py-4">
                       {new Date(b.tanggal_pengajuan).toLocaleDateString('id-ID')}
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td className="px-6 py-4">
                       <span style={{ fontWeight: 700, color: '#166534' }}>{validLulus} Tugas Selesai</span>
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'right' }}>

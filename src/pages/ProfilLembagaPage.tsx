@@ -435,7 +435,7 @@ const ProfilLembagaPage: React.FC = () => {
 
           {!isEditing ? (
             /* View Mode */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="flex flex-col gap-6">
               {/* System Info */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                 <div className="profile-stat-card">
@@ -492,11 +492,11 @@ const ProfilLembagaPage: React.FC = () => {
             /* Edit Mode */
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.3s ease-out' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', padding: '20px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                <div className="form-group" style={{ margin: 0 }}>
+                <div className="form-group m-0">
                   <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem' }}><Key size={14} /> Kode Lembaga</label>
                   <input type="text" className="form-control" value={formData.kode_lembaga} disabled style={{ background: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed', borderColor: '#e2e8f0' }} />
                 </div>
-                <div className="form-group" style={{ margin: 0 }}>
+                <div className="form-group m-0">
                   <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem' }}><Hash size={14} /> Kode Wilayah Badkom</label>
                   <input type="text" className="form-control" value={pjutdData.badkom?.kode_badkom || formData.badkom_id} disabled style={{ background: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed', borderColor: '#e2e8f0' }} />
                 </div>
@@ -555,7 +555,7 @@ const ProfilLembagaPage: React.FC = () => {
                 />
               </div>
 
-              <div className="form-group" style={{ margin: 0 }}>
+              <div className="form-group m-0">
                 <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16} /> Alamat Lengkap</label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '16px' }}>
                   <div>

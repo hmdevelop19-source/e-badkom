@@ -57,12 +57,12 @@ const PenilaianValidasiPage: React.FC = () => {
   }, [searchQuery]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       <div className="card">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Shield size={24} style={{ color: 'var(--primary)' }} />
-            <h2 style={{ margin: 0 }}>Validasi Penilaian Santri</h2>
+            <h2 className="m-0">Validasi Penilaian Santri</h2>
           </div>
           <div style={{ position: 'relative', width: '300px' }}>
             <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
@@ -101,17 +101,17 @@ const PenilaianValidasiPage: React.FC = () => {
                 
                 return (
                   <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td className="px-6 py-4">
                       <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{p.utd?.santri?.nama}</div>
                       <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>TA: {p.utd?.tahun_ajaran?.nama_tahun_ajaran}</div>
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td className="px-6 py-4">
                       <div style={{ fontWeight: 500 }}>{p.utd?.pjutd?.nama_pjutd}</div>
                       <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                         {p.utd?.pjutd?.badkom?.nama_pj}
                       </div>
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td className="px-6 py-4">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ 
                           padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600,
@@ -123,7 +123,7 @@ const PenilaianValidasiPage: React.FC = () => {
                       </div>
                       {p.catatan && <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Catatan: {p.catatan}</div>}
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td className="px-6 py-4">
                       <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, background: sPusatColor.bg, color: sPusatColor.text }}>
                         {p.status_badkom_pusat}
                       </span>

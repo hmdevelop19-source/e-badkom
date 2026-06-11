@@ -183,7 +183,7 @@ const ProfilePage: React.FC = () => {
           </div>
 
           {/* Bagian Form Data */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex flex-col gap-6">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="form-group">
                 <label className="form-label">Nama Lengkap *</label>

@@ -18,7 +18,7 @@ export const SantriDetailModal: React.FC<SantriDetailModalProps> = ({ isOpen, on
       title="Detail & Riwayat Penugasan Santri"
       maxWidth="800px"
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div className="flex flex-col gap-6">
         {/* Top Cards Section */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           
@@ -129,11 +129,11 @@ export const SantriDetailModal: React.FC<SantriDetailModalProps> = ({ isOpen, on
                         <td style={{ padding: '16px 24px', fontSize: '0.875rem', fontWeight: 600, color: '#334155' }}>
                           {utd.tahun_ajaran?.nama_tahun_ajaran || '-'}
                         </td>
-                        <td style={{ padding: '16px 24px' }}>
+                        <td className="px-6 py-4">
                           <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{utd.pjutd?.nama_madrasah || utd.pjutd?.yayasan || utd.pjutd?.nama_pjutd || '-'}</div>
                           <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '2px' }}>ID: {utd.pjutd?.kode_lembaga}</div>
                         </td>
-                        <td style={{ padding: '16px 24px' }}>
+                        <td className="px-6 py-4">
                           {(() => {
                             let displayStatus = utd.status || 'Aktif';
                             if (displayStatus === 'Aktif' && utd.tahun_ajaran && !utd.tahun_ajaran.is_active) displayStatus = 'Selesai';

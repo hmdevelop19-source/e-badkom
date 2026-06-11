@@ -234,13 +234,13 @@ const SoalLaporanPage: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Settings size={24} style={{ color: 'var(--primary)' }} />
-            <h2 style={{ margin: 0 }}>Form Builder (Bank Soal Dinamis)</h2>
+            <h2 className="m-0">Form Builder (Bank Soal Dinamis)</h2>
           </div>
           <button className="btn btn-outline" onClick={() => { 
             setIsEditKategoriMode(false);
@@ -264,7 +264,7 @@ const SoalLaporanPage: React.FC = () => {
         </div>
         
         {loadingKategori ? <p>Memuat form builder...</p> : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex flex-col gap-6">
             {kategoriList.map((kategori, kIndex) => (
               <div key={kategori.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
                 <div style={{ background: '#f8fafc', padding: '16px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -350,7 +350,7 @@ const SoalLaporanPage: React.FC = () => {
 
       {/* Modal Tambah/Edit Soal */}
       <Modal isOpen={isSoalModalOpen} onClose={() => setIsSoalModalOpen(false)} title={isEditMode ? "Edit Soal" : "Tambah Soal (Bisa Sekaligus Banyak)"}>
-        <form onSubmit={handleSaveSoal} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <form onSubmit={handleSaveSoal} className="flex flex-col gap-6">
           
           <div className="form-group" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <label className="form-label" style={{ fontWeight: 'bold' }}>Kategori Soal</label>

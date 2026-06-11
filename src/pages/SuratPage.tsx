@@ -212,7 +212,7 @@ const SuratPage: React.FC = () => {
   }, [isModalOpen, formData.jenis_permohonan, userLevel, pjutds, currentUser?.fullname]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', gap: '16px', flex: 1, flexWrap: 'wrap' }}>
           <div style={{ position: 'relative', width: '300px' }}>
@@ -266,15 +266,15 @@ const SuratPage: React.FC = () => {
             ) : (
               paginatedSurat.map((item) => (
                 <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{item.pemohon_nama}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{item.pemohon_jabatan}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{item.pjutd_nama_lembaga || item.pjutd?.nama_madrasah || item.pjutd?.yayasan || '-'}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Tahun {item.tahun_ajaran_tujuan || item.tahun_ajaran?.nama_tahun_ajaran}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <span style={{ 
                       padding: '4px 8px', 
                       background: item.jenis_permohonan === 'Baru' ? '#e0f2fe' : '#dcfce7', 

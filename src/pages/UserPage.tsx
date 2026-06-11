@@ -196,7 +196,7 @@ const UserPage: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ position: 'relative', width: '300px' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
@@ -235,11 +235,11 @@ const UserPage: React.FC = () => {
             ) : (
               paginatedUsers.map((user) => (
                 <tr key={user.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{user.fullname}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>@{user.username} • {user.email}</div>
                   </td>
-                  <td style={{ padding: '16px 24px' }}>
+                  <td className="px-6 py-4">
                     <span style={{ 
                       display: 'inline-flex', 
                       alignItems: 'center', 

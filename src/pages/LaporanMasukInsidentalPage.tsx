@@ -68,13 +68,13 @@ const LaporanMasukInsidentalPage: React.FC = () => {
   const displayedReports = incomingReports.filter(l => l.user?.level === activeRoleTab);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <AlertCircle size={24} color="#ef4444" />
-            <h3 style={{ margin: 0 }}>Daftar Laporan Insidental (Mendesak) Masuk</h3>
+            <h3 className="m-0">Daftar Laporan Insidental (Mendesak) Masuk</h3>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

@@ -123,13 +123,13 @@ const LaporanMasukWajibPage: React.FC = () => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div className="flex flex-col gap-6">
       
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <FileText size={24} color="var(--primary-color)" />
-            <h3 style={{ margin: 0 }}>Daftar Laporan Wajib Bawahan</h3>
+            <h3 className="m-0">Daftar Laporan Wajib Bawahan</h3>
           </div>
           
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>

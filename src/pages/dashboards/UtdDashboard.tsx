@@ -115,7 +115,7 @@ const UtdDashboard: React.FC<UtdDashboardProps> = ({ data }) => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
             <StatCard key={stat.label} {...stat} index={index} />
           ))}

@@ -479,7 +479,7 @@ const PjutdPage: React.FC = () => {
               <th>Nama PJ UTD</th>
               <th>Yayasan / Madrasah</th>
               <th>Badkom</th>
-              <th style={{ textAlign: 'right' }}>Aksi</th>
+              <th className="text-right">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -508,7 +508,7 @@ const PjutdPage: React.FC = () => {
                     {p.badkom?.kode_badkom || '-'}
                   </span>
                 </td>
-                <td style={{ textAlign: 'right' }}>
+                <td className="text-right">
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
                     <button 
                       className="action-btn view"
@@ -562,7 +562,7 @@ const PjutdPage: React.FC = () => {
         title={formData.id ? "Edit Data PJ UTD" : "Menambah Data PJ UTD"}
         maxWidth="700px"
       >
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {error && (
             <div style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: '8px', fontSize: '0.875rem' }}>
               {error}
@@ -744,7 +744,7 @@ const PjutdPage: React.FC = () => {
         maxWidth="800px"
       >
         {selectedPjutd && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex flex-col gap-6">
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>Profil Lembaga</h3>

@@ -150,7 +150,7 @@ const PenilaianPjutdPage: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="flex flex-col gap-6">
       
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -232,14 +232,14 @@ const PenilaianPjutdPage: React.FC = () => {
                   
                   return (
                     <tr key={pjutd.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '16px 24px' }}>
+                      <td className="px-6 py-4">
                         <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{pjutd.nama_pjutd}</div>
                         <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Kode: {pjutd.kode_lembaga}</div>
                       </td>
-                      <td style={{ padding: '16px 24px' }}>
+                      <td className="px-6 py-4">
                         <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{pjutd.badkom?.wilayah_koordinasi ? `${pjutd.badkom.kode_badkom} - ${pjutd.badkom.wilayah_koordinasi}` : pjutd.badkom?.kode_badkom || '-'}</div>
                       </td>
-                      <td style={{ padding: '16px 24px' }}>
+                      <td className="px-6 py-4">
                         {penilaian ? (
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>

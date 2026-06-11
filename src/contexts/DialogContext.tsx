@@ -43,7 +43,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     <DialogContext.Provider value={{ showConfirm }}>
       {children}
       <Modal isOpen={isOpen} onClose={handleClose} title={title} maxWidth="400px">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="flex flex-col gap-5">
           <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
             {message}
           </p>
