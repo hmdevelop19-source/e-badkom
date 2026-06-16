@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import toast from 'react-hot-toast';
 import { Building2, Save, Edit2, X, Phone, MapPin, School, BookOpen, Key, Hash } from 'lucide-react';
 
@@ -44,7 +44,7 @@ const ProfilLembagaPage: React.FC = () => {
         try {
           const token = localStorage.getItem('token');
           const config = { headers: { Authorization: `Bearer ${token}` } };
-          const provRes = await axios.get('http://127.0.0.1:8000/api/wilayah/provinsi', config);
+          const provRes = await api.get('/wilayah/provinsi', config);
           setProvinsiList(provRes.data);
           
           if (pjutdData?.provinsi) {
@@ -52,7 +52,7 @@ const ProfilLembagaPage: React.FC = () => {
             if (matchProv) {
               setSelectedProvId(matchProv.id);
               
-              const kabRes = await axios.get(`http://127.0.0.1:8000/api/wilayah/kabupaten/${matchProv.id}`, config);
+              const kabRes = await api.get(`/wilayah/kabupaten/${matchProv.id}`, config);
               setKabupatenList(kabRes.data);
               
               if (pjutdData.kabupaten) {
@@ -60,7 +60,7 @@ const ProfilLembagaPage: React.FC = () => {
                 if (matchKab) {
                   setSelectedKabId(matchKab.id);
                   
-                  const kecRes = await axios.get(`http://127.0.0.1:8000/api/wilayah/kecamatan/${matchKab.id}`, config);
+                  const kecRes = await api.get(`/wilayah/kecamatan/${matchKab.id}`, config);
                   setKecamatanList(kecRes.data);
                   
                   if (pjutdData.kecamatan) {
@@ -68,7 +68,7 @@ const ProfilLembagaPage: React.FC = () => {
                     if (matchKec) {
                       setSelectedKecId(matchKec.id);
                       
-                      const desaRes = await axios.get(`http://127.0.0.1:8000/api/wilayah/kelurahan/${matchKec.id}`, config);
+                      const desaRes = await api.get(`/wilayah/kelurahan/${matchKec.id}`, config);
                       setDesaList(desaRes.data);
                     }
                   }
@@ -111,7 +111,7 @@ const ProfilLembagaPage: React.FC = () => {
     setKecamatanList([]);
     setDesaList([]);
     const token = localStorage.getItem('token');
-    const res = await axios.get(`http://127.0.0.1:8000/api/wilayah/kabupaten/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await api.get(`/wilayah/kabupaten/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     setKabupatenList(res.data);
   };
 
@@ -133,7 +133,7 @@ const ProfilLembagaPage: React.FC = () => {
     setKecamatanList([]);
     setDesaList([]);
     const token = localStorage.getItem('token');
-    const res = await axios.get(`http://127.0.0.1:8000/api/wilayah/kecamatan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await api.get(`/wilayah/kecamatan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     setKecamatanList(res.data);
   };
 
@@ -151,7 +151,7 @@ const ProfilLembagaPage: React.FC = () => {
     setFormData(prev => ({ ...prev, kecamatan: nama, desa: '' }));
     setDesaList([]);
     const token = localStorage.getItem('token');
-    const res = await axios.get(`http://127.0.0.1:8000/api/wilayah/kelurahan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await api.get(`/wilayah/kelurahan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     setDesaList(res.data);
   };
 
@@ -174,7 +174,7 @@ const ProfilLembagaPage: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://127.0.0.1:8000/api/pjutd/${pjutdId}`, {
+      const response = await api.get(`/pjutd/${pjutdId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPjutdData(response.data);
@@ -225,7 +225,7 @@ const ProfilLembagaPage: React.FC = () => {
         id_kec: selectedKecId || null,
         id_kel: formData.desa ? (desaList.find(d => d.nama.toLowerCase() === formData.desa.toLowerCase())?.id || null) : null
       };
-      await axios.put(`http://127.0.0.1:8000/api/pjutd/${pjutdId}`, payload, {
+      await api.put(`/pjutd/${pjutdId}`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Profil lembaga berhasil diperbarui!');

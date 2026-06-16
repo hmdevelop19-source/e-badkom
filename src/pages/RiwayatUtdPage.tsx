@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import { Users, Search, History, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ const RiwayatUtdPage: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:8000/api/riwayat-utd', {
+      const response = await api.get('/riwayat-utd', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRiwayatList(response.data);

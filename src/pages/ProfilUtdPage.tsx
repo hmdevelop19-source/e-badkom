@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
-import axios from 'axios';
 import { Save, User, Edit2, X, MapPin, Calendar, Phone, Hash, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -67,19 +66,19 @@ const ProfilUtdPage: React.FC = () => {
         try {
           const token = localStorage.getItem('token');
           const config = { headers: { Authorization: `Bearer ${token}` } };
-          const provRes = await axios.get('http://127.0.0.1:8000/api/wilayah/provinsi', config);
+          const provRes = await api.get('/wilayah/provinsi', config);
           setProvinsiList(provRes.data);
           
           if (profile?.santri?.id_prov) {
-            const kabRes = await axios.get(`http://127.0.0.1:8000/api/wilayah/kabupaten/${profile.santri.id_prov}`, config);
+            const kabRes = await api.get(`/wilayah/kabupaten/${profile.santri.id_prov}`, config);
             setKabupatenList(kabRes.data);
             
             if (profile?.santri?.id_kab) {
-              const kecRes = await axios.get(`http://127.0.0.1:8000/api/wilayah/kecamatan/${profile.santri.id_kab}`, config);
+              const kecRes = await api.get(`/wilayah/kecamatan/${profile.santri.id_kab}`, config);
               setKecamatanList(kecRes.data);
               
               if (profile?.santri?.id_kec) {
-                const desaRes = await axios.get(`http://127.0.0.1:8000/api/wilayah/kelurahan/${profile.santri.id_kec}`, config);
+                const desaRes = await api.get(`/wilayah/kelurahan/${profile.santri.id_kec}`, config);
                 setDesaList(desaRes.data);
               }
             }
@@ -106,7 +105,7 @@ const ProfilUtdPage: React.FC = () => {
     setFormData(prev => ({ ...prev, santri_desa: '' }));
     setKabupatenList([]); setKecamatanList([]); setDesaList([]);
     const token = localStorage.getItem('token');
-    const res = await axios.get(`http://127.0.0.1:8000/api/wilayah/kabupaten/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await api.get(`/wilayah/kabupaten/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     setKabupatenList(res.data);
   };
 
@@ -123,7 +122,7 @@ const ProfilUtdPage: React.FC = () => {
     setFormData(prev => ({ ...prev, santri_desa: '' }));
     setKecamatanList([]); setDesaList([]);
     const token = localStorage.getItem('token');
-    const res = await axios.get(`http://127.0.0.1:8000/api/wilayah/kecamatan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await api.get(`/wilayah/kecamatan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     setKecamatanList(res.data);
   };
 
@@ -139,7 +138,7 @@ const ProfilUtdPage: React.FC = () => {
     setFormData(prev => ({ ...prev, santri_desa: '' }));
     setDesaList([]);
     const token = localStorage.getItem('token');
-    const res = await axios.get(`http://127.0.0.1:8000/api/wilayah/kelurahan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await api.get(`/wilayah/kelurahan/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     setDesaList(res.data);
   };
 
