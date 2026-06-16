@@ -697,6 +697,25 @@ const LaporanSayaPage: React.FC = () => {
                             </div>
                           ))}
                         </div>
+                      ) : soal.tipe_soal === 'uraian_multi' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          {soal.opsi_jawaban?.map((opsi: string, idx: number) => (
+                            <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>{opsi}</label>
+                              <textarea 
+                                className="styled-input" 
+                                rows={3} 
+                                required 
+                                onChange={e => setJawabanForm({
+                                  ...jawabanForm, 
+                                  [soal.id]: { ...((jawabanForm as any)[soal.id] || {}), [opsi]: e.target.value }
+                                })}
+                                placeholder={`Jawaban untuk ${opsi}...`}
+                                style={{ width: '100%', resize: 'vertical' }}
+                              />
+                            </div>
+                          ))}
+                        </div>
                       ) : soal.tipe_soal === 'uraian' ? (
                         <textarea 
                           className="styled-input" 

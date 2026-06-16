@@ -139,7 +139,11 @@ const SantriPage: React.FC = () => {
     const formDataFile = new FormData();
     formDataFile.append('file', file);
     try {
-      const response = await api.post('/santri/import/excel', formDataFile);
+      const response = await api.post('/santri/import/excel', formDataFile, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: ['santri'] });
     } catch (error: any) {

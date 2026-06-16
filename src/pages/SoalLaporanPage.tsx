@@ -112,7 +112,7 @@ const SoalLaporanPage: React.FC = () => {
     if (isEditMode) {
       const payload = { ...soalForms[0], target_level: globalTargetLevel, kategori_soal_id: selectedKategoriId };
       if (payload.tipe_soal === 'uraian') payload.opsi_jawaban = null;
-      else if (payload.tipe_soal === 'pilihan_ganda' && payload.opsi_jawaban) {
+      else if ((payload.tipe_soal === 'pilihan_ganda' || payload.tipe_soal === 'uraian_multi') && payload.opsi_jawaban) {
         payload.opsi_jawaban = payload.opsi_jawaban.filter((o: any) => typeof o === 'string' && o.trim() !== '');
       } else if (payload.tipe_soal === 'pilihan_ganda_multi' && payload.opsi_jawaban) {
         payload.opsi_jawaban = payload.opsi_jawaban.filter((g: any) => g && typeof g === 'object' && g.label.trim() !== '').map((g: any) => ({
@@ -125,7 +125,7 @@ const SoalLaporanPage: React.FC = () => {
       const items = soalForms.map(form => {
         const payload = { ...form, target_level: globalTargetLevel, kategori_soal_id: selectedKategoriId };
         if (payload.tipe_soal === 'uraian') payload.opsi_jawaban = null;
-        else if (payload.tipe_soal === 'pilihan_ganda' && payload.opsi_jawaban) {
+        else if ((payload.tipe_soal === 'pilihan_ganda' || payload.tipe_soal === 'uraian_multi') && payload.opsi_jawaban) {
           payload.opsi_jawaban = payload.opsi_jawaban.filter((o: any) => typeof o === 'string' && o.trim() !== '');
         } else if (payload.tipe_soal === 'pilihan_ganda_multi' && payload.opsi_jawaban) {
           payload.opsi_jawaban = payload.opsi_jawaban.filter((g: any) => g && typeof g === 'object' && g.label.trim() !== '').map((g: any) => ({
@@ -157,14 +157,14 @@ const SoalLaporanPage: React.FC = () => {
 
   const addOpsi = (formIndex: number) => {
     const form = soalForms[formIndex];
-    if (form.tipe_soal === 'pilihan_ganda' && form.opsi_jawaban) {
+    if ((form.tipe_soal === 'pilihan_ganda' || form.tipe_soal === 'uraian_multi') && form.opsi_jawaban) {
       updateSoalForm(formIndex, 'opsi_jawaban', [...form.opsi_jawaban, '']);
     }
   };
 
   const updateOpsi = (formIndex: number, opsiIndex: number, value: string) => {
     const form = soalForms[formIndex];
-    if (form.tipe_soal === 'pilihan_ganda' && form.opsi_jawaban) {
+    if ((form.tipe_soal === 'pilihan_ganda' || form.tipe_soal === 'uraian_multi') && form.opsi_jawaban) {
       const newOpsi = [...form.opsi_jawaban];
       newOpsi[opsiIndex] = value;
       updateSoalForm(formIndex, 'opsi_jawaban', newOpsi);
@@ -173,7 +173,7 @@ const SoalLaporanPage: React.FC = () => {
 
   const removeOpsi = (formIndex: number, opsiIndex: number) => {
     const form = soalForms[formIndex];
-    if (form.tipe_soal === 'pilihan_ganda' && form.opsi_jawaban && form.opsi_jawaban.length > 1) {
+    if ((form.tipe_soal === 'pilihan_ganda' || form.tipe_soal === 'uraian_multi') && form.opsi_jawaban && form.opsi_jawaban.length > 1) {
       const newOpsi = form.opsi_jawaban.filter((_, i) => i !== opsiIndex);
       updateSoalForm(formIndex, 'opsi_jawaban', newOpsi);
     }
@@ -299,7 +299,7 @@ const SoalLaporanPage: React.FC = () => {
                     {kategori.soal_laporan?.map((s, sIndex) => (
                       <tr key={s.id} style={{ borderBottom: sIndex === kategori.soal_laporan!.length - 1 ? 'none' : '1px solid #f1f5f9' }}>
                         <td style={{ padding: '12px 16px', width: '60%' }}>{s.pertanyaan}</td>
-                        <td style={{ padding: '12px 16px', color: '#64748b', fontSize: '0.875rem' }}>{s.tipe_soal === 'uraian' ? 'Uraian' : s.tipe_soal === 'pilihan_ganda_multi' ? 'Pilihan Ganda Multi' : 'Pilihan Ganda'}</td>
+                        <td style={{ padding: '12px 16px', color: '#64748b', fontSize: '0.875rem' }}>{s.tipe_soal === 'uraian' ? 'Uraian' : s.tipe_soal === 'pilihan_ganda_multi' ? 'Pilihan Ganda Multi' : s.tipe_soal === 'uraian_multi' ? 'Uraian Multi' : 'Pilihan Ganda'}</td>
                         <td style={{ padding: '12px 16px', color: s.is_active ? '#10b981' : '#94a3b8', fontSize: '0.875rem' }}>{s.is_active ? 'Aktif' : 'Nonaktif'}</td>
                         <td style={{ padding: '12px 16px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                           <button className="btn" style={{ padding: '6px' }} onClick={() => { 
@@ -382,7 +382,7 @@ const SoalLaporanPage: React.FC = () => {
                   <select className="form-control" value={form.tipe_soal} onChange={e => {
                     const newType = e.target.value;
                     let initialOpsi: any[] | null = null;
-                    if (newType === 'pilihan_ganda') initialOpsi = [''];
+                    if (newType === 'pilihan_ganda' || newType === 'uraian_multi') initialOpsi = [''];
                     if (newType === 'pilihan_ganda_multi') initialOpsi = [{ label: '', options: [''] }];
                     
                     const newForms = [...soalForms];
@@ -390,18 +390,19 @@ const SoalLaporanPage: React.FC = () => {
                     setSoalForms(newForms);
                   }}>
                     <option value="uraian">Uraian Panjang</option>
+                    <option value="uraian_multi">Uraian Multi (Kelompok)</option>
                     <option value="pilihan_ganda">Pilihan Ganda</option>
                     <option value="pilihan_ganda_multi">Pilihan Ganda Multi (Kelompok)</option>
                   </select>
                 </div>
-                {form.tipe_soal === 'pilihan_ganda' && (
+                {(form.tipe_soal === 'pilihan_ganda' || form.tipe_soal === 'uraian_multi') && (
                   <div className="form-group">
-                    <label className="form-label">Opsi Jawaban</label>
+                    <label className="form-label">{form.tipe_soal === 'uraian_multi' ? 'Label/Pertanyaan Uraian' : 'Opsi Jawaban'}</label>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {Array.isArray(form.opsi_jawaban) && form.opsi_jawaban.map((opsi: any, opsiIndex: number) => typeof opsi === 'string' && (
                         <div key={opsiIndex} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <span style={{ fontWeight: 'bold', color: '#94a3b8', width: '24px' }}>{String.fromCharCode(65 + opsiIndex)}.</span>
-                          <input type="text" className="form-control" value={opsi} onChange={e => updateOpsi(formIndex, opsiIndex, e.target.value)} placeholder={`Opsi ${opsiIndex+1}`} required style={{ flex: 1 }} />
+                          <span style={{ fontWeight: 'bold', color: '#94a3b8', width: '24px' }}>{form.tipe_soal === 'uraian_multi' ? `${opsiIndex + 1}.` : `${String.fromCharCode(65 + opsiIndex)}.`}</span>
+                          <input type="text" className="form-control" value={opsi} onChange={e => updateOpsi(formIndex, opsiIndex, e.target.value)} placeholder={form.tipe_soal === 'uraian_multi' ? `Label ${opsiIndex+1} (Misal: Kelebihan)` : `Opsi ${opsiIndex+1}`} required style={{ flex: 1 }} />
                           {form.opsi_jawaban!.length > 1 && (
                             <button type="button" onClick={() => removeOpsi(formIndex, opsiIndex)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}>
                               <Trash2 size={16} />
@@ -410,7 +411,7 @@ const SoalLaporanPage: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                    <button type="button" className="btn" style={{ padding: '6px 12px', fontSize: '0.75rem', marginTop: '8px', alignSelf: 'flex-start', background: '#f1f5f9' }} onClick={() => addOpsi(formIndex)}>+ Tambah Opsi</button>
+                    <button type="button" className="btn" style={{ padding: '6px 12px', fontSize: '0.75rem', marginTop: '8px', alignSelf: 'flex-start', background: '#f1f5f9' }} onClick={() => addOpsi(formIndex)}>+ Tambah {form.tipe_soal === 'uraian_multi' ? 'Label Uraian' : 'Opsi'}</button>
                   </div>
                 )}
                 {form.tipe_soal === 'pilihan_ganda_multi' && (

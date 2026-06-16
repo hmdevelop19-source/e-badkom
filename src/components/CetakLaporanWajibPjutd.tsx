@@ -35,12 +35,20 @@ export const CetakLaporanWajibPjutd: React.FC<Props> = ({ laporan, kopSuratUrl, 
     blankoKategoriList.forEach(kat => {
       categoriesMap.set(kat.id, {
         ...kat,
-        jawabans: (kat.soal_laporan || []).map((soal: any) => ({
-          soal_laporan: soal,
-          jawaban: '..............................................................',
-          soal_urutan: soal.urutan || 0,
-          soal_id: soal.id
-        }))
+        jawabans: (kat.soal_laporan || []).map((soal: any) => {
+          let blankoJawaban = '..............................................................';
+          if (soal.tipe_soal === 'uraian_multi' && Array.isArray(soal.opsi_jawaban)) {
+            blankoJawaban = soal.opsi_jawaban.map((o: any) => `${o}: ........................`).join(' | ');
+          } else if (soal.tipe_soal === 'pilihan_ganda_multi' && Array.isArray(soal.opsi_jawaban)) {
+            blankoJawaban = soal.opsi_jawaban.map((g: any) => `${g.label}: ........................`).join(' | ');
+          }
+          return {
+            soal_laporan: soal,
+            jawaban: blankoJawaban,
+            soal_urutan: soal.urutan || 0,
+            soal_id: soal.id
+          };
+        })
       });
     });
   }
